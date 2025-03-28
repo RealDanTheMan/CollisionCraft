@@ -41,11 +41,11 @@ void Logger::setActive(std::weak_ptr<Logger> logger)
 }
 
 /// Opens log file on disk associated with this logger object.
-bool Logger::initLogFile()
+void Logger::initLogFile()
 {
     if (this->log_file)
     {
-        return false;
+        return;
     }
 
     this->log_file = std::make_unique<std::ofstream>(

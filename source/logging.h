@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <memory>
 
 enum LogLevel
 {
@@ -18,7 +19,7 @@ class Logger
     Logger(const std::string &filepath);
     ~Logger();
 
-    bool initLogFile();
+    void initLogFile();
     void debug(const std::string &msg);
     void info(const std::string &msg);
     void warning(const std::string &msg);

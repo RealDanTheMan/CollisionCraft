@@ -1,6 +1,9 @@
 #include <filesystem>
 #include <QApplication>
 #include <QMainWindow>
+#include <QFile>
+#include <qapplication.h>
+#include <qcontainerfwd.h>
 #include <string>
 
 #include "appwindow.h"
@@ -34,6 +37,23 @@ std::string getLocalAppDataLocation()
 	return location;
 }
 
+/// Loads and applies given QSS stylesheet to given QT app.
+/// @param: app Application to apply stylesheet to.
+/// @param: filepath Filepath to the qss stylesheet file.
+bool applyStyleSheet(QApplication& app, const std::string &filepath)
+{
+	QFile file(QString::fromStdString(filepath));
+	if (file.open(QFile::ReadOnly | QFile::Text))
+	{
+		QString contents = file.readAll();
+		app.setStyleSheet(contents);
+
+		return true;
+	}
+
+	return false;
+}
+
 int main(int argc, char *argv[])
 {
 	/// Initialise local app data storage.
@@ -49,6 +69,12 @@ int main(int argc, char *argv[])
 	/// Create main window and start application loop.
     Logger::active()->debug("Starting application");
     QApplication app(argc, argv);
+
+	std::string stylesheet = ":/ui/stylesheet.qss";
+	if(!applyStyleSheet(app, stylesheet))
+	{
+		Logger::active()->warning("Failed to load default application stylesheet");
+	}
 
     Logger::active()->debug("Initialising application main window");
     AppWindow win;

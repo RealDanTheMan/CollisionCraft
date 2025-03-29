@@ -54,8 +54,11 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/viewportwidget.cpp
 )
 
+# Define resources
+qt_add_resources(PROCESSED_RESOURCES resources/resources.qrc)
+
 # Create executable target and link modules
-add_executable(CollisionCraft ${SOURCES})
+add_executable(CollisionCraft ${SOURCES} ${PROCESSED_RESOURCES})
 target_link_libraries(CollisionCraft PRIVATE
     Qt6::Core
     Qt6::Gui

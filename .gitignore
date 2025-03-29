@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Build and caches
+.cache
+build

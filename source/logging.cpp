@@ -48,11 +48,7 @@ void Logger::initLogFile()
         return;
     }
 
-    this->log_file = std::make_unique<std::ofstream>(
-        this->log_filepath,
-        std::ios::trunc | std::ios::out
-    );
-
+    this->log_file = std::make_unique<std::ofstream>(this->log_filepath, std::ios::out);
     if (!this->log_file || !this->log_file->is_open())
     {
         std::string err_msg = std::format("Failed to initialise log file -> {}", this->log_filepath);

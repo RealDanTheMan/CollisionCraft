@@ -11,9 +11,9 @@ void ViewportWidget::initializeGL()
     initializeOpenGLFunctions();
 
     glClearColor(
-        this->background_color.red(),
-        this->background_color.green(),
-        this->background_color.blue(),
+        this->background_color.redF(),
+        this->background_color.greenF(),
+        this->background_color.blueF(),
         1.0f
     );
 }
@@ -47,5 +47,5 @@ void ViewportWidget::setBackgroundColor(const QColor &color)
 /// @param blue Normalised blue channel value.
 void ViewportWidget::setBackgroundColor(float red, float green, float blue)
 {
-    this->background_color = QColor(red, green, blue, 1.0f);
+    this->background_color = QColor::fromRgbF(red, green, blue, 1.0f);
 }

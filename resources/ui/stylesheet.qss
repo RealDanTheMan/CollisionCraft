@@ -1,0 +1,11 @@
+QMainWindow 
+{
+	background-color	: rgb(33, 33, 33);
+}
+
+QFrame
+{
+	border			: 2px solid rgb(40, 40, 40);
+	border-radius	: 2px;
+	padding			: 0px;
+}

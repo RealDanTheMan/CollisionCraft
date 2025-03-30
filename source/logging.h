@@ -1,6 +1,8 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
+#include <QObject>
+#include <qtmetamacros.h>
 #include <string>
 #include <fstream>
 #include <memory>
@@ -13,9 +15,11 @@ enum LogLevel
     Error
 };
 
-class Logger 
+class Logger : public QObject
 {
-    public:
+	Q_OBJECT
+
+public:
     Logger(const std::string &filepath);
     ~Logger();
 
@@ -27,6 +31,10 @@ class Logger
 
     static Logger* active();
     static void setActive(std::weak_ptr<Logger> logger);
+
+signals:
+	void messageLogged(const std::string &message, LogLevel level);
+
 
 private:
     std::string log_filepath;

@@ -76,6 +76,8 @@ void Logger::logMessage(const std::string &msg, LogLevel level)
     std::string message = message_stream.str();
     std::cout << message << std::endl;
     *this->log_file << message << std::endl; 
+
+	emit this->messageLogged(message, level);
 }
 
 /// Get text value represennting given message severity level.

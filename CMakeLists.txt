@@ -51,6 +51,8 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/main.cpp
     ${PROJECT_SOURCE_DIR}/logging.cpp
     ${PROJECT_SOURCE_DIR}/graphics.cpp
+    ${PROJECT_SOURCE_DIR}/mesh.cpp
+    ${PROJECT_SOURCE_DIR}/rendermesh.cpp
     ${PROJECT_SOURCE_DIR}/appwindow.cpp
     ${PROJECT_SOURCE_DIR}/viewportwidget.cpp
     ${PROJECT_SOURCE_DIR}/logwidget.cpp

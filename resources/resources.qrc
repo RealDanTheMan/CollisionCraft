@@ -3,5 +3,6 @@
 		<file>ui/stylesheet.qss</file>
 		<file>shaders/model.vs</file>
 		<file>shaders/model.ps</file>
+		<file>models/dragon.usdc</file>
 	</qresource>
 </RCC>

@@ -1,11 +1,25 @@
 QMainWindow 
 {
-	background-color	: rgb(33, 33, 33);
+	background-color	: rgb(24, 24, 24);
 }
 
 QFrame
 {
-	border			: 2px solid rgb(40, 40, 40);
-	border-radius	: 2px;
-	padding			: 0px;
+	background-color	: rgb(33, 33, 33);
+	border				: 2px solid rgb(40, 40, 40);
+	border-radius		: 2px;
+	padding				: 0px;
+}
+
+LogWidget
+{
+	background-color	: rgb(100,0,0);
+}
+
+LogWidget QListWidget
+{
+	background-color	: rgb(50, 50, 50);
+	font-size			: 12px;
+	font-weight			: bold;
+	color               : rgb(192, 192, 192);
 }

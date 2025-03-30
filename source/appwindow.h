@@ -3,8 +3,11 @@
 
 #include <QMainWindow>
 #include <QVBoxLayout>
+#include <memory>
+
 #include "windowbase.h"
 #include "viewportwidget.h"
+#include "logwidget.h"
 
 class AppWindow : public QMainWindow
 {
@@ -15,7 +18,7 @@ public:
 
 private:
     Ui_MainWindow ui;
-    std::unique_ptr<ViewportWidget> viewport;
-    std::unique_ptr<QVBoxLayout> viewport_layout;
+    std::unique_ptr<ViewportWidget> viewport_widget;
+	std::unique_ptr<LogWidget> log_widget;
 };
 #endif

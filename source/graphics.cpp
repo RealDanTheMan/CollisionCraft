@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QOpenGLShader>
+#include <memory>
 
 /// Default ctor
 Graphics::Graphics()
@@ -22,6 +23,11 @@ bool Graphics::init()
 	}
 
 	return true;
+}
+
+QOpenGLShaderProgram * Graphics::getModelShader() const
+{
+	return this->model_shader.get();
 }
 
 /// Initialise default set of shaders used during graphics operations.

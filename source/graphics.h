@@ -4,12 +4,14 @@
 #include <memory>
 #include <QString>
 #include <QOpenGLShaderProgram>
+#include <qopenglshaderprogram.h>
 
 class Graphics
 {
 public:
 	Graphics();
 	bool init();
+	QOpenGLShaderProgram * getModelShader() const;
 
 protected:
 	bool initDefaultShaders();

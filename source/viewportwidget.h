@@ -3,6 +3,9 @@
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+#include <memory>
+
+#include "graphics.h"
 
 class ViewportWidget : public QOpenGLWidget, public QOpenGLFunctions
 {
@@ -19,6 +22,7 @@ protected:
     virtual void paintGL() override;
 
     QColor background_color = QColor(0.0f, 0.0f, 0.0f, 1.0f);
+	std::unique_ptr<Graphics> graphics = nullptr;
 
 };
 

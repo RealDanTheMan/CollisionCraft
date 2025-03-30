@@ -1,14 +1,30 @@
 #include "viewportwidget.h"
+#include "logging.h"
+#include <memory>
+#include <QSurfaceFormat>
 
 ViewportWidget::ViewportWidget(QWidget *parent) : QOpenGLWidget(parent) 
 {
+	this->graphics = std::make_unique<Graphics>();
 
+    QSurfaceFormat format;
+    format.setRenderableType(QSurfaceFormat::OpenGL);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setVersion(3, 3);
+    this->setFormat(format);
 }
 
 /// Initialize OpenGL graphics context for this widget.
 void ViewportWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+
+	Logger::active()->debug("Initialising graphics");
+	if (!this->graphics->init())
+	{
+		Logger::active()->error("Failed to initialise graphics!");
+		return;
+	}
 
     glClearColor(
         this->background_color.redF(),

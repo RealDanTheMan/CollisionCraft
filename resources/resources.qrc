@@ -3,6 +3,5 @@
 		<file>ui/stylesheet.qss</file>
 		<file>shaders/model.vs</file>
 		<file>shaders/model.ps</file>
-	loadShaderResource()
 	</qresource>
 </RCC>

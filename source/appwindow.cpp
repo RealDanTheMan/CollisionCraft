@@ -23,7 +23,6 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
     
 	Logger::active()->debug("Initialising viewport widget");
     this->viewport_widget = std::make_unique<ViewportWidget>(this);
-    this->viewport_widget->setBackgroundColor(0.1f, 0.1f, 0.4f);
     this->ui.ViewportFrame->setLayout(new QVBoxLayout());
 	this->ui.ViewportFrame->layout()->addWidget(this->viewport_widget.get());
 

@@ -1,17 +1,13 @@
 #include "viewportwidget.h"
 #include "logging.h"
 #include <memory>
+#include <vector>
+#include <QVector3D>
 #include <QSurfaceFormat>
 
 ViewportWidget::ViewportWidget(QWidget *parent) : QOpenGLWidget(parent) 
 {
 	this->graphics = std::make_unique<Graphics>();
-
-    QSurfaceFormat format;
-    format.setRenderableType(QSurfaceFormat::OpenGL);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setVersion(3, 3);
-    this->setFormat(format);
 }
 
 /// Initialize OpenGL graphics context for this widget.
@@ -32,6 +28,17 @@ void ViewportWidget::initializeGL()
         this->background_color.blueF(),
         1.0f
     );
+
+	Logger::active()->debug("Initialising viewport fallback render mesh");
+	std::vector<QVector3D> fallback_mesh_verts = {
+		QVector3D(-0.5f, -0.5f, 0.0f),
+		QVector3D(0.5f, -0.5f, 0.0f),
+		QVector3D(0.0f, 0.5f, 0.0f),
+	};
+
+	std::vector<int> fallback_mesh_indices = {0, 1, 2};
+	Mesh mesh(fallback_mesh_verts, fallback_mesh_indices);
+	this->fallback_mesh = std::make_unique<RenderMesh>(mesh);
 }
 
 /// Event handler invoked when the widget GL surface is resized.
@@ -48,6 +55,11 @@ void ViewportWidget::resizeGL(int width, int height)
 void ViewportWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (this->fallback_mesh)
+	{
+		QOpenGLShaderProgram *shader = this->graphics->getModelShader();
+		this->fallback_mesh->Render(*shader);
+	}
 }
 
 /// Set the color of the OpenGL surface background

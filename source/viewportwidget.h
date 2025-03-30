@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "graphics.h"
+#include "rendermesh.h"
 
 class ViewportWidget : public QOpenGLWidget, public QOpenGLFunctions
 {
@@ -23,6 +24,9 @@ protected:
 
     QColor background_color = QColor(0.0f, 0.0f, 0.0f, 1.0f);
 	std::unique_ptr<Graphics> graphics = nullptr;
+
+private:
+	std::unique_ptr<RenderMesh> fallback_mesh;
 
 };
 

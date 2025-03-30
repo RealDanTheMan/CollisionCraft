@@ -69,7 +69,14 @@ int main(int argc, char *argv[])
 	/// Create main window and start application loop.
     Logger::active()->debug("Starting application");
     QApplication app(argc, argv);
-
+	
+	/// Define OpenGL context specification.
+	QSurfaceFormat format;
+	format.setRenderableType(QSurfaceFormat::OpenGL);
+	format.setProfile(QSurfaceFormat::CoreProfile);
+	format.setVersion(3, 3);
+	QSurfaceFormat::setDefaultFormat(format);
+	
 	std::string stylesheet = ":/ui/stylesheet.qss";
 	if(!applyStyleSheet(app, stylesheet))
 	{

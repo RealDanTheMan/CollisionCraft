@@ -49,6 +49,9 @@ private:
     
 };
 
+/// Shorthand function for logging formated debug message.
+/// @param: msg Message string.
+/// @param: Args Format arguments.
 template <typename... Args>
 void logDebug(const std::string &msg, Args&&... args)
 {
@@ -68,6 +71,9 @@ void logDebug(const std::string &msg, Args&&... args)
 	}
 }
 
+/// Shorthand function for logging formated info message.
+/// @param: msg Message string.
+/// @param: Args Format arguments.
 template <typename... Args>
 void logInfo(const std::string &msg, Args&&... args)
 {
@@ -87,6 +93,9 @@ void logInfo(const std::string &msg, Args&&... args)
 	}
 }
 
+/// Shorthand function for logging formated warning message.
+/// @param: msg Message string.
+/// @param: Args Format arguments.
 template <typename... Args>
 void logWarning(const std::string &msg, Args&&... args)
 {
@@ -106,6 +115,9 @@ void logWarning(const std::string &msg, Args&&... args)
 	}
 }
 
+/// Shorthand function for logging formated error message.
+/// @param: msg Message string.
+/// @param: Args Format arguments.
 template <typename... Args>
 void logError(const std::string &msg, Args&&... args)
 {

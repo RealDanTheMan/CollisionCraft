@@ -31,7 +31,7 @@ endif()
 set(CMAKE_BINARY_DIR ./bin/)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(PROJECT_SOURCE_DIR ./source/)
+set(PROJECT_SOURCE_DIR source/)
 
 set(CMAKE_AUTOMOC ON)
 
@@ -44,8 +44,9 @@ find_package(Qt6 REQUIRED COMPONENTS
     OpenGLWidgets
 )
 
-# Define source and header files
-include_directories(${PROJECT_SOURCE_DIR})
+set(USD_PATH lib/openusd)
+set(USD_INCLUDES ${USD_PATH}/include)
+set(USD_LIB ${USD_PATH}/lib)
 
 set(SOURCES
     ${PROJECT_SOURCE_DIR}/main.cpp
@@ -53,6 +54,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/graphics.cpp
     ${PROJECT_SOURCE_DIR}/mesh.cpp
     ${PROJECT_SOURCE_DIR}/rendermesh.cpp
+    ${PROJECT_SOURCE_DIR}/modelloader.cpp
     ${PROJECT_SOURCE_DIR}/appwindow.cpp
     ${PROJECT_SOURCE_DIR}/viewportwidget.cpp
     ${PROJECT_SOURCE_DIR}/logwidget.cpp
@@ -63,10 +65,27 @@ qt_add_resources(PROCESSED_RESOURCES resources/resources.qrc)
 
 # Create executable target and link modules
 add_executable(CollisionCraft ${SOURCES} ${PROCESSED_RESOURCES})
+
+target_include_directories(CollisionCraft PRIVATE
+	${PROJECT_SOURCE_DIR}
+	${USD_INCLUDES}
+)
+
+target_link_directories(CollisionCraft PRIVATE
+	${USD_LIB}
+)
+
 target_link_libraries(CollisionCraft PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
     Qt6::OpenGL
     Qt6::OpenGLWidgets
+	
+	usd_usd
+	usd_usdGeom
+	usd_usdUtils
+	usd_tf
+	usd_sdf
+	usd_vt
 )

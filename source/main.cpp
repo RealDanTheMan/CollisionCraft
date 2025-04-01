@@ -6,6 +6,8 @@
 #include <qcontainerfwd.h>
 #include <string>
 
+#include <pxr/base/tf/diagnosticMgr.h>
+
 #include "appwindow.h"
 #include "logging.h"
 
@@ -56,6 +58,10 @@ bool applyStyleSheet(QApplication& app, const std::string &filepath)
 
 int main(int argc, char *argv[])
 {
+	/// Enable USD debug output.
+	pxr::TfDiagnosticMgr::GetInstance().EnableNotification2();
+	pxr::TfDiagnosticMgr::GetInstance().SetQuiet(false);
+
 	/// Initialise local app data storage.
     std::string local_app_data = getLocalAppDataLocation();
 	std::filesystem::create_directories(local_app_data);
@@ -84,7 +90,7 @@ int main(int argc, char *argv[])
 	}
 
     Logger::active()->debug("Initialising application main window");
-    AppWindow win;
+    AppWindow win (local_app_data);
     win.setWindowTitle("CollisionCraft");
     win.resize(1000, 720);
     win.show();

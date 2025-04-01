@@ -36,7 +36,7 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
 	/// Load default model into the viewport for the time being to better test
 	/// viewport logic and onging changes.
 	Logger::active()->debug("Loading default viewport model");
-	const std::string model_res = ":models/dragon.usdc";
+	const std::string model_res = ":models/suzanne.usdc";
 
 	std::vector<Mesh> meshes;
 	ModelLoader::LoadResourceUSD(model_res, meshes);

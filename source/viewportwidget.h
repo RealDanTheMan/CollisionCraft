@@ -30,7 +30,6 @@ protected:
 	std::unique_ptr<Graphics> graphics = nullptr;
 
 private:
-	std::unique_ptr<RenderMesh> fallback_mesh;
 	std::vector<RenderMesh*> render_queue;
 
 };

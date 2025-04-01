@@ -44,18 +44,6 @@ void ViewportWidget::initializeGL()
         this->background_color.blueF(),
         1.0f
     );
-
-	Logger::active()->debug("Initialising viewport fallback render mesh");
-	std::vector<QVector3D> fallback_mesh_verts = {
-		QVector3D(-0.5f, -0.5f, 0.0f),
-		QVector3D(0.5f, -0.5f, 0.0f),
-		QVector3D(0.0f, 0.5f, 0.0f),
-	};
-
-	std::vector<int> fallback_mesh_indices = {0, 1, 2};
-	Mesh mesh(fallback_mesh_verts, fallback_mesh_indices);
-	this->fallback_mesh = std::make_unique<RenderMesh>(mesh);
-	this->addRenderMesh(this->fallback_mesh.get());
 }
 
 /// Event handler invoked when the widget GL surface is resized.

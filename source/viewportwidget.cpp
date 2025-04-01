@@ -1,5 +1,6 @@
 #include "viewportwidget.h"
 #include "logging.h"
+#include "rendermesh.h"
 #include <memory>
 #include <vector>
 #include <QVector3D>
@@ -8,6 +9,21 @@
 ViewportWidget::ViewportWidget(QWidget *parent) : QOpenGLWidget(parent) 
 {
 	this->graphics = std::make_unique<Graphics>();
+}
+
+/// Clear this viewport render queue / empty the viewport.
+void ViewportWidget::clearRenderMeshes()
+{
+	this->render_queue.clear();
+}
+
+/// Add render mesh to this viewport render queue.
+///
+/// Meshes in the render queue will re-draw each time the viewport paint event is called.
+/// @param: mesh Render mesh to add to the queue.
+void ViewportWidget::addRenderMesh(RenderMesh *mesh)
+{
+	this->render_queue.push_back(mesh);
 }
 
 /// Initialize OpenGL graphics context for this widget.
@@ -39,6 +55,7 @@ void ViewportWidget::initializeGL()
 	std::vector<int> fallback_mesh_indices = {0, 1, 2};
 	Mesh mesh(fallback_mesh_verts, fallback_mesh_indices);
 	this->fallback_mesh = std::make_unique<RenderMesh>(mesh);
+	this->addRenderMesh(this->fallback_mesh.get());
 }
 
 /// Event handler invoked when the widget GL surface is resized.
@@ -55,10 +72,12 @@ void ViewportWidget::resizeGL(int width, int height)
 void ViewportWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if (this->fallback_mesh)
+
+	logDebug("Drawing render queue of size -> {}", this->render_queue.size());
+	for (RenderMesh *mesh : this->render_queue)
 	{
 		QOpenGLShaderProgram *shader = this->graphics->getModelShader();
-		this->fallback_mesh->Render(*shader);
+		mesh->Render(*shader);
 	}
 }
 

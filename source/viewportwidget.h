@@ -4,6 +4,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <memory>
+#include <vector>
 
 #include "graphics.h"
 #include "rendermesh.h"
@@ -17,6 +18,9 @@ public:
     void setBackgroundColor(const QColor &color);
     void setBackgroundColor(float red, float green, float blue);
 
+	void clearRenderMeshes();
+	void addRenderMesh(RenderMesh *mesh);
+
 protected:
     virtual void initializeGL() override;
     virtual void resizeGL(int width, int height) override;
@@ -27,6 +31,7 @@ protected:
 
 private:
 	std::unique_ptr<RenderMesh> fallback_mesh;
+	std::vector<RenderMesh*> render_queue;
 
 };
 

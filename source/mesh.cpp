@@ -27,3 +27,15 @@ const std::vector<int>* Mesh::getIndices() const
 {
 	return this->indices.get();
 }
+
+/// Get number of vertices stored in this mesh data.
+int Mesh::numVertices() const
+{
+	return this->vertices->size();
+}
+
+/// Get number of triangle indices stored in this mesh data.
+int Mesh::numIndices() const
+{
+	return this->indices->size();
+}

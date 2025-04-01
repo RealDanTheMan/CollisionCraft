@@ -12,6 +12,9 @@ public:
 	const std::vector<QVector3D>* getVertices() const;
 	const std::vector<int>* getIndices() const;
 
+	int numIndices() const;
+	int numVertices() const;
+
 protected:
 	std::unique_ptr<std::vector<QVector3D>> vertices;
 	std::unique_ptr<std::vector<int>> indices;

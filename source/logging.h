@@ -2,9 +2,11 @@
 #define LOGGING_H
 
 #include <QObject>
+#include <format>
 #include <qtmetamacros.h>
 #include <string>
 #include <fstream>
+#include <iostream>
 #include <memory>
 
 enum LogLevel
@@ -46,5 +48,81 @@ private:
     static std::string getTimestamp();
     
 };
+
+template <typename... Args>
+void logDebug(const std::string &msg, Args&&... args)
+{
+	if (!Logger::active()) 
+	{
+		return;
+	}
+
+	try
+	{
+		std::string message = std::vformat(msg, std::make_format_args(args...));
+		Logger::active()->debug(message);
+	}
+	catch (const std::format_error &err)
+	{
+		std::cerr << "Error logging message message: " << err.what() << std::endl;
+	}
+}
+
+template <typename... Args>
+void logInfo(const std::string &msg, Args&&... args)
+{
+	if (!Logger::active()) 
+	{
+		return;
+	}
+
+	try
+	{
+		std::string message = std::vformat(msg, std::make_format_args(args...));
+		Logger::active()->info(message);
+	}
+	catch (const std::format_error &err)
+	{
+		std::cerr << "Error logging info message: " << err.what() << std::endl;
+	}
+}
+
+template <typename... Args>
+void logWarning(const std::string &msg, Args&&... args)
+{
+	if (!Logger::active()) 
+	{
+		return;
+	}
+
+	try
+	{
+		std::string message = std::vformat(msg, std::make_format_args(args...));
+		Logger::active()->warning(message);
+	}
+	catch (const std::format_error &err)
+	{
+		std::cerr << "Error logging warning message: " << err.what() << std::endl;
+	}
+}
+
+template <typename... Args>
+void logError(const std::string &msg, Args&&... args)
+{
+	if (!Logger::active()) 
+	{
+		return;
+	}
+
+	try
+	{
+		std::string message = std::vformat(msg, std::make_format_args(args...));
+		Logger::active()->error(message);
+	}
+	catch (const std::format_error &err)
+	{
+		std::cerr << "Error logging error message: " << err.what() << std::endl;
+	}
+}
 
 #endif

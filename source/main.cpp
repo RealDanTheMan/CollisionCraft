@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 	}
 
     Logger::active()->debug("Initialising application main window");
-    AppWindow win (local_app_data);
+    AppWindow win;
     win.setWindowTitle("CollisionCraft");
     win.resize(1000, 720);
     win.show();

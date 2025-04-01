@@ -1,6 +1,4 @@
 #include "rendermesh.h"
-#include <GL/gl.h>
-#include <stdexcept>
 
 
 RenderMesh::RenderMesh(const Mesh &mesh)

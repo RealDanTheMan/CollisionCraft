@@ -1,20 +1,21 @@
 #include "modelloader.h"
 #include "logging.h"
 #include "mesh.h"
-#include "pxr/base/gf/vec3i.h"
-#include "pxr/base/vt/array.h"
 
-#include <format>
+#include <vector>
 #include <QString>
+#include <QDir>
 #include <QFile>
 #include <QTemporaryFile>
-#include <QDir>
 
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/tokens.h>
+#include <pxr/usd/usdGeom/metrics.h>
+#include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdGeom/xformCommonAPI.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdGeom/mesh.h>
-#include <qdir.h>
-#include <vector>
+#include <pxr/base/vt/array.h>
 
 /// Load model data from USD file stored in QT resource pack.
 /// @param: resource_path Resource pack relative path to the usd model.
@@ -62,6 +63,7 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
 		return;
 	}
 
+
 	for (const pxr::UsdPrim &prim : stage->Traverse())
 	{
 		if (!prim.IsA<pxr::UsdGeomMesh>())
@@ -70,7 +72,9 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
 		}
 
 		logDebug("Analising USD Mesh -> {}", prim.GetPath().GetString());
+		pxr::TfToken up_axis = pxr::UsdGeomGetStageUpAxis(stage);
 		pxr::UsdGeomMesh mesh(prim);
+	
 
 		/// Vertex data.
 		std::vector<QVector3D> mesh_vertices;
@@ -79,7 +83,23 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
 		mesh_vertices.reserve(vertices.size());
 		for (const pxr::GfVec3f &vertex : vertices)
 		{
-			mesh_vertices.emplace_back(vertex[0], vertex[1], vertex[2]);
+			/// Convert to Z up axis as needed.
+			if (up_axis == pxr::UsdGeomTokens->z)
+			{
+				pxr::GfMatrix4d yup {
+					1, 0, 0, 0,
+					0, 0, 1, 0,
+					0, 1, 0, 0,
+					0, 0, 0, 1
+				};
+				
+				pxr::GfVec3d pos = yup.Transform(vertex);
+				mesh_vertices.emplace_back(pos[0], pos[1], pos[2]);
+			}
+			else
+			{
+				mesh_vertices.emplace_back(vertex[0], vertex[1], vertex[2]);
+			}
 		}
 
 		/// Triangle index data.
@@ -89,6 +109,7 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
 	
 		/// Build mesh data.
 		meshes.emplace_back(mesh_vertices, mesh_indices);
+		meshes.back().generateNormals();
 		logDebug("USD mesh vertex count -> {}", meshes.back().numVertices());
 		logDebug("USD mesh index count -> {}", meshes.back().numIndices());
 	}

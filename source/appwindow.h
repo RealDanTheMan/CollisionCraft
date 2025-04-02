@@ -18,6 +18,9 @@ class AppWindow : public QMainWindow
 public:
     AppWindow(QWidget *parent = nullptr);
 
+protected:
+	void onViewportReady();
+
 private:
     Ui_MainWindow ui;
     std::unique_ptr<ViewportWidget> viewport_widget;

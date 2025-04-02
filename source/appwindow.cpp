@@ -3,6 +3,7 @@
 #include "logwidget.h"
 #include "modelloader.h"
 #include "rendermesh.h"
+#include "viewportwidget.h"
 
 #include <memory>
 #include <qboxlayout.h>
@@ -32,6 +33,19 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
 	this->ui.ViewportFrame->layout()->addWidget(this->viewport_widget.get());
 	this->ui.ViewportFrame->layout()->setContentsMargins(0, 0, 0, 0);
 	this->ui.ViewportFrame->layout()->setSpacing(0);
+	this->viewport_widget->makeCurrent();
+	this->viewport_widget->update();
+	
+	connect(
+		this->viewport_widget.get(),
+		&ViewportWidget::graphicsReady,
+		this,
+		&AppWindow::onViewportReady
+	);
+}
+
+void AppWindow::onViewportReady()
+{
 
 	/// Load default model into the viewport for the time being to better test
 	/// viewport logic and onging changes.

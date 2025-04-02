@@ -39,6 +39,8 @@ void ViewportWidget::initializeGL()
 		return;
 	}
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
     glClearColor(
         this->background_color.redF(),
         this->background_color.greenF(),

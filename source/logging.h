@@ -34,7 +34,7 @@ public:
     static Logger* active();
     static void setActive(std::weak_ptr<Logger> logger);
 
-signals:
+	Q_SIGNAL
 	void messageLogged(const std::string &message, LogLevel level);
 
 

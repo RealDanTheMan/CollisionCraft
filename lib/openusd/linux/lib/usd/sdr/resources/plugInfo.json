@@ -1,0 +1,25 @@
+{
+    "Plugins": [
+        {
+            "Info": {
+                "Types": {
+                    "SdrDiscoveryPlugin": {
+                        "bases": ["NdrDiscoveryPlugin"]
+                    },
+                    "_SdrFilesystemDiscoveryPlugin" : {
+                        "bases": ["SdrDiscoveryPlugin"],
+                        "displayName": "Filesystem Discovery"
+                    },
+                    "SdrParserPlugin": {
+                        "bases": ["NdrParserPlugin"]
+                    }
+                }
+            },
+            "LibraryPath": "../../libusd_sdr.so", 
+            "Name": "sdr", 
+            "ResourcePath": "resources", 
+            "Root": "..", 
+            "Type": "library"
+        }
+    ]
+}

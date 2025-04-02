@@ -13,6 +13,7 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdGeom/mesh.h>
+#include <qdir.h>
 #include <vector>
 
 /// Load model data from USD file stored in QT resource pack.
@@ -23,7 +24,7 @@ void ModelLoader::LoadResourceUSD(const std::string &resource_path, std::vector<
 	/// TODO: Loading QT resource model and write to tmp file that
 	/// USD SDK can read data from.
 	/// Note: At this time USD SDK cannot read from in-memory stream.
-	logDebug("Loading resource usd model file -> ");
+	logDebug("Loading resource usd model file -> {}", resource_path);
 	QFile file(QString::fromStdString(resource_path));
 	if	(!file.open(QIODevice::ReadOnly))
 	{
@@ -32,10 +33,11 @@ void ModelLoader::LoadResourceUSD(const std::string &resource_path, std::vector<
 	}
 
 	QFileInfo info(file);
-	QTemporaryFile tmp_file(QDir::tempPath() + info.baseName() + "_XXXXXX.usdc");
+	QTemporaryFile tmp_file(QDir::tempPath() + "/" + info.baseName() + "_XXXXXX.usdc");
 	if(!tmp_file.open())
 	{
-		Logger::active()->error("Failed to create temporary model file!");
+		logError("Failed to create temporary model file -> {}", tmp_file.fileName().toStdString());
+		logError("Error: {}", tmp_file.errorString().toStdString());
 	}
 
 	tmp_file.write(file.readAll());

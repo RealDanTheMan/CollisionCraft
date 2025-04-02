@@ -5,6 +5,9 @@ project(CollisionCraft VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# TMP flag to avoid compile issues with OpenUSD with older versions of TBB
+add_compile_options(-Wno-error=changes-meaning)
+
 # Set platform flags
 message(STATUS "Resolving target platform architecture")
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -44,7 +47,16 @@ find_package(Qt6 REQUIRED COMPONENTS
     OpenGLWidgets
 )
 
-set(USD_PATH lib/openusd)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+	message(STATUS "Targeting MacOS OpenUSD libraries")
+	set(USD_PATH lib/openusd/macos)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	message(STATUS "Targeting Linux OpenUSD libraries")
+	set(USD_PATH lib/openusd/linux)
+else()
+	message(FATAL_ERROR "Unsupported target architecture for USD")
+endif()
+
 set(USD_INCLUDES ${USD_PATH}/include)
 set(USD_LIB ${USD_PATH}/lib)
 
@@ -60,11 +72,15 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/logwidget.cpp
 )
 
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+include_directories(${Python3_INCLUDE_DIRS})
+
 # Define resources
 qt_add_resources(PROCESSED_RESOURCES resources/resources.qrc)
 
 # Create executable target and link modules
 add_executable(CollisionCraft ${SOURCES} ${PROCESSED_RESOURCES})
+target_compile_definitions(CollisionCraft PRIVATE QT_NO_KEYWORDS)
 
 target_include_directories(CollisionCraft PRIVATE
 	${PROJECT_SOURCE_DIR}
@@ -82,7 +98,7 @@ target_link_libraries(CollisionCraft PRIVATE
     Qt6::OpenGL
     Qt6::OpenGLWidgets
 	
-	usd_usd
+	usd_usd	
 	usd_usdGeom
 	usd_usdUtils
 	usd_tf

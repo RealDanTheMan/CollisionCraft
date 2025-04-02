@@ -14,9 +14,11 @@ public:
 
 	int numIndices() const;
 	int numVertices() const;
+	void generateNormals();
 
 protected:
 	std::unique_ptr<std::vector<QVector3D>> vertices;
+	std::unique_ptr<std::vector<QVector3D>> normals;
 	std::unique_ptr<std::vector<int>> indices;
 };
 

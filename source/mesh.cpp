@@ -40,8 +40,8 @@ void Mesh::generateNormals()
 		QVector3D b = this->vertices->at(idx1);
 		QVector3D c = this->vertices->at(idx2);
 
-		QVector3D ab = (b - a).normalized(); 
-		QVector3D ac = (c - a).normalized(); 
+		QVector3D ab = (b - a);
+		QVector3D ac = (c - a); 
 		QVector3D normal = QVector3D::crossProduct(ab, ac);
 
 		all_normals.at(idx0).push_back(normal);
@@ -60,7 +60,7 @@ void Mesh::generateNormals()
 		}
 
 		normal /= all_normals.at(i).size();
-		this->normals->push_back(normal);
+		this->normals->push_back(normal.normalized());
 	}
 }
 
@@ -68,6 +68,12 @@ void Mesh::generateNormals()
 const std::vector<QVector3D>* Mesh::getVertices() const
 {
 	return this->vertices.get();
+}
+
+/// Get read-only access to mesh normals.
+const std::vector<QVector3D>* Mesh::getNormals() const
+{
+	return this->normals.get();
 }
 
 /// Get read-only access to mesh triangle indices.
@@ -80,6 +86,12 @@ const std::vector<int>* Mesh::getIndices() const
 int Mesh::numVertices() const
 {
 	return this->vertices->size();
+}
+
+/// Get number of normals stored in this mesh data.
+int Mesh::numNormals() const
+{
+	return this->normals->size();
 }
 
 /// Get number of triangle indices stored in this mesh data.

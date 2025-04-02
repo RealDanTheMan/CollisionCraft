@@ -1,4 +1,5 @@
 #include "rendermesh.h"
+#include <cstdint>
 
 
 RenderMesh::RenderMesh(const Mesh &mesh)
@@ -10,22 +11,30 @@ RenderMesh::RenderMesh(const Mesh &mesh)
 	this->vertex_attributes.create();
 	this->vertex_attributes.bind();
 
+	const int position_size = mesh.numVertices() * sizeof(QVector3D);
+	const int normal_size = mesh.numNormals() * sizeof(QVector3D);
+	const int buffer_size = position_size + normal_size;
+
 	this->vertex_buffer.create();
 	this->vertex_buffer.bind();
-	this->vertex_buffer.allocate(
-		mesh.getVertices()->data(),
-		mesh.getVertices()->size() * sizeof(QVector3D)
-	);
+	this->vertex_buffer.allocate(buffer_size);
+
+	/// We write vertex buffer data sequentially by data type.
+	/// Buffer layout example [[position], [normals], [other]]
+	this->vertex_buffer.write(0, mesh.getVertices()->data(), position_size);
+	this->vertex_buffer.write(position_size, mesh.getNormals()->data(), normal_size);
 
 	this->index_buffer.create();
 	this->index_buffer.bind();
 	this->index_buffer.allocate(
 		mesh.getIndices()->data(),
-		mesh.getIndices()->size() * sizeof(int)
+		mesh.numIndices() * sizeof(int)
 	);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(QVector3D), nullptr);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(intptr_t)(position_size));
 
 	this->vertex_attributes.release();
 	this->vertex_buffer.release();
@@ -43,11 +52,11 @@ void RenderMesh::Render(QOpenGLShaderProgram &shader)
 	shader.bind();
 	this->vertex_attributes.bind();
 
-	glDisable(GL_DEPTH_TEST);
 	glDrawElements(GL_TRIANGLES, this->index_size, GL_UNSIGNED_INT, nullptr);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	this->index_buffer.release();
+	this->vertex_buffer.release();
 	this->vertex_attributes.release();
 	shader.release();
 }

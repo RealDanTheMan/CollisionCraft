@@ -2,6 +2,7 @@
 #include "logging.h"
 #include "rendermesh.h"
 #include <memory>
+#include <qtmetamacros.h>
 #include <vector>
 #include <QVector3D>
 #include <QSurfaceFormat>
@@ -44,6 +45,8 @@ void ViewportWidget::initializeGL()
         this->background_color.blueF(),
         1.0f
     );
+
+	Q_EMIT this->graphicsReady();
 }
 
 /// Event handler invoked when the widget GL surface is resized.

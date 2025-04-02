@@ -4,6 +4,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <memory>
+#include <qtmetamacros.h>
 #include <vector>
 
 #include "graphics.h"
@@ -20,6 +21,9 @@ public:
 
 	void clearRenderMeshes();
 	void addRenderMesh(RenderMesh *mesh);
+
+	Q_SIGNAL
+	void graphicsReady();
 
 protected:
     virtual void initializeGL() override;

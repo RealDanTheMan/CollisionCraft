@@ -23,8 +23,8 @@ protected:
 
 private:
     Ui_MainWindow ui;
-    std::unique_ptr<ViewportWidget> viewport_widget;
-	std::unique_ptr<LogWidget> log_widget;
+    ViewportWidget *viewport_widget;
+	LogWidget *log_widget;
 	std::vector<std::unique_ptr<RenderMesh>> model_meshes;
 };
 #endif

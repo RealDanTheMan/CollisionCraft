@@ -3,8 +3,10 @@
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
+#include <QMatrix4x4>
+
 #include <memory>
-#include <qtmetamacros.h>
 #include <vector>
 
 #include "graphics.h"
@@ -29,12 +31,18 @@ protected:
     virtual void initializeGL() override;
     virtual void resizeGL(int width, int height) override;
     virtual void paintGL() override;
+	void updatePerspectiveProjection(float fov = 30.0f);
+	void setShaderStandardInputs(QOpenGLShaderProgram &shader);
 
     QColor background_color = QColor(0.0f, 0.0f, 0.0f, 1.0f);
 	std::unique_ptr<Graphics> graphics = nullptr;
 
 private:
 	std::vector<RenderMesh*> render_queue;
+	QMatrix4x4 mat_model;
+	QMatrix4x4 mat_view;
+	QMatrix4x4 mat_perspective;
+
 
 };
 

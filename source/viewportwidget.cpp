@@ -10,6 +10,9 @@
 ViewportWidget::ViewportWidget(QWidget *parent) : QOpenGLWidget(parent) 
 {
 	this->graphics = std::make_unique<Graphics>();
+	this->mat_view.setToIdentity();
+	this->mat_perspective.setToIdentity();
+	this->mat_model.setToIdentity();
 }
 
 /// Clear this viewport render queue / empty the viewport.
@@ -41,6 +44,7 @@ void ViewportWidget::initializeGL()
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	glDisable(GL_CULL_FACE);
     glClearColor(
         this->background_color.redF(),
         this->background_color.greenF(),
@@ -48,6 +52,11 @@ void ViewportWidget::initializeGL()
         1.0f
     );
 
+	/// Move the camear away from the model so we can see it.
+	/// TODO: Use sphere bounds of the model to calculate better offset.
+	this->mat_view.translate(0.0, 0.0, -3.5);
+
+	this->updatePerspectiveProjection();
 	Q_EMIT this->graphicsReady();
 }
 
@@ -59,6 +68,7 @@ void ViewportWidget::initializeGL()
 void ViewportWidget::resizeGL(int width, int height)
 {
     glViewport(0, 0, width, height);
+	this->updatePerspectiveProjection();
 }
 
 /// Event handler invoked when redraw is called for this widget.
@@ -66,10 +76,11 @@ void ViewportWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	logDebug("Drawing render queue of size -> {}", this->render_queue.size());
+	//logDebug("Drawing render queue of size -> {}", this->render_queue.size());
 	for (RenderMesh *mesh : this->render_queue)
 	{
 		QOpenGLShaderProgram *shader = this->graphics->getModelShader();
+		this->setShaderStandardInputs(*shader);
 		mesh->Render(*shader);
 	}
 }
@@ -88,4 +99,28 @@ void ViewportWidget::setBackgroundColor(const QColor &color)
 void ViewportWidget::setBackgroundColor(float red, float green, float blue)
 {
     this->background_color = QColor::fromRgbF(red, green, blue, 1.0f);
+}
+
+/// Recalulates perspective projection transform based on the current size of viewport.
+void ViewportWidget::updatePerspectiveProjection(float fov)
+{
+	const float width = static_cast<float>(this->width());
+	const int height = static_cast<float>(this->height());
+	const float aspect = width / height;
+	const float near = 0.001f;
+	const float far = 1000000.0f;
+
+	this->mat_perspective.setToIdentity();
+	this->mat_perspective.perspective(fov, aspect, near, far);
+}
+
+/// Send standard input parameter the shader pipeline expects to receive to draw
+/// content to screen correctly.
+void ViewportWidget::setShaderStandardInputs(QOpenGLShaderProgram &shader)
+{
+	shader.bind();
+	shader.setUniformValue("SV_MODEL_MAT", this->mat_model);
+	shader.setUniformValue("SV_VIEW_MAT", this->mat_view);
+	shader.setUniformValue("SV_PROJ_MAT", this->mat_perspective);
+	shader.release();
 }

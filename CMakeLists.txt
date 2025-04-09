@@ -102,6 +102,7 @@ target_link_libraries(CollisionCraft PRIVATE
 	usd_usdGeom
 	usd_usdUtils
 	usd_tf
+	usd_gf
 	usd_sdf
 	usd_vt
 )

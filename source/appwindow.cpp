@@ -59,4 +59,6 @@ void AppWindow::onViewportReady()
 		this->model_meshes.push_back(std::make_unique<RenderMesh>(mesh));
 		this->viewport_widget->addRenderMesh(this->model_meshes.back().get());
 	}
+
+	this->viewport_widget->autoFrameCamera();
 }

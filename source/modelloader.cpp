@@ -110,6 +110,7 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
 		/// Build mesh data.
 		meshes.emplace_back(mesh_vertices, mesh_indices);
 		meshes.back().generateNormals();
+		meshes.back().computeBounds();
 		logDebug("USD mesh vertex count -> {}", meshes.back().numVertices());
 		logDebug("USD mesh index count -> {}", meshes.back().numIndices());
 	}

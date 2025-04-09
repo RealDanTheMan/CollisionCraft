@@ -40,6 +40,9 @@ RenderMesh::RenderMesh(const Mesh &mesh)
 	this->vertex_buffer.release();
 	this->index_buffer.release();
 	this->index_size = mesh.getIndices()->size();
+
+	this->bsphere_center = mesh.getBoundingSphereCenter();
+	this->bsphere_radius = mesh.getBoundingSphereRadius();
 }
 
 /// Draw this mesh to currently bound OpenGL rendering context.
@@ -59,4 +62,16 @@ void RenderMesh::Render(QOpenGLShaderProgram &shader)
 	this->vertex_buffer.release();
 	this->vertex_attributes.release();
 	shader.release();
+}
+
+/// Get center of the bounding sphere of this render mesh.
+const QVector3D& RenderMesh::getBoundingShereCenter() const
+{
+	return this->bsphere_center;
+}
+
+/// Get radius of the bounding sphere of this render mesh.
+const double RenderMesh::getBoundingShereRadius() const
+{
+	return this->bsphere_radius;
 }

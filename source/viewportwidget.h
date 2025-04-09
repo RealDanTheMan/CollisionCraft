@@ -23,6 +23,7 @@ public:
 
 	void clearRenderMeshes();
 	void addRenderMesh(RenderMesh *mesh);
+	void autoFrameCamera();
 
 	Q_SIGNAL
 	void graphicsReady();
@@ -31,7 +32,7 @@ protected:
     virtual void initializeGL() override;
     virtual void resizeGL(int width, int height) override;
     virtual void paintGL() override;
-	void updatePerspectiveProjection(float fov = 30.0f);
+	void updatePerspectiveProjection();
 	void setShaderStandardInputs(QOpenGLShaderProgram &shader);
 
     QColor background_color = QColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -43,7 +44,8 @@ private:
 	QMatrix4x4 mat_view;
 	QMatrix4x4 mat_perspective;
 
-
+	float aspect;
+	float fov;
 };
 
 #endif

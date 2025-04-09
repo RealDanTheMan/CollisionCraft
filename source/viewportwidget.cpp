@@ -1,13 +1,18 @@
 #include "viewportwidget.h"
 #include "logging.h"
 #include "rendermesh.h"
+#include <cmath>
+#include <csignal>
 #include <memory>
 #include <qtmetamacros.h>
 #include <vector>
 #include <QVector3D>
 #include <QSurfaceFormat>
 
-ViewportWidget::ViewportWidget(QWidget *parent) : QOpenGLWidget(parent) 
+ViewportWidget::ViewportWidget(QWidget *parent) : 
+	QOpenGLWidget(parent),
+	aspect(0.0),
+	fov(45.0)
 {
 	this->graphics = std::make_unique<Graphics>();
 	this->mat_view.setToIdentity();
@@ -28,6 +33,30 @@ void ViewportWidget::clearRenderMeshes()
 void ViewportWidget::addRenderMesh(RenderMesh *mesh)
 {
 	this->render_queue.push_back(mesh);
+}
+
+/// Update camera view transform to envelop currently loaded meshes.
+void ViewportWidget::autoFrameCamera()
+{
+	if (this->render_queue.size() == 0)
+	{
+		return;
+	}
+
+	float v_fov = qDegreesToRadians(this->fov);
+	float h_fov = 2.0f * std::atan(std::tan(v_fov * 0.5f) * this->aspect);
+
+	RenderMesh *mesh = this->render_queue[0];
+	float v_dist = mesh->getBoundingShereRadius() / std::tan(v_fov * 0.5);
+	float h_dist = mesh->getBoundingShereRadius() / std::tan(h_fov * 0.5);
+	float dist = std::max(v_dist, h_dist);
+
+	QVector3D forward = QVector3D(0.0, 0.0, -1.0);
+	QVector3D up = QVector3D(0.0, 1.0, 0.0);
+	QVector3D cam_pos = mesh->getBoundingShereCenter() - forward * dist;
+
+	this->mat_view.setToIdentity();
+	this->mat_view.lookAt(cam_pos, mesh->getBoundingShereCenter(), up);
 }
 
 /// Initialize OpenGL graphics context for this widget.
@@ -52,10 +81,7 @@ void ViewportWidget::initializeGL()
         1.0f
     );
 
-	/// Move the camear away from the model so we can see it.
-	/// TODO: Use sphere bounds of the model to calculate better offset.
-	this->mat_view.translate(0.0, 0.0, -3.5);
-
+	this->resizeGL(this->width(), this->height());
 	this->updatePerspectiveProjection();
 	Q_EMIT this->graphicsReady();
 }
@@ -68,6 +94,7 @@ void ViewportWidget::initializeGL()
 void ViewportWidget::resizeGL(int width, int height)
 {
     glViewport(0, 0, width, height);
+	this->aspect = static_cast<float>(width) / static_cast<float>(height);
 	this->updatePerspectiveProjection();
 }
 
@@ -102,16 +129,13 @@ void ViewportWidget::setBackgroundColor(float red, float green, float blue)
 }
 
 /// Recalulates perspective projection transform based on the current size of viewport.
-void ViewportWidget::updatePerspectiveProjection(float fov)
+void ViewportWidget::updatePerspectiveProjection()
 {
-	const float width = static_cast<float>(this->width());
-	const int height = static_cast<float>(this->height());
-	const float aspect = width / height;
 	const float near = 0.001f;
 	const float far = 1000000.0f;
 
 	this->mat_perspective.setToIdentity();
-	this->mat_perspective.perspective(fov, aspect, near, far);
+	this->mat_perspective.perspective(this->fov, this->aspect, near, far);
 }
 
 /// Send standard input parameter the shader pipeline expects to receive to draw

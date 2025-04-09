@@ -1,9 +1,11 @@
 #include "mesh.h"
-#include "logging.h"
+#include <cmath>
 #include <memory>
 #include <vector>
 
-Mesh::Mesh(const std::vector<QVector3D> &vertices, const std::vector<int> &indices)
+Mesh::Mesh(const std::vector<QVector3D> &vertices, const std::vector<int> &indices) :
+		bsphere_center(QVector3D(0.0, 0.0, 0.0)),
+		bsphere_radius(0.0)
 {
     this->vertices = std::make_unique<std::vector<QVector3D>>();
 	for (const QVector3D &vert : vertices)
@@ -64,6 +66,40 @@ void Mesh::generateNormals()
 	}
 }
 
+/// Computes mesh bounding sphere.
+void Mesh::computeBounds()
+{
+	if (this->vertices->size() == 0 || !this->vertices)
+	{
+		this->bsphere_center = QVector3D(0.0, 0.0, 0.0);
+		this->bsphere_radius = 0.0;
+		return;
+	}
+
+	/// Compute bounding sphere center.
+	QVector3D center = QVector3D(0.0, 0.0, 0.0);
+	for (const QVector3D &pos : *this->vertices)
+	{
+		center += pos;
+	}
+	center /= double(this->vertices->size());
+
+	/// Compute bounding sphere radius
+	double radius = 0.0;
+	for (const QVector3D &pos : *this->vertices)
+	{
+		const double len = (pos - center).lengthSquared();
+		if (len > radius)
+		{
+			radius = len;
+		}
+	}
+	radius = std::sqrt(radius);
+
+	this->bsphere_center = center;
+	this->bsphere_radius = radius;
+}
+
 /// Get read-only access to mesh vertices.
 const std::vector<QVector3D>* Mesh::getVertices() const
 {
@@ -98,4 +134,18 @@ int Mesh::numNormals() const
 int Mesh::numIndices() const
 {
 	return this->indices->size();
+}
+
+/// Get this mesh bounding sphere center.
+/// Ensure to call Mesh::computeBounds() if mesh changed since last call.
+const QVector3D& Mesh::getBoundingSphereCenter() const
+{
+	return this->bsphere_center;
+}
+
+/// Get this mesh bounding sphere radius.
+/// Ensure to call Mesh::computeBounds() if mesh changed since last call.
+const double Mesh::getBoundingSphereRadius() const
+{
+	return this->bsphere_radius;
 }

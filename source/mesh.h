@@ -17,11 +17,18 @@ public:
 	int numVertices() const;
 	int numNormals() const;
 	void generateNormals();
+	void computeBounds();
+
+	const QVector3D& getBoundingSphereCenter() const;
+	const double getBoundingSphereRadius() const;
 
 protected:
 	std::unique_ptr<std::vector<QVector3D>> vertices;
 	std::unique_ptr<std::vector<QVector3D>> normals;
 	std::unique_ptr<std::vector<int>> indices;
+
+	QVector3D bsphere_center;
+	double bsphere_radius;
 };
 
 #endif

@@ -1,6 +1,8 @@
 #include "modelloader.h"
 #include "logging.h"
 #include "mesh.h"
+#include "pxr/base/gf/matrix4d.h"
+#include "pxr/base/gf/vec3d.h"
 
 #include <vector>
 #include <QString>
@@ -12,6 +14,7 @@
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/metrics.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdGeom/xformCache.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdGeom/mesh.h>
@@ -74,7 +77,9 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
 		logDebug("Analising USD Mesh -> {}", prim.GetPath().GetString());
 		pxr::TfToken up_axis = pxr::UsdGeomGetStageUpAxis(stage);
 		pxr::UsdGeomMesh mesh(prim);
-	
+
+		pxr::UsdGeomXformCache xform(pxr::UsdTimeCode::Default());
+		pxr::GfMatrix4d world = xform.GetLocalToWorldTransform(prim);
 
 		/// Vertex data.
 		std::vector<QVector3D> mesh_vertices;
@@ -94,11 +99,13 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
 				};
 				
 				pxr::GfVec3d pos = yup.Transform(vertex);
+				pos = world.Transform(pos);
 				mesh_vertices.emplace_back(pos[0], pos[1], pos[2]);
 			}
 			else
 			{
-				mesh_vertices.emplace_back(vertex[0], vertex[1], vertex[2]);
+				pxr::GfVec3d pos = world.Transform(vertex);
+				mesh_vertices.emplace_back(pos[0], pos[1], pos[2]);
 			}
 		}
 

@@ -39,6 +39,10 @@ set(PROJECT_SOURCE_DIR source/)
 set(CMAKE_AUTOMOC ON)
 
 # External dependencies
+find_package(Boost REQUIRED)
+find_package(CGAL REQUIRED)
+find_package(Eigen3 3.4 REQUIRED NO_MODULE)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 find_package(Qt6 REQUIRED COMPONENTS
     Core
     Gui
@@ -57,8 +61,12 @@ else()
 	message(FATAL_ERROR "Unsupported target architecture for USD")
 endif()
 
+set(EIGEN_INCLUDES "${CMAKE_SOURCE_DIR}/lib/eigen")
+set(CGAL_INCLUDES "${CMAKE_SOURCE_DIR}/lib/cgal")
 set(USD_INCLUDES ${USD_PATH}/include)
 set(USD_LIB ${USD_PATH}/lib)
+include_directories(BEFORE "${EIGEN_INCLUDES}")
+
 
 set(SOURCES
     ${PROJECT_SOURCE_DIR}/main.cpp
@@ -72,8 +80,6 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/logwidget.cpp
 )
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-include_directories(${Python3_INCLUDE_DIRS})
 
 # Define resources
 qt_add_resources(PROCESSED_RESOURCES resources/resources.qrc)
@@ -84,6 +90,9 @@ target_compile_definitions(CollisionCraft PRIVATE QT_NO_KEYWORDS)
 
 target_include_directories(CollisionCraft PRIVATE
 	${PROJECT_SOURCE_DIR}
+    ${Python3_INCLUDE_DIRS}
+	${EIGEN_INCLUDES}
+	${CGAL_INCLUDES}
 	${USD_INCLUDES}
 )
 
@@ -98,6 +107,7 @@ target_link_libraries(CollisionCraft PRIVATE
     Qt6::OpenGL
     Qt6::OpenGLWidgets
 	
+    # OpenUSD Modules
 	usd_usd	
 	usd_usdGeom
 	usd_usdUtils
@@ -105,4 +115,9 @@ target_link_libraries(CollisionCraft PRIVATE
 	usd_gf
 	usd_sdf
 	usd_vt
+
+    # CGAL Modules & its dependencies
+	Boost::boost
+    Eigen3::Eigen
+    CGAL::CGAL
 )

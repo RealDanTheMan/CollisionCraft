@@ -4,5 +4,6 @@
 		<file>shaders/model.vs</file>
 		<file>shaders/model.ps</file>
 		<file>models/suzanne.usdc</file>
+		<file>models/arch.usdc</file>
 	</qresource>
 </RCC>

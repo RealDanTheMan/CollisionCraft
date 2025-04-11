@@ -50,10 +50,13 @@ void AppWindow::onViewportReady()
 	/// Load default model into the viewport for the time being to better test
 	/// viewport logic and onging changes.
 	Logger::active()->debug("Loading default viewport model");
-	const std::string model_res = ":models/suzanne.usdc";
+	const std::string model_res0 = ":models/suzanne.usdc";
+	const std::string model_res1 = ":models/arch.usdc";
 
 	std::vector<Mesh> meshes;
-	ModelLoader::LoadResourceUSD(model_res, meshes);
+	ModelLoader::LoadResourceUSD(model_res0, meshes);
+	ModelLoader::LoadResourceUSD(model_res1, meshes);
+
 	for (const Mesh &mesh : meshes)
 	{
 		this->model_meshes.push_back(std::make_unique<RenderMesh>(mesh));

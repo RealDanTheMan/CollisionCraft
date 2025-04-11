@@ -1,6 +1,7 @@
 #include "viewportwidget.h"
 #include "logging.h"
 #include "rendermesh.h"
+#include <OpenGL/gl.h>
 #include <cmath>
 #include <csignal>
 #include <memory>
@@ -8,6 +9,16 @@
 #include <vector>
 #include <QVector3D>
 #include <QSurfaceFormat>
+
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/Min_sphere_of_spheres_d.h>
+#include <CGAL/Min_sphere_of_spheres_d_traits_d.h>
+
+using CGAL_Kernel = CGAL::Simple_cartesian<double>;
+using CGAL_Traits = CGAL::Min_sphere_of_spheres_d_traits_3<CGAL_Kernel,double>;
+using CGAL_Point3 = CGAL_Kernel::Point_3;
+using CGAL_Sphere = CGAL_Traits::Sphere;
+using CGAL_MinSphere = CGAL::Min_sphere_of_spheres_d<CGAL_Traits>;
 
 ViewportWidget::ViewportWidget(QWidget *parent) : 
 	QOpenGLWidget(parent),
@@ -46,17 +57,46 @@ void ViewportWidget::autoFrameCamera()
 	float v_fov = qDegreesToRadians(this->fov);
 	float h_fov = 2.0f * std::atan(std::tan(v_fov * 0.5f) * this->aspect);
 
-	RenderMesh *mesh = this->render_queue[0];
-	float v_dist = mesh->getBoundingShereRadius() / std::tan(v_fov * 0.5);
-	float h_dist = mesh->getBoundingShereRadius() / std::tan(h_fov * 0.5);
+	QVector3D scene_center(0.0, 0.0, 0.0);
+	float scene_radius;
+	computeSceneBoundingSphere(scene_center, scene_radius);
+
+	logWarning("Scene center -> x={} y={} z={}", scene_center.x(), scene_center.y(), scene_center.z());
+	logWarning("Scene radius -> {}", scene_radius);
+
+	float v_dist = scene_radius / std::tan(v_fov * 0.5);
+	float h_dist = scene_radius / std::tan(h_fov * 0.5);
 	float dist = std::max(v_dist, h_dist);
 
 	QVector3D forward = QVector3D(0.0, 0.0, -1.0);
 	QVector3D up = QVector3D(0.0, 1.0, 0.0);
-	QVector3D cam_pos = mesh->getBoundingShereCenter() - forward * dist;
+	QVector3D cam_pos = scene_center - forward * dist;
 
 	this->mat_view.setToIdentity();
-	this->mat_view.lookAt(cam_pos, mesh->getBoundingShereCenter(), up);
+	this->mat_view.lookAt(cam_pos, scene_center, up);
+}
+
+/// Compute bounding sphere that envelops currently loaded render meshes.
+void ViewportWidget::computeSceneBoundingSphere(QVector3D &center, float &radius) const
+{
+	std::vector<CGAL_Sphere> scene_spheres;
+	for (const RenderMesh *mesh : this->render_queue)
+	{
+		QVector3D mesh_center = mesh->getBoundingShereCenter();
+		float mesh_radius = mesh->getBoundingShereRadius();
+
+		CGAL_Point3 p(mesh_center.x(), mesh_center.y(), mesh_center.z());
+		scene_spheres.emplace_back(p, mesh_radius * mesh_radius);
+	}
+
+	CGAL_MinSphere sphere(scene_spheres.begin(), scene_spheres.end());
+
+	double x = static_cast<double>(*(sphere.center_cartesian_begin() + 0));
+	double y = static_cast<double>(*(sphere.center_cartesian_begin() + 1));
+	double z = static_cast<double>(*(sphere.center_cartesian_begin() + 2));
+
+	center = QVector3D(x, y, z);
+	radius = std::sqrt(sphere.radius());
 }
 
 /// Initialize OpenGL graphics context for this widget.

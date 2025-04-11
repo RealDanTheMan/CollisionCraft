@@ -24,6 +24,7 @@ public:
 	void clearRenderMeshes();
 	void addRenderMesh(RenderMesh *mesh);
 	void autoFrameCamera();
+	void computeSceneBoundingSphere(QVector3D &center, float &radius) const;
 
 	Q_SIGNAL
 	void graphicsReady();

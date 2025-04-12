@@ -1,12 +1,14 @@
 #include "viewportwidget.h"
 #include "logging.h"
 #include "rendermesh.h"
-#include <OpenGL/gl.h>
+
+#include <algorithm>
 #include <cmath>
 #include <csignal>
 #include <memory>
-#include <qtmetamacros.h>
 #include <vector>
+
+#include <Qt>
 #include <QVector3D>
 #include <QSurfaceFormat>
 
@@ -23,7 +25,11 @@ using CGAL_MinSphere = CGAL::Min_sphere_of_spheres_d<CGAL_Traits>;
 ViewportWidget::ViewportWidget(QWidget *parent) : 
 	QOpenGLWidget(parent),
 	aspect(0.0),
-	fov(45.0)
+	fov(45.0),
+	cam_mode(ViewportWidget::CameraMode::Default),
+	cam_sensitivity(0.0174533),
+	cam_yaw(0.0),
+	cam_pitch(0.0)
 {
 	this->graphics = std::make_unique<Graphics>();
 	this->mat_view.setToIdentity();
@@ -74,6 +80,7 @@ void ViewportWidget::autoFrameCamera()
 
 	this->mat_view.setToIdentity();
 	this->mat_view.lookAt(cam_pos, scene_center, up);
+	this->cam_focus = scene_center;
 }
 
 /// Compute bounding sphere that envelops currently loaded render meshes.
@@ -113,7 +120,6 @@ void ViewportWidget::initializeGL()
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	glDisable(GL_CULL_FACE);
     glClearColor(
         this->background_color.redF(),
         this->background_color.greenF(),
@@ -187,4 +193,74 @@ void ViewportWidget::setShaderStandardInputs(QOpenGLShaderProgram &shader)
 	shader.setUniformValue("SV_VIEW_MAT", this->mat_view);
 	shader.setUniformValue("SV_PROJ_MAT", this->mat_perspective);
 	shader.release();
+}
+
+void ViewportWidget::setCamMode(ViewportWidget::CameraMode mode)
+{
+	this->cam_mode = mode;
+}
+
+ViewportWidget::CameraMode ViewportWidget::getCamMode() const
+{
+	return this->cam_mode;
+}
+
+/// Event handler invoked when user presses mouse key over viewport widget.
+/// Activates camera mode states.
+void ViewportWidget::mousePressEvent(QMouseEvent *event)
+{
+	switch (event->button())
+	{
+		case Qt::LeftButton:
+			this->mouse_pos = event->pos();
+			this->setCamMode(CameraMode::Rotate);
+			break;
+		case Qt::RightButton:
+			this->mouse_pos = event->pos();
+			this->setCamMode(CameraMode::Pan);
+			break;
+		default:
+			this->setCamMode(CameraMode::Default);
+			this->mouse_pos = QPoint(0.0, 0.0);
+			break;
+	}
+}
+
+/// Event handler invoked when user releases mouse key over viewport widget.
+/// Resets the camera mode state.
+void ViewportWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+	this->mouse_pos = QPoint(0.0, 0.0);
+	this->setCamMode(CameraMode::Default);
+}
+
+void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
+{
+	if (this->getCamMode() == CameraMode::Rotate)
+	{
+		QPoint delta = event->pos() - this->mouse_pos;
+		this->cam_yaw -= this->cam_sensitivity * delta.x();
+		this->cam_pitch += this->cam_sensitivity * delta.y();
+		this->cam_pitch = std::clamp(this->cam_pitch, -1.5, 1.5);
+		this->mouse_pos = event->pos();
+		
+		this->setCamOrbit(this->cam_pitch, this->cam_yaw);
+		this->update();
+	}
+}
+
+/// Rotate the camera along current distance and focus point.
+/// @param: pitch Pitch angle in radians.
+/// @param: yaw Yaw angle in radians.
+void ViewportWidget::setCamOrbit(double pitch, double yaw)
+{
+	double dist = this->cam_focus.distanceToPoint(this->mat_view.inverted().column(3).toVector3D());
+
+	QVector3D cam_pos;
+	cam_pos.setX(dist * qCos(this->cam_pitch) * qSin(this->cam_yaw));
+	cam_pos.setY(dist * qSin(this->cam_pitch));
+	cam_pos.setZ(dist * qCos(this->cam_pitch) * qCos(this->cam_yaw));
+
+	this->mat_view.setToIdentity();
+	this->mat_view.lookAt(this->cam_focus + cam_pos, this->cam_focus, QVector3D(0.0, 1.0, 0.0));
 }

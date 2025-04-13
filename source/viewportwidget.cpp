@@ -229,11 +229,11 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
     if (this->getCamMode() == ViewMode::Orbit)
     {
         QPoint delta = event->pos() - this->mouse_pos;
-        this->orbit_acc_yaw -= this->orbit_sensitivity * delta.x();
+        this->orbit_acc_yaw += this->orbit_sensitivity * delta.x();
         this->orbit_acc_pitch += this->orbit_sensitivity * delta.y();
         this->orbit_acc_pitch = std::clamp(this->orbit_acc_pitch, -1.5, 1.5);
         this->mouse_pos = event->pos();
-        
+
         this->setCamOrbit(this->orbit_acc_pitch, this->orbit_acc_yaw);
         this->update();
         return;
@@ -245,7 +245,7 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
         this->pan_acc_x += sensitivity * delta.x();
         this->pan_acc_y += sensitivity * delta.y();
         this->mouse_pos = event->pos();
-    
+
         QVector3D cam_pos = this->camera->getPosition();
         QVector3D offset(this->pan_acc_x, this->pan_acc_y, cam_pos.z());
 

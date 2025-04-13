@@ -23,57 +23,57 @@ public:
     void setBackgroundColor(const QColor &color);
     void setBackgroundColor(float red, float green, float blue);
 
-	void clearRenderMeshes();
-	void addRenderMesh(RenderMesh *mesh);
-	void autoFrameCamera();
-	void computeSceneBoundingSphere(QVector3D &center, double &radius) const;
+    void clearRenderMeshes();
+    void addRenderMesh(RenderMesh *mesh);
+    void autoFrameCamera();
+    void computeSceneBoundingSphere(QVector3D &center, double &radius) const;
 
-	ViewportCamera* getCamera();
+    ViewportCamera* getCamera();
 
-	Q_SIGNAL
-	void graphicsReady();
+    Q_SIGNAL
+    void graphicsReady();
 
 protected:
-	enum class ViewMode
-	{
-		Default,
-		Zoom,
-		Pan,
-		Orbit
-	};
+    enum class ViewMode
+    {
+        Default,
+        Zoom,
+        Pan,
+        Orbit
+    };
 
     virtual void initializeGL() override;
     virtual void resizeGL(int width, int height) override;
     virtual void paintGL() override;
-	virtual void mousePressEvent(QMouseEvent *event) override;
-	virtual void mouseReleaseEvent(QMouseEvent *event) override;
-	virtual void mouseMoveEvent(QMouseEvent *event) override;
-	
-	void setShaderStandardInputs(QOpenGLShaderProgram &shader);
-	void setCamMode(ViewMode mode);
-	void setCamOrbit(double pitch, double yaw);
-	ViewMode getCamMode() const;
+    virtual void mousePressEvent(QMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QMouseEvent *event) override;
+    virtual void mouseMoveEvent(QMouseEvent *event) override;
+    
+    void setShaderStandardInputs(QOpenGLShaderProgram &shader);
+    void setCamMode(ViewMode mode);
+    void setCamOrbit(double pitch, double yaw);
+    ViewMode getCamMode() const;
 
 protected:
     QColor background_color = QColor(0.0f, 0.0f, 0.0f, 1.0f);
-	std::unique_ptr<Graphics> graphics = nullptr;
-	std::unique_ptr<ViewportCamera> camera = nullptr;
+    std::unique_ptr<Graphics> graphics = nullptr;
+    std::unique_ptr<ViewportCamera> camera = nullptr;
 
 private:
-	std::vector<RenderMesh*> render_queue;
+    std::vector<RenderMesh*> render_queue;
 
-	QMatrix4x4 mat_model;
-	QPoint mouse_pos;
-	ViewMode view_mode;
+    QMatrix4x4 mat_model;
+    QPoint mouse_pos;
+    ViewMode view_mode;
 
-	QVector3D orbit_center;
-	double orbit_distance;
-	double orbit_acc_yaw;
-	double orbit_acc_pitch;
-	double orbit_sensitivity;
+    QVector3D orbit_center;
+    double orbit_distance;
+    double orbit_acc_yaw;
+    double orbit_acc_pitch;
+    double orbit_sensitivity;
 
-	double pan_acc_x;
-	double pan_acc_y;
+    double pan_acc_x;
+    double pan_acc_y;
 };
 
 #endif

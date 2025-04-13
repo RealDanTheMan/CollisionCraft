@@ -10,16 +10,16 @@
 
 class LogWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	LogWidget(Logger &logger, QWidget *parent = nullptr);
+    LogWidget(Logger &logger, QWidget *parent = nullptr);
 
 protected:
-	QListWidget* log_list;
+    QListWidget* log_list;
 
 private:
-	void onMessageLogged(const std::string &message, LogLevel level);
+    void onMessageLogged(const std::string &message, LogLevel level);
 };
 
 #endif

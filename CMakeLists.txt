@@ -52,13 +52,13 @@ find_package(Qt6 REQUIRED COMPONENTS
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-	message(STATUS "Targeting MacOS OpenUSD libraries")
-	set(USD_PATH lib/openusd/macos)
+    message(STATUS "Targeting MacOS OpenUSD libraries")
+    set(USD_PATH lib/openusd/macos)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	message(STATUS "Targeting Linux OpenUSD libraries")
-	set(USD_PATH lib/openusd/linux)
+    message(STATUS "Targeting Linux OpenUSD libraries")
+    set(USD_PATH lib/openusd/linux)
 else()
-	message(FATAL_ERROR "Unsupported target architecture for USD")
+    message(FATAL_ERROR "Unsupported target architecture for USD")
 endif()
 
 set(EIGEN_INCLUDES "${CMAKE_SOURCE_DIR}/lib/eigen")
@@ -90,15 +90,15 @@ add_executable(CollisionCraft ${SOURCES} ${PROCESSED_RESOURCES})
 target_compile_definitions(CollisionCraft PRIVATE QT_NO_KEYWORDS)
 
 target_include_directories(CollisionCraft PRIVATE
-	${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}
     ${Python3_INCLUDE_DIRS}
-	${EIGEN_INCLUDES}
-	${CGAL_INCLUDES}
-	${USD_INCLUDES}
+    ${EIGEN_INCLUDES}
+    ${CGAL_INCLUDES}
+    ${USD_INCLUDES}
 )
 
 target_link_directories(CollisionCraft PRIVATE
-	${USD_LIB}
+    ${USD_LIB}
 )
 
 target_link_libraries(CollisionCraft PRIVATE
@@ -107,18 +107,18 @@ target_link_libraries(CollisionCraft PRIVATE
     Qt6::Widgets
     Qt6::OpenGL
     Qt6::OpenGLWidgets
-	
+    
     # OpenUSD Modules
-	usd_usd	
-	usd_usdGeom
-	usd_usdUtils
-	usd_tf
-	usd_gf
-	usd_sdf
-	usd_vt
+    usd_usd    
+    usd_usdGeom
+    usd_usdUtils
+    usd_tf
+    usd_gf
+    usd_sdf
+    usd_vt
 
     # CGAL Modules & its dependencies
-	Boost::boost
+    Boost::boost
     Eigen3::Eigen
     CGAL::CGAL
 )

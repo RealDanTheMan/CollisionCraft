@@ -19,12 +19,12 @@ public:
     AppWindow(QWidget *parent = nullptr);
 
 protected:
-	void onViewportReady();
+    void onViewportReady();
 
 private:
     Ui_MainWindow ui;
     ViewportWidget *viewport_widget;
-	LogWidget *log_widget;
-	std::vector<std::unique_ptr<RenderMesh>> model_meshes;
+    LogWidget *log_widget;
+    std::vector<std::unique_ptr<RenderMesh>> model_meshes;
 };
 #endif

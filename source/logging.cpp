@@ -77,7 +77,7 @@ void Logger::logMessage(const std::string &msg, LogLevel level)
     std::cout << message << std::endl;
     *this->log_file << message << std::endl; 
 
-	Q_EMIT this->messageLogged(message, level);
+    Q_EMIT this->messageLogged(message, level);
 }
 
 /// Get text value represennting given message severity level.
@@ -94,7 +94,7 @@ std::string Logger::getLevelDescription(LogLevel level)
         case LogLevel::Error:
             return "[ERROR]";
         default:
-            return "[UNKNOWN]"	;
+            return "[UNKNOWN]"    ;
     }
 }
 

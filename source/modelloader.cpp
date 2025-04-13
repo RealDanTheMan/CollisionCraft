@@ -93,7 +93,7 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
 			{
 				pxr::GfMatrix4d yup {
 					1, 0, 0, 0,
-					0, 0, -1, 0,
+					0, 0, 1, 0,
 					0, 1, 0, 0,
 					0, 0, 0, 1
 				};

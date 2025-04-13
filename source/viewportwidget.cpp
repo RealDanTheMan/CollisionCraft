@@ -26,7 +26,7 @@ using CGAL_MinSphere = CGAL::Min_sphere_of_spheres_d<CGAL_Traits>;
 
 ViewportWidget::ViewportWidget(QWidget *parent) : 
     QOpenGLWidget(parent),
-    view_mode(ViewportWidget::CameraMode::Default),
+    view_mode(ViewportWidget::ViewMode::Default),
     orbit_sensitivity(0.0174533),
     orbit_center(QVector3D(0.0, 0.0, 0.0)),
     orbit_acc_yaw(0.0),
@@ -229,12 +229,12 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
     if (this->getCamMode() == ViewMode::Orbit)
     {
         QPoint delta = event->pos() - this->mouse_pos;
-        this->acc_yaw -= this->orbit_sensitivity * delta.x();
+        this->orbit_acc_yaw -= this->orbit_sensitivity * delta.x();
         this->orbit_acc_pitch += this->orbit_sensitivity * delta.y();
         this->orbit_acc_pitch = std::clamp(this->orbit_acc_pitch, -1.5, 1.5);
         this->mouse_pos = event->pos();
         
-        this->setCamOrbit(this->orbit_acc_pitch, this->acc_yaw);
+        this->setCamOrbit(this->orbit_acc_pitch, this->orbit_acc_yaw);
         this->update();
         return;
     }

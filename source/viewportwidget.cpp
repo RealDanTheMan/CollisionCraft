@@ -228,7 +228,7 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
     if (this->getCamMode() == ViewMode::Orbit)
     {
         QPoint delta = event->pos() - this->mouse_pos;
-        this->orbit_acc_yaw += this->orbit_sensitivity * delta.x();
+        this->orbit_acc_yaw -= this->orbit_sensitivity * delta.x();
         this->orbit_acc_pitch += this->orbit_sensitivity * delta.y();
         this->orbit_acc_pitch = std::clamp(this->orbit_acc_pitch, -1.5, 1.5);
         this->mouse_pos = event->pos();
@@ -258,15 +258,15 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
 /// @param: yaw Yaw angle in radians.
 void ViewportWidget::setCamOrbit(double pitch, double yaw)
 {
-
     QVector3D cam_pos;
     cam_pos.setX(this->orbit_distance * qCos(pitch) * qSin(yaw));
     cam_pos.setY(this->orbit_distance * qSin(pitch));
     cam_pos.setZ(this->orbit_distance * qCos(pitch) * qCos(yaw));
 
+    QVector3D up = QVector3D(0.0, 1.0, 0.0);
     QVector3D cam_forward = (cam_pos - this->orbit_center).normalized();
-    QVector3D cam_right = QVector3D::crossProduct(cam_forward, QVector3D(0, 1, 0)).normalized();
-    QVector3D cam_up = QVector3D::crossProduct(cam_right, cam_forward);
+    QVector3D cam_right = QVector3D::crossProduct(up, cam_forward).normalized();
+    QVector3D cam_up = QVector3D::crossProduct(cam_forward, cam_right);
 
     QMatrix4x4 cam_transform;
     cam_transform.setColumn(0, cam_right.toVector4D());

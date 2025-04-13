@@ -12,6 +12,7 @@
 
 #include "graphics.h"
 #include "rendermesh.h"
+#include "viewportcamera.h"
 
 class ViewportWidget : public QOpenGLWidget, public QOpenGLFunctions
 {
@@ -25,18 +26,20 @@ public:
 	void clearRenderMeshes();
 	void addRenderMesh(RenderMesh *mesh);
 	void autoFrameCamera();
-	void computeSceneBoundingSphere(QVector3D &center, float &radius) const;
+	void computeSceneBoundingSphere(QVector3D &center, double &radius) const;
+
+	ViewportCamera* getCamera();
 
 	Q_SIGNAL
 	void graphicsReady();
 
 protected:
-	enum class CameraMode
+	enum class ViewMode
 	{
 		Default,
 		Zoom,
 		Pan,
-		Rotate
+		Orbit
 	};
 
     virtual void initializeGL() override;
@@ -46,31 +49,31 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event) override;
 	virtual void mouseMoveEvent(QMouseEvent *event) override;
 	
-	void updatePerspectiveProjection();
 	void setShaderStandardInputs(QOpenGLShaderProgram &shader);
-	void setCamMode(CameraMode mode);
+	void setCamMode(ViewMode mode);
 	void setCamOrbit(double pitch, double yaw);
-	CameraMode getCamMode() const;
+	ViewMode getCamMode() const;
 
 protected:
     QColor background_color = QColor(0.0f, 0.0f, 0.0f, 1.0f);
 	std::unique_ptr<Graphics> graphics = nullptr;
+	std::unique_ptr<ViewportCamera> camera = nullptr;
 
 private:
 	std::vector<RenderMesh*> render_queue;
 
 	QMatrix4x4 mat_model;
-	QMatrix4x4 mat_view;
-	QMatrix4x4 mat_perspective;
 	QPoint mouse_pos;
-	
-	CameraMode cam_mode;
-	QVector3D cam_focus;
-	double cam_sensitivity;
-	double cam_yaw;
-	double cam_pitch;
-	float aspect;
-	float fov;
+	ViewMode view_mode;
+
+	QVector3D orbit_center;
+	double orbit_distance;
+	double orbit_acc_yaw;
+	double orbit_acc_pitch;
+	double orbit_sensitivity;
+
+	double pan_acc_x;
+	double pan_acc_y;
 };
 
 #endif

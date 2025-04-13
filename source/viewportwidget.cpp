@@ -1,6 +1,7 @@
 #include "viewportwidget.h"
 #include "logging.h"
 #include "rendermesh.h"
+#include "viewportcamera.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,6 +11,7 @@
 
 #include <Qt>
 #include <QVector3D>
+#include <QMatrix3x3>
 #include <QSurfaceFormat>
 
 #include <CGAL/Simple_cartesian.h>
@@ -24,17 +26,20 @@ using CGAL_MinSphere = CGAL::Min_sphere_of_spheres_d<CGAL_Traits>;
 
 ViewportWidget::ViewportWidget(QWidget *parent) : 
 	QOpenGLWidget(parent),
-	aspect(0.0),
-	fov(45.0),
-	cam_mode(ViewportWidget::CameraMode::Default),
-	cam_sensitivity(0.0174533),
-	cam_yaw(0.0),
-	cam_pitch(0.0)
+	view_mode(ViewportWidget::CameraMode::Default),
+	orbit_sensitivity(0.0174533),
+	orbit_center(QVector3D(0.0, 0.0, 0.0)),
+	orbit_acc_yaw(0.0),
+	orbit_acc_pitch(0.0)
 {
 	this->graphics = std::make_unique<Graphics>();
-	this->mat_view.setToIdentity();
-	this->mat_perspective.setToIdentity();
+	this->camera = std::make_unique<ViewportCamera>();
 	this->mat_model.setToIdentity();
+}
+
+ViewportCamera* ViewportWidget::getCamera()
+{
+	return this->camera.get();
 }
 
 /// Clear this viewport render queue / empty the viewport.
@@ -60,31 +65,24 @@ void ViewportWidget::autoFrameCamera()
 		return;
 	}
 
-	float v_fov = qDegreesToRadians(this->fov);
-	float h_fov = 2.0f * std::atan(std::tan(v_fov * 0.5f) * this->aspect);
+	double v_fov = qDegreesToRadians(this->camera->getFov());
+	double h_fov = 2.0 * std::atan(std::tan(v_fov * 0.5) * this->camera->getAspect());
 
 	QVector3D scene_center(0.0, 0.0, 0.0);
-	float scene_radius;
+	double scene_radius;
 	computeSceneBoundingSphere(scene_center, scene_radius);
 
-	logWarning("Scene center -> x={} y={} z={}", scene_center.x(), scene_center.y(), scene_center.z());
-	logWarning("Scene radius -> {}", scene_radius);
+	double v_dist = scene_radius / std::tan(v_fov * 0.5);
+	double h_dist = scene_radius / std::tan(h_fov * 0.5);
+	double dist = std::max(v_dist, h_dist);
+	QVector3D cam_pos = scene_center + this->camera->forward() * dist;
 
-	float v_dist = scene_radius / std::tan(v_fov * 0.5);
-	float h_dist = scene_radius / std::tan(h_fov * 0.5);
-	float dist = std::max(v_dist, h_dist);
-
-	QVector3D forward = QVector3D(0.0, 0.0, -1.0);
-	QVector3D up = QVector3D(0.0, 1.0, 0.0);
-	QVector3D cam_pos = scene_center - forward * dist;
-
-	this->mat_view.setToIdentity();
-	this->mat_view.lookAt(cam_pos, scene_center, up);
-	this->cam_focus = scene_center;
+	this->camera->setPosition(cam_pos);
+	this->orbit_center = scene_center;
 }
 
 /// Compute bounding sphere that envelops currently loaded render meshes.
-void ViewportWidget::computeSceneBoundingSphere(QVector3D &center, float &radius) const
+void ViewportWidget::computeSceneBoundingSphere(QVector3D &center, double &radius) const
 {
 	std::vector<CGAL_Sphere> scene_spheres;
 	for (const RenderMesh *mesh : this->render_queue)
@@ -128,7 +126,6 @@ void ViewportWidget::initializeGL()
     );
 
 	this->resizeGL(this->width(), this->height());
-	this->updatePerspectiveProjection();
 	Q_EMIT this->graphicsReady();
 }
 
@@ -140,8 +137,8 @@ void ViewportWidget::initializeGL()
 void ViewportWidget::resizeGL(int width, int height)
 {
     glViewport(0, 0, width, height);
-	this->aspect = static_cast<float>(width) / static_cast<float>(height);
-	this->updatePerspectiveProjection();
+	double aspect = static_cast<float>(width) / static_cast<float>(height);
+	this->camera->setAspect(aspect);
 }
 
 /// Event handler invoked when redraw is called for this widget.
@@ -174,35 +171,25 @@ void ViewportWidget::setBackgroundColor(float red, float green, float blue)
     this->background_color = QColor::fromRgbF(red, green, blue, 1.0f);
 }
 
-/// Recalulates perspective projection transform based on the current size of viewport.
-void ViewportWidget::updatePerspectiveProjection()
-{
-	const float near = 0.001f;
-	const float far = 1000000.0f;
-
-	this->mat_perspective.setToIdentity();
-	this->mat_perspective.perspective(this->fov, this->aspect, near, far);
-}
-
 /// Send standard input parameter the shader pipeline expects to receive to draw
 /// content to screen correctly.
 void ViewportWidget::setShaderStandardInputs(QOpenGLShaderProgram &shader)
 {
 	shader.bind();
 	shader.setUniformValue("SV_MODEL_MAT", this->mat_model);
-	shader.setUniformValue("SV_VIEW_MAT", this->mat_view);
-	shader.setUniformValue("SV_PROJ_MAT", this->mat_perspective);
+	shader.setUniformValue("SV_VIEW_MAT", this->camera->getViewMatrix());
+	shader.setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
 	shader.release();
 }
 
-void ViewportWidget::setCamMode(ViewportWidget::CameraMode mode)
+void ViewportWidget::setCamMode(ViewportWidget::ViewMode mode)
 {
-	this->cam_mode = mode;
+	this->view_mode = mode;
 }
 
-ViewportWidget::CameraMode ViewportWidget::getCamMode() const
+ViewportWidget::ViewMode ViewportWidget::getCamMode() const
 {
-	return this->cam_mode;
+	return this->view_mode;
 }
 
 /// Event handler invoked when user presses mouse key over viewport widget.
@@ -213,14 +200,17 @@ void ViewportWidget::mousePressEvent(QMouseEvent *event)
 	{
 		case Qt::LeftButton:
 			this->mouse_pos = event->pos();
-			this->setCamMode(CameraMode::Rotate);
+			this->setCamMode(ViewMode::Orbit);
+			this->orbit_distance = this->orbit_center.distanceToPoint(this->camera->getPosition());
 			break;
 		case Qt::RightButton:
 			this->mouse_pos = event->pos();
-			this->setCamMode(CameraMode::Pan);
+			this->pan_acc_x = this->camera->getPosition().x();
+			this->pan_acc_y = this->camera->getPosition().y();
+			this->setCamMode(ViewMode::Pan);
 			break;
 		default:
-			this->setCamMode(CameraMode::Default);
+			this->setCamMode(ViewMode::Default);
 			this->mouse_pos = QPoint(0.0, 0.0);
 			break;
 	}
@@ -231,20 +221,35 @@ void ViewportWidget::mousePressEvent(QMouseEvent *event)
 void ViewportWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 	this->mouse_pos = QPoint(0.0, 0.0);
-	this->setCamMode(CameraMode::Default);
+	this->setCamMode(ViewMode::Default);
 }
 
 void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
 {
-	if (this->getCamMode() == CameraMode::Rotate)
+	if (this->getCamMode() == ViewMode::Orbit)
 	{
 		QPoint delta = event->pos() - this->mouse_pos;
-		this->cam_yaw -= this->cam_sensitivity * delta.x();
-		this->cam_pitch += this->cam_sensitivity * delta.y();
-		this->cam_pitch = std::clamp(this->cam_pitch, -1.5, 1.5);
+		this->acc_yaw -= this->orbit_sensitivity * delta.x();
+		this->orbit_acc_pitch += this->orbit_sensitivity * delta.y();
+		this->orbit_acc_pitch = std::clamp(this->orbit_acc_pitch, -1.5, 1.5);
 		this->mouse_pos = event->pos();
 		
-		this->setCamOrbit(this->cam_pitch, this->cam_yaw);
+		this->setCamOrbit(this->orbit_acc_pitch, this->acc_yaw);
+		this->update();
+		return;
+	}
+	else if (this->getCamMode() == ViewMode::Pan)
+	{
+		const double sensitivity = 1.0;
+		QPoint delta = event->pos() - this->mouse_pos;
+		this->pan_acc_x += sensitivity * delta.x();
+		this->pan_acc_y += sensitivity * delta.y();
+		this->mouse_pos = event->pos();
+	
+		QVector3D cam_pos = this->camera->getPosition();
+		QVector3D offset(this->pan_acc_x, this->pan_acc_y, cam_pos.z());
+
+		this->camera->setPosition(offset);
 		this->update();
 	}
 }
@@ -254,13 +259,21 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
 /// @param: yaw Yaw angle in radians.
 void ViewportWidget::setCamOrbit(double pitch, double yaw)
 {
-	double dist = this->cam_focus.distanceToPoint(this->mat_view.inverted().column(3).toVector3D());
 
 	QVector3D cam_pos;
-	cam_pos.setX(dist * qCos(this->cam_pitch) * qSin(this->cam_yaw));
-	cam_pos.setY(dist * qSin(this->cam_pitch));
-	cam_pos.setZ(dist * qCos(this->cam_pitch) * qCos(this->cam_yaw));
+	cam_pos.setX(this->orbit_distance * qCos(pitch) * qSin(yaw));
+	cam_pos.setY(this->orbit_distance * qSin(pitch));
+	cam_pos.setZ(this->orbit_distance * qCos(pitch) * qCos(yaw));
 
-	this->mat_view.setToIdentity();
-	this->mat_view.lookAt(this->cam_focus + cam_pos, this->cam_focus, QVector3D(0.0, 1.0, 0.0));
+	QVector3D cam_forward = (cam_pos - this->orbit_center).normalized();
+	QVector3D cam_right = QVector3D::crossProduct(cam_forward, QVector3D(0, 1, 0)).normalized();
+	QVector3D cam_up = QVector3D::crossProduct(cam_right, cam_forward);
+
+	QMatrix4x4 cam_transform;
+	cam_transform.setColumn(0, cam_right.toVector4D());
+	cam_transform.setColumn(1, cam_up.toVector4D());
+	cam_transform.setColumn(2, cam_forward.toVector4D());
+	cam_transform.setColumn(3, QVector4D(cam_pos.x(), cam_pos.y(), cam_pos.z(), 1.0));
+
+	this->camera->setTransform(cam_transform);
 }

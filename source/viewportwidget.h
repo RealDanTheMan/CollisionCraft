@@ -52,6 +52,7 @@ protected:
     void setShaderStandardInputs(QOpenGLShaderProgram &shader, const RenderMesh &mesh);
     void setCamMode(ViewMode mode);
     void setCamOrbit(double pitch, double yaw);
+	void setCamPan(double x, double y);
     ViewMode getCamMode() const;
 
 protected:

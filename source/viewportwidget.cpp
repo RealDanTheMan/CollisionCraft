@@ -240,14 +240,8 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
         const double sensitivity = 1.0;
         QPoint delta = event->pos() - this->mouse_pos;
         this->mouse_pos = event->pos();
-
-        QVector3D cam_pos = this->camera->getPosition();
-        QVector3D lateral = this->camera->right() * -delta.x() * sensitivity;
-        QVector3D vertical = this->camera->up() * delta.y() * sensitivity;
-        QVector3D offset = vertical + lateral + cam_pos;
-
-        this->camera->setPosition(offset);
-        this->update();
+        this->setCamPan(delta.x(), delta.y());
+		this->update();
     }
 }
 
@@ -273,4 +267,19 @@ void ViewportWidget::setCamOrbit(double pitch, double yaw)
     cam_transform.setColumn(3, QVector4D(cam_pos.x(), cam_pos.y(), cam_pos.z(), 1.0));
 
     this->camera->setTransform(cam_transform);
+}
+
+/// Pan the camera relatively to it current view vector.
+/// @param: x Screen space lateral pan delta.
+/// @param: y Screen space vertical pan delta.
+void ViewportWidget::setCamPan(double x, double y)
+{
+
+    QVector3D cam_pos = this->camera->getPosition();
+    QVector3D lateral = this->camera->right() * -x;
+    QVector3D vertical = this->camera->up() * y;
+    QVector3D offset = vertical + lateral + cam_pos;
+
+    this->camera->setPosition(offset);
+    this->update();
 }

@@ -198,14 +198,26 @@ void ViewportWidget::mousePressEvent(QMouseEvent *event)
     switch (event->button())
     {
         case Qt::LeftButton:
+            logDebug("Enabling camera orbit mode");
             this->mouse_pos = event->pos();
             this->setCamMode(ViewMode::Orbit);
             this->orbit_distance = this->orbit_center.distanceToPoint(this->camera->getPosition());
             break;
         case Qt::RightButton:
-            this->mouse_pos = event->pos();
-            this->setCamMode(ViewMode::Pan);
-            break;
+            if (event->modifiers() == Qt::NoModifier)
+            {
+                logDebug("Enabling camera panning mode");
+                this->mouse_pos = event->pos();
+                this->setCamMode(ViewMode::Pan);
+                break;
+            }
+            else if (event->modifiers() & Qt::AltModifier)
+            {
+                logDebug("Enabling camera zoom mode");
+                this->mouse_pos = event->pos();
+                this->setCamMode(ViewMode::Zoom);
+                break;
+            }
         default:
             this->setCamMode(ViewMode::Default);
             this->mouse_pos = QPoint(0.0, 0.0);
@@ -217,6 +229,7 @@ void ViewportWidget::mousePressEvent(QMouseEvent *event)
 /// Resets the camera mode state.
 void ViewportWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    logDebug("Reverting back to default camera mode");
     this->mouse_pos = QPoint(0.0, 0.0);
     this->setCamMode(ViewMode::Default);
 }
@@ -238,10 +251,18 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
     else if (this->getCamMode() == ViewMode::Pan)
     {
         const double sensitivity = 1.0;
-        QPoint delta = event->pos() - this->mouse_pos;
+        QPoint delta = (event->pos() - this->mouse_pos) * sensitivity;
         this->mouse_pos = event->pos();
         this->setCamPan(delta.x(), delta.y());
-		this->update();
+        this->update();
+    }
+    else if (this->getCamMode() == ViewMode::Zoom)
+    {
+        const double sensitivity = 3.0;
+        QPoint delta = (event->pos() - this->mouse_pos) * sensitivity;
+        this->mouse_pos = event->pos();
+        this->setCamZoom(delta.x() * sensitivity);
+        this->update();
     }
 }
 
@@ -270,8 +291,8 @@ void ViewportWidget::setCamOrbit(double pitch, double yaw)
 }
 
 /// Pan the camera relatively to it current view vector.
-/// @param: x Screen space lateral pan delta.
-/// @param: y Screen space vertical pan delta.
+/// @param: x Screen space lateral pan delta value.
+/// @param: y Screen space vertical pan delta value.
 void ViewportWidget::setCamPan(double x, double y)
 {
 
@@ -282,4 +303,13 @@ void ViewportWidget::setCamPan(double x, double y)
 
     this->camera->setPosition(offset);
     this->update();
+}
+
+/// Zoon in or out camera along it current forward view.
+/// @param: value Zoom delta factor.
+void ViewportWidget::setCamZoom(double value)
+{
+    QVector3D cam_pos = this->camera->getPosition();
+    QVector3D offset = this->camera->forward() * value;
+    this->camera->setPosition(cam_pos + offset);
 }

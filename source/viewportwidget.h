@@ -53,6 +53,7 @@ protected:
     void setCamMode(ViewMode mode);
     void setCamOrbit(double pitch, double yaw);
 	void setCamPan(double x, double y);
+    void setCamZoom(double value);
     ViewMode getCamMode() const;
 
 protected:

@@ -34,7 +34,6 @@ ViewportWidget::ViewportWidget(QWidget *parent) :
 {
     this->graphics = std::make_unique<Graphics>();
     this->camera = std::make_unique<ViewportCamera>();
-    this->mat_model.setToIdentity();
 }
 
 ViewportCamera* ViewportWidget::getCamera()
@@ -150,7 +149,7 @@ void ViewportWidget::paintGL()
     for (RenderMesh *mesh : this->render_queue)
     {
         QOpenGLShaderProgram *shader = this->graphics->getModelShader();
-        this->setShaderStandardInputs(*shader);
+        this->setShaderStandardInputs(*shader, *mesh);
         mesh->Render(*shader);
     }
 }
@@ -173,10 +172,10 @@ void ViewportWidget::setBackgroundColor(float red, float green, float blue)
 
 /// Send standard input parameter the shader pipeline expects to receive to draw
 /// content to screen correctly.
-void ViewportWidget::setShaderStandardInputs(QOpenGLShaderProgram &shader)
+void ViewportWidget::setShaderStandardInputs(QOpenGLShaderProgram &shader, const RenderMesh &mesh)
 {
     shader.bind();
-    shader.setUniformValue("SV_MODEL_MAT", this->mat_model);
+    shader.setUniformValue("SV_MODEL_MAT", mesh.getTransform());
     shader.setUniformValue("SV_VIEW_MAT", this->camera->getViewMatrix());
     shader.setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
     shader.release();

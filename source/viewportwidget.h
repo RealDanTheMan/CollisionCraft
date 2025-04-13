@@ -49,7 +49,7 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     
-    void setShaderStandardInputs(QOpenGLShaderProgram &shader);
+    void setShaderStandardInputs(QOpenGLShaderProgram &shader, const RenderMesh &mesh);
     void setCamMode(ViewMode mode);
     void setCamOrbit(double pitch, double yaw);
     ViewMode getCamMode() const;
@@ -61,8 +61,6 @@ protected:
 
 private:
     std::vector<RenderMesh*> render_queue;
-
-    QMatrix4x4 mat_model;
     QPoint mouse_pos;
     ViewMode view_mode;
 

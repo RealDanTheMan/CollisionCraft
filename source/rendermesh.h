@@ -7,7 +7,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
-#include <qopenglshaderprogram.h>
+#include <QMatrix4x4>
 
 class RenderMesh : protected QOpenGLFunctions
 {
@@ -17,6 +17,8 @@ public:
 
     const QVector3D& getBoundingShereCenter() const;
     const double getBoundingShereRadius() const;
+    const QMatrix4x4& getTransform() const;
+	void setTransform(const QMatrix4x4 &transform);
 
 private:
     int index_size = 0;
@@ -24,6 +26,7 @@ private:
     QOpenGLBuffer index_buffer;
     QOpenGLVertexArrayObject vertex_attributes;
 
+    QMatrix4x4 transform;
     QVector3D bsphere_center;
     double bsphere_radius;
 };

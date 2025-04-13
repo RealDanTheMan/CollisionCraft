@@ -64,5 +64,4 @@ void AppWindow::onViewportReady()
     }
 
     this->viewport_widget->autoFrameCamera();
-    //this->viewport_widget->getCamera()->setPosition(QVector3D(0.0, 0.0, 10));
 }

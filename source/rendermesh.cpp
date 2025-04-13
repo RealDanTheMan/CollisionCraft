@@ -75,3 +75,15 @@ const double RenderMesh::getBoundingShereRadius() const
 {
     return this->bsphere_radius;
 }
+
+/// Get model transform matrix.
+const QMatrix4x4& RenderMesh::getTransform() const
+{
+    return this->transform;
+}
+
+/// Set model transform matrix.
+void RenderMesh::setTransform(const QMatrix4x4 &transform)
+{
+    this->transform = transform;
+}

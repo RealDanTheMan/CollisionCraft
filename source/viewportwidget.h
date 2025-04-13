@@ -69,9 +69,6 @@ private:
     double orbit_acc_yaw;
     double orbit_acc_pitch;
     double orbit_sensitivity;
-
-    double pan_acc_x;
-    double pan_acc_y;
 };
 
 #endif

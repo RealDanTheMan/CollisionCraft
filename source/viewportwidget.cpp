@@ -204,8 +204,6 @@ void ViewportWidget::mousePressEvent(QMouseEvent *event)
             break;
         case Qt::RightButton:
             this->mouse_pos = event->pos();
-            this->pan_acc_x = this->camera->getPosition().x();
-            this->pan_acc_y = this->camera->getPosition().y();
             this->setCamMode(ViewMode::Pan);
             break;
         default:
@@ -241,12 +239,12 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
     {
         const double sensitivity = 1.0;
         QPoint delta = event->pos() - this->mouse_pos;
-        this->pan_acc_x += sensitivity * delta.x();
-        this->pan_acc_y += sensitivity * delta.y();
         this->mouse_pos = event->pos();
 
         QVector3D cam_pos = this->camera->getPosition();
-        QVector3D offset(this->pan_acc_x, this->pan_acc_y, cam_pos.z());
+        QVector3D lateral = this->camera->right() * -delta.x() * sensitivity;
+        QVector3D vertical = this->camera->up() * delta.y() * sensitivity;
+        QVector3D offset = vertical + lateral + cam_pos;
 
         this->camera->setPosition(offset);
         this->update();

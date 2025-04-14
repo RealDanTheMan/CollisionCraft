@@ -50,14 +50,16 @@ vec3 computeBlinnPhong(blinnPhongInputs inputs)
 /// Main pixel shader entry point.
 void main()
 {
+    vec3 surface_normal = normalize(pix_normal);
+
     blinnPhongInputs light_inputs;
-    light_inputs.normal = pix_normal;
+    light_inputs.normal = surface_normal;
     light_inputs.view_dir = vec3(0, 0, -1.0);
     light_inputs.specular = vec3(1.0, 1.0, 1.0);
     light_inputs.light = defaulLight();
 
     vec3 ambience = vec3(0.1, 0.1, 0.1);
-    vec3 normal_color = pix_normal * 0.5 + 0.5;
+    vec3 normal_color = surface_normal * 0.5 + 0.5;
     vec3 light = computeBlinnPhong(light_inputs) + ambience;
     frag_color = vec4(normal_color * light, 1.0);
 }

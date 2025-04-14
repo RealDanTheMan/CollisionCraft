@@ -115,8 +115,12 @@ void ViewportWidget::initializeGL()
         return;
     }
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_LINE_SMOOTH);;
     glClearColor(
         this->background_color.redF(),
         this->background_color.greenF(),
@@ -176,6 +180,7 @@ void ViewportWidget::setShaderStandardInputs(QOpenGLShaderProgram &shader, const
 {
     shader.bind();
     shader.setUniformValue("SV_MODEL_MAT", mesh.getTransform());
+    shader.setUniformValue("SV_NORMAL_MAT", mesh.getTransform().normalMatrix());
     shader.setUniformValue("SV_VIEW_MAT", this->camera->getViewMatrix());
     shader.setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
     shader.release();

@@ -271,6 +271,15 @@ void ViewportWidget::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
+void ViewportWidget::wheelEvent(QWheelEvent *event)
+{
+    const double delta = event->angleDelta().y();
+    const double sensitivity = 1.5;
+
+    this->setCamZoom(-delta * sensitivity);
+    this->update();
+}
+
 /// Rotate the camera along current distance and focus point.
 /// @param: pitch Pitch angle in radians.
 /// @param: yaw Yaw angle in radians.

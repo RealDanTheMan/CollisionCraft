@@ -3,8 +3,8 @@
 ViewportCamera::ViewportCamera(double fov, double aspect) :
     fov(fov),
     aspect(aspect),
-    near_clip(0.001),
-    far_clip(1000000.0)
+    near_clip(0.01),
+    far_clip(10000.0)
 {
     this->mat_view.setToIdentity();
     this->mat_transform.setToIdentity();

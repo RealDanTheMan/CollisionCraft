@@ -26,7 +26,7 @@ void CollisionGen::clearInputMeshes()
 /// @param: out_mesh Output mesh handle to allocate generated collision hull.
 void CollisionGen::generateCollisionHull(std::unique_ptr<Mesh> &out_mesh)
 {
-    std::vector<CGAL_Point> points = this->getInputPoints();
+    std::vector<CGAL_Point> points = this->getInputPoints(0.01);
     CGAL_Surface collision_surface;
 
     CGAL::convex_hull_3(points.begin(), points.end(), collision_surface);
@@ -38,14 +38,27 @@ void CollisionGen::generateCollisionHull(std::unique_ptr<Mesh> &out_mesh)
 }
 
 /// Generate list of all vertex position across all input meshes.
-std::vector<CGAL_Point> CollisionGen::getInputPoints() const
+/// @param: padding Normalized padding value relative to bunding sphere diameter of each input mesh.
+std::vector<CGAL_Point> CollisionGen::getInputPoints(float padding) const
 {
     std::vector<CGAL_Point> points;
     for (const Mesh *mesh : this->input_meshes)
     {
+        const QVector3D center = mesh->getBoundingSphereCenter();
+        const double diameter = mesh->getBoundingSphereRadius() * 2;
+
         for (const QVector3D &vertex : *mesh->getVertices())
         {
-            points.emplace_back(vertex.x(), vertex.y(), vertex.z());
+            if (qAbs(padding) > 0.0)
+            {
+                QVector3D padding_dir = (vertex - center).normalized();
+                QVector3D point = vertex + padding_dir * padding * diameter;
+                points.emplace_back(point.x(), point.y(), point.z());
+            }
+            else
+            {
+                points.emplace_back(vertex.x(), vertex.y(), vertex.z());
+            }
         }
     }
 

@@ -24,7 +24,7 @@ public:
     void generateCollisionHull(std::unique_ptr<Mesh> &out_mesh);
 
 protected:
-    std::vector<CGAL_Point> getInputPoints() const;
+    std::vector<CGAL_Point> getInputPoints(float padding = 0.0) const;
     static std::unique_ptr<Mesh> meshFromSurface(const CGAL_Surface &surface);
 
 private:

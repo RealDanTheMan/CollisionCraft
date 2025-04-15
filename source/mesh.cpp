@@ -22,6 +22,31 @@ Mesh::Mesh(const std::vector<QVector3D> &vertices, const std::vector<int> &indic
     this->normals = std::make_unique<std::vector<QVector3D>>();
 }
 
+/// Default copy constructor
+Mesh::Mesh(const Mesh &from) :
+    bsphere_center(from.bsphere_center),
+    bsphere_radius(from.bsphere_radius)
+{
+    
+    this->vertices = std::make_unique<std::vector<QVector3D>>();
+    for (const QVector3D &vert : *from.getVertices())
+    {
+        this->vertices->push_back(vert);
+    }
+    
+    this->indices = std::make_unique<std::vector<int>>();
+    for (const int &idx : *from.getIndices())
+    {
+        this->indices->push_back(idx);
+    }
+
+    this->normals = std::make_unique<std::vector<QVector3D>>();
+    for (const QVector3D &normal : *from.getNormals())
+    {
+        this->normals->push_back(normal);
+    }
+}
+
 /// Auto generates normals based on existing triangle data.
 /// Clears existing normal data.
 void Mesh::generateNormals()

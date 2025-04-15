@@ -3,6 +3,8 @@
 		<file>ui/stylesheet.qss</file>
 		<file>shaders/model.vs</file>
 		<file>shaders/model.ps</file>
+		<file>shaders/collision.vs</file>
+		<file>shaders/collision.ps</file>
 		<file>models/suzanne.usdc</file>
 		<file>models/teapot.usdc</file>
 		<file>models/arch.usdc</file>

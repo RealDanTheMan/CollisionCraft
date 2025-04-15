@@ -1,0 +1,13 @@
+#version 330
+
+in vec3 pix_position;
+in vec3 pix_normal;
+
+out vec4 frag_color;
+
+/// Main pixel shader entry point.
+void main()
+{
+    vec3 surface_normal = normalize(pix_normal);
+    frag_color = vec4(0.0, 1.0, 0.0, 1.0);
+}

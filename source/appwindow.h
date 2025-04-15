@@ -6,10 +6,12 @@
 #include <memory>
 #include <vector>
 
+#include "collisiongen.h"
 #include "rendermesh.h"
 #include "windowbase.h"
 #include "viewportwidget.h"
 #include "logwidget.h"
+
 
 class AppWindow : public QMainWindow
 {
@@ -20,11 +22,18 @@ public:
 
 protected:
     void onViewportReady();
+    void generateSimpleCollision();
+    void generateComplexCollision();
+    std::unique_ptr<CollisionGen> collision_gen;
 
 private:
     Ui_MainWindow ui;
     ViewportWidget *viewport_widget;
     LogWidget *log_widget;
-    std::vector<std::unique_ptr<RenderMesh>> model_meshes;
+
+    std::vector<std::unique_ptr<Mesh>> model_meshes;
+    std::vector<std::unique_ptr<Mesh>> collision_meshes;
+    std::vector<std::unique_ptr<RenderMesh>> model_rendermeshes;
+    std::vector<std::unique_ptr<RenderMesh>> collision_rendermeshes;
 };
 #endif

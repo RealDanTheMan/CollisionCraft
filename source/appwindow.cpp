@@ -1,4 +1,5 @@
 #include "appwindow.h"
+#include "graphics.h"
 #include "logging.h"
 #include "logwidget.h"
 #include "modelloader.h"
@@ -12,6 +13,8 @@
 
 AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
 {
+    this->collision_gen = std::make_unique<CollisionGen>();
+
     ui.setupUi(this);
     this->resize(512, 512);
 
@@ -44,6 +47,8 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
     );
 }
 
+/// Event handler invoked when viewport graphics initialisation is completed.
+/// Currently loads default test assets & generates test collision.
 void AppWindow::onViewportReady()
 {
 
@@ -59,9 +64,32 @@ void AppWindow::onViewportReady()
 
     for (const Mesh &mesh : meshes)
     {
-        this->model_meshes.push_back(std::make_unique<RenderMesh>(mesh));
-        this->viewport_widget->addRenderMesh(this->model_meshes.back().get());
+        this->model_meshes.push_back(std::make_unique<Mesh>(mesh));
+        this->model_rendermeshes.push_back(std::make_unique<RenderMesh>(mesh));
+        this->viewport_widget->addRenderMesh(this->model_rendermeshes.back().get());
     }
 
     this->viewport_widget->autoFrameCamera();
+    this->generateSimpleCollision();
+}
+
+/// Generates simple collision hull for all loaded meshes and adds it to the viewport.
+void AppWindow::generateSimpleCollision()
+{
+    this->collision_gen->clearInputMeshes();
+    for (const auto &mesh : this->model_meshes)
+    {
+        this->collision_gen->addInputMesh(mesh.get());
+    }
+
+    /// TODO: Reduce mesh copy operations.
+    std::unique_ptr<Mesh> collision;
+    this->collision_gen->generateCollisionHull(collision);
+    this->collision_meshes.push_back(std::make_unique<Mesh>(*collision));
+    this->collision_rendermeshes.push_back(std::make_unique<RenderMesh>(*collision));
+
+    this->viewport_widget->addRenderMesh(
+        this->collision_rendermeshes.back().get(),
+        ViewportWidget::ShaderClass::Collision
+    );
 }

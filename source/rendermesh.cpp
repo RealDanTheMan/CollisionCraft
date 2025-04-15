@@ -87,3 +87,15 @@ void RenderMesh::setTransform(const QMatrix4x4 &transform)
 {
     this->transform = transform;
 }
+
+/// Set model shader program handle.
+void RenderMesh::setShader(QOpenGLShaderProgram *shader)
+{
+    this->shader = shader;
+}
+
+/// Get model shader program handle.
+QOpenGLShaderProgram* RenderMesh::getShader() const
+{
+    return this->shader;
+}

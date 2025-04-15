@@ -17,8 +17,13 @@ public:
 
     const QVector3D& getBoundingShereCenter() const;
     const double getBoundingShereRadius() const;
+
+    void setTransform(const QMatrix4x4 &transform);
     const QMatrix4x4& getTransform() const;
-	void setTransform(const QMatrix4x4 &transform);
+
+    void setShader(QOpenGLShaderProgram *shader);
+    QOpenGLShaderProgram* getShader() const;
+
 
 private:
     int index_size = 0;
@@ -29,6 +34,8 @@ private:
     QMatrix4x4 transform;
     QVector3D bsphere_center;
     double bsphere_radius;
+
+    QOpenGLShaderProgram* shader = nullptr;
 };
 
 #endif

@@ -75,6 +75,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/mesh.cpp
     ${PROJECT_SOURCE_DIR}/rendermesh.cpp
     ${PROJECT_SOURCE_DIR}/modelloader.cpp
+    ${PROJECT_SOURCE_DIR}/collisiongen.cpp
     ${PROJECT_SOURCE_DIR}/appwindow.cpp
     ${PROJECT_SOURCE_DIR}/viewportwidget.cpp
     ${PROJECT_SOURCE_DIR}/viewportcamera.cpp

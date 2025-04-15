@@ -82,6 +82,8 @@ int main(int argc, char *argv[])
     format.setRenderableType(QSurfaceFormat::OpenGL);
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setDepthBufferSize(32);
+    format.setAlphaBufferSize(8);
+    format.setStencilBufferSize(8);
     format.setVersion(3, 3);
     QSurfaceFormat::setDefaultFormat(format);
     

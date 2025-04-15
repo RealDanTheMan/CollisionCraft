@@ -3,6 +3,7 @@
 #include "rendermesh.h"
 #include "viewportcamera.h"
 
+#include <OpenGL/gl.h>
 #include <algorithm>
 #include <cmath>
 #include <csignal>
@@ -133,6 +134,8 @@ void ViewportWidget::initializeGL()
     glDepthFunc(GL_LESS);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_LINE_SMOOTH);;
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(
         this->background_color.redF(),
         this->background_color.greenF(),

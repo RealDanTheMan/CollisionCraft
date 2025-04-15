@@ -3,12 +3,14 @@
 #include <QFile>
 #include <QTextStream>
 #include <QOpenGLShader>
+#include <format>
 #include <memory>
 
 /// Default ctor
 Graphics::Graphics()
 {
     this->model_shader = std::make_unique<QOpenGLShaderProgram>();
+    this->collision_shader = std::make_unique<QOpenGLShaderProgram>();
 }
 
 /// Initialise graphics.
@@ -25,35 +27,33 @@ bool Graphics::init()
     return true;
 }
 
-QOpenGLShaderProgram * Graphics::getModelShader() const
+/// Get handle to the default model shader program.
+QOpenGLShaderProgram* Graphics::getModelShader() const
 {
     return this->model_shader.get();
+}
+
+/// Get handle to the default collision model shader program.
+QOpenGLShaderProgram* Graphics::getCollisionShader() const
+{
+    return this->collision_shader.get();
 }
 
 /// Initialise default set of shaders used during graphics operations.
 /// Shader source code lives in resources/shaders/
 bool Graphics::initDefaultShaders()
 {
-    QString model_vs = "";
-    Logger::active()->debug("Loading default model vertex shader");
-    if (!Graphics::loadShaderResource(":shaders/model.vs", model_vs))
+    /// Load and compile default model shader.
+    if (!Graphics::compileShaderResource("model", *this->model_shader))
     {
-        Logger::active()->error("Failed to load default model vertex shader!");
+        logError("Failed to initialise default model shader");
         return false;
     }
 
-    QString model_ps = "";
-    Logger::active()->debug("Loading default model pixel shader");
-    if (!Graphics::loadShaderResource(":shaders/model.ps", model_ps))
+    /// Load and compile default collision shader.
+    if (!Graphics::compileShaderResource("collision", *this->collision_shader))
     {
-        Logger::active()->error("Failed to load default model pixel shader!");
-        return false;
-    }
-
-    Logger::active()->debug("Compiling default model shader");
-    if (!Graphics::compileShader(model_vs, model_ps, *this->model_shader))
-    {
-        Logger::active()->error("Failed to compile default model shader!");
+        logError("Failed to initialise default collision shader");
         return false;
     }
 
@@ -76,6 +76,48 @@ bool Graphics::loadShaderResource(const QString &resource_path, QString &shader_
     QTextStream src(&file);
     shader_src = src.readAll();
     file.close();
+
+    return true;
+}
+
+/// Loads and compiles vertex and pixel shader matching given name into shader program.
+/// @param: shader_name Base name matching vertex and pixel shader resource.
+/// @param: shader Out shader handle to load compile shader program.
+bool Graphics::compileShaderResource(const std::string &shader_name, QOpenGLShaderProgram &shader)
+{
+    /// Note we use std::vformat as std::format is not fully implemented on MacOS
+    std::string vs_res = std::vformat(
+        ":shaders/{}.vs",
+        std::make_format_args(shader_name)
+    );
+
+    std::string ps_res = std::vformat(
+        ":shaders/{}.ps",
+        std::make_format_args(shader_name)
+    );
+
+    QString vs_src;
+    logDebug("Loading shader resouce -> {}", vs_res);
+    if (!Graphics::loadShaderResource(QString(vs_res.c_str()), vs_src))
+    {
+        logError("Failed to load vertex shader resource -> {}", vs_res);
+        return false;
+    }
+
+    QString ps_src;
+    logDebug("Loading shader resouce -> {}", ps_res);
+    if (!Graphics::loadShaderResource(QString(ps_res.c_str()), ps_src))
+    {
+        logError("Failed to load pixel shader resource -> {}", ps_res);
+        return false;
+    }
+
+    logDebug("Compiling shader resouce -> {}", shader_name);
+    if(!Graphics::compileShader(vs_src, ps_src, shader))
+    {
+        logError("Failed to compile shader program -> {}", shader_name);
+        return false;
+    }
 
     return true;
 }

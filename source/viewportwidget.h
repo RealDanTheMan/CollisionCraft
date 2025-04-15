@@ -20,11 +20,18 @@ class ViewportWidget : public QOpenGLWidget, public QOpenGLFunctions
 
 public:
     ViewportWidget(QWidget *parent = nullptr);
+
+    enum class ShaderClass
+    {
+        Model,
+        Collision
+    };
+
     void setBackgroundColor(const QColor &color);
     void setBackgroundColor(float red, float green, float blue);
 
     void clearRenderMeshes();
-    void addRenderMesh(RenderMesh *mesh);
+    void addRenderMesh(RenderMesh *mesh, ShaderClass shader_class = ShaderClass::Model);
     void autoFrameCamera();
     void computeSceneBoundingSphere(QVector3D &center, double &radius) const;
 
@@ -50,10 +57,10 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void wheelEvent(QWheelEvent *event) override;
     
-    void setShaderStandardInputs(QOpenGLShaderProgram &shader, const RenderMesh &mesh);
+    void setShaderStandardInputs(const RenderMesh &mesh);
     void setCamMode(ViewMode mode);
     void setCamOrbit(double pitch, double yaw);
-	void setCamPan(double x, double y);
+    void setCamPan(double x, double y);
     void setCamZoom(double value);
     ViewMode getCamMode() const;
 

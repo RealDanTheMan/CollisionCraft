@@ -88,5 +88,6 @@ void AppWindow::generateSimpleCollision()
     this->collision_meshes.push_back(std::make_unique<Mesh>(*collision));
     this->collision_rendermeshes.push_back(std::make_unique<RenderMesh>(*collision));
     this->collision_rendermeshes.back()->setMaterial(RenderMeshMaterial::Collision);
+    this->collision_rendermeshes.back()->setStyle(RenderMeshStyle::ShadedWireframe);
     this->viewport_widget->addRenderMesh(this->collision_rendermeshes.back().get());
 }

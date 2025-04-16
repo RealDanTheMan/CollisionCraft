@@ -9,6 +9,21 @@
 #include <QOpenGLFunctions>
 #include <QMatrix4x4>
 
+enum class RenderMeshStyle
+{
+    Shaded = 0,
+    ShadedWireframe = 1,
+    WireframeOnly = 2
+};
+
+
+enum class RenderMeshMaterial
+{
+    Standard = 0,
+    Collision = 1
+};
+
+
 class RenderMesh : protected QOpenGLFunctions
 {
 public:
@@ -16,13 +31,14 @@ public:
     void Render(QOpenGLShaderProgram &shader);
 
     const QVector3D& getBoundingShereCenter() const;
-    const double getBoundingShereRadius() const;
-
     void setTransform(const QMatrix4x4 &transform);
-    const QMatrix4x4& getTransform() const;
+    void setMaterial(RenderMeshMaterial material);
+    void setStyle(RenderMeshStyle style);
 
-    void setShader(QOpenGLShaderProgram *shader);
-    QOpenGLShaderProgram* getShader() const;
+    const double getBoundingShereRadius() const;
+    const QMatrix4x4& getTransform() const;
+    RenderMeshMaterial getMaterial() const;
+    RenderMeshStyle getStyle() const;
 
 
 private:
@@ -35,7 +51,8 @@ private:
     QVector3D bsphere_center;
     double bsphere_radius;
 
-    QOpenGLShaderProgram* shader = nullptr;
+    RenderMeshStyle style;
+    RenderMeshMaterial material;
 };
 
 #endif

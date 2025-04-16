@@ -88,14 +88,26 @@ void RenderMesh::setTransform(const QMatrix4x4 &transform)
     this->transform = transform;
 }
 
-/// Set model shader program handle.
-void RenderMesh::setShader(QOpenGLShaderProgram *shader)
+/// Set mesh render material style.
+void RenderMesh::setMaterial(RenderMeshMaterial material)
 {
-    this->shader = shader;
+    this->material = material;
 }
 
-/// Get model shader program handle.
-QOpenGLShaderProgram* RenderMesh::getShader() const
+/// Set mesh render style.
+void RenderMesh::setStyle(RenderMeshStyle style)
 {
-    return this->shader;
+    this->style = style;
+}
+
+/// Get render material used by this mesh during rendering.
+RenderMeshMaterial RenderMesh::getMaterial() const
+{
+    return this->material;
+}
+
+/// Get render style used by this mesh during rendering.
+RenderMeshStyle RenderMesh::getStyle() const
+{
+    return this->style;
 }

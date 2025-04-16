@@ -52,21 +52,9 @@ void ViewportWidget::clearRenderMeshes()
 ///
 /// Meshes in the render queue will re-draw each time the viewport paint event is called.
 /// @param: mesh Render mesh to add to the queue.
-void ViewportWidget::addRenderMesh(RenderMesh *mesh, ShaderClass shader_class)
+void ViewportWidget::addRenderMesh(RenderMesh *mesh)
 {
     this->render_queue.push_back(mesh);
-    switch (shader_class)
-    {
-        case ShaderClass::Model:
-            this->render_queue.back()->setShader(this->graphics->getModelShader());
-            break;
-        case ShaderClass::Collision:
-            this->render_queue.back()->setShader(this->graphics->getCollisionShader());
-            break;
-        default:
-            this->render_queue.back()->setShader(this->graphics->getModelShader());
-            break;
-    }
 }
 
 /// Update camera view transform to envelop currently loaded meshes.
@@ -167,9 +155,32 @@ void ViewportWidget::paintGL()
     //logDebug("Drawing render queue of size -> {}", this->render_queue.size());
     for (RenderMesh *mesh : this->render_queue)
     {
-        this->setShaderStandardInputs(*mesh);
-        mesh->Render(*mesh->getShader());
+        if (mesh->getStyle() == RenderMeshStyle::Shaded ||
+            mesh->getStyle() == RenderMeshStyle::ShadedWireframe)
+        {
+            this->drawMesh(*mesh);
+        }
     }
+}
+
+/// Draw given render mesh to viewport screen.
+void ViewportWidget::drawMesh(RenderMesh &mesh)
+{
+    QOpenGLShaderProgram *shader = nullptr;
+    switch (mesh.getMaterial())
+    {
+        case RenderMeshMaterial::Standard:
+            shader = this->graphics->getModelShader();
+            break;
+        case RenderMeshMaterial::Collision:
+            shader = this->graphics->getCollisionShader();
+            break;
+        default:
+            return;
+    }
+
+    this->setShaderStandardInputs(mesh, *shader);
+    mesh.Render(*shader);
 }
 
 /// Set the color of the OpenGL surface background
@@ -190,20 +201,14 @@ void ViewportWidget::setBackgroundColor(float red, float green, float blue)
 
 /// Send standard input parameter the shader pipeline expects to receive to draw
 /// content to screen correctly.
-void ViewportWidget::setShaderStandardInputs(const RenderMesh &mesh)
+void ViewportWidget::setShaderStandardInputs(const RenderMesh &mesh, QOpenGLShaderProgram &shader)
 {
-    if (!mesh.getShader())
-    {
-        logError("Attempting to set shader input when shader handle is null");
-        return;
-    }
-
-    mesh.getShader()->bind();
-    mesh.getShader()->setUniformValue("SV_MODEL_MAT", mesh.getTransform());
-    mesh.getShader()->setUniformValue("SV_NORMAL_MAT", mesh.getTransform().normalMatrix());
-    mesh.getShader()->setUniformValue("SV_VIEW_MAT", this->camera->getViewMatrix());
-    mesh.getShader()->setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
-    mesh.getShader()->release();
+    shader.bind();
+    shader.setUniformValue("SV_MODEL_MAT", mesh.getTransform());
+    shader.setUniformValue("SV_NORMAL_MAT", mesh.getTransform().normalMatrix());
+    shader.setUniformValue("SV_VIEW_MAT", this->camera->getViewMatrix());
+    shader.setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
+    shader.release();
 }
 
 void ViewportWidget::setCamMode(ViewportWidget::ViewMode mode)

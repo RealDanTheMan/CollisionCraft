@@ -5,6 +5,8 @@
 		<file>shaders/model.ps</file>
 		<file>shaders/collision.vs</file>
 		<file>shaders/collision.ps</file>
+		<file>shaders/wireframe.vs</file>
+		<file>shaders/wireframe.ps</file>
 		<file>models/suzanne.usdc</file>
 		<file>models/teapot.usdc</file>
 		<file>models/arch.usdc</file>

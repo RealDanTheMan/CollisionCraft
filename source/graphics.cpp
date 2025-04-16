@@ -11,6 +11,7 @@ Graphics::Graphics()
 {
     this->model_shader = std::make_unique<QOpenGLShaderProgram>();
     this->collision_shader = std::make_unique<QOpenGLShaderProgram>();
+    this->wireframe_shader = std::make_unique<QOpenGLShaderProgram>();
 }
 
 /// Initialise graphics.
@@ -54,6 +55,13 @@ bool Graphics::initDefaultShaders()
     if (!Graphics::compileShaderResource("collision", *this->collision_shader))
     {
         logError("Failed to initialise default collision shader");
+        return false;
+    }
+
+    /// Load and compile default wireframe_shader.
+    if (!Graphics::compileShaderResource("wireframe", *this->wireframe_shader))
+    {
+        logError("Failed to initialise default wireframe_shader");
         return false;
     }
 

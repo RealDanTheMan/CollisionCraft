@@ -32,6 +32,7 @@ protected:
 private:
     std::unique_ptr<QOpenGLShaderProgram> model_shader;
     std::unique_ptr<QOpenGLShaderProgram> collision_shader;
+    std::unique_ptr<QOpenGLShaderProgram> wireframe_shader;
 
 };
 

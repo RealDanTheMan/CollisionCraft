@@ -40,6 +40,12 @@ QOpenGLShaderProgram* Graphics::getCollisionShader() const
     return this->collision_shader.get();
 }
 
+/// Get handle to the default wireframe shader program.
+QOpenGLShaderProgram* Graphics::getWireframeShader() const
+{
+    return this->wireframe_shader.get();
+}
+
 /// Initialise default set of shaders used during graphics operations.
 /// Shader source code lives in resources/shaders/
 bool Graphics::initDefaultShaders()

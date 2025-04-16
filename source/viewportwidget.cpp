@@ -160,6 +160,12 @@ void ViewportWidget::paintGL()
         {
             this->drawMesh(*mesh);
         }
+
+        if (mesh->getStyle() == RenderMeshStyle::WireframeOnly ||
+            mesh->getStyle() == RenderMeshStyle::ShadedWireframe)
+        {
+            this->drawMeshWireframe(*mesh);
+        }
     }
 }
 
@@ -181,6 +187,22 @@ void ViewportWidget::drawMesh(RenderMesh &mesh)
 
     this->setShaderStandardInputs(mesh, *shader);
     mesh.Render(*shader);
+}
+
+/// Draw given render mesh wireframe to viewport screen.
+void ViewportWidget::drawMeshWireframe(RenderMesh &mesh)
+{
+    QOpenGLShaderProgram *shader = this->graphics->getWireframeShader();
+    this->setShaderStandardInputs(mesh, *shader);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonOffset(-1.0, -1.0);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glLineWidth(4.0);
+    mesh.Render(*shader);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPolygonOffset(0.0, 0.0);
+    glDisable(GL_POLYGON_OFFSET_LINE);
 }
 
 /// Set the color of the OpenGL surface background

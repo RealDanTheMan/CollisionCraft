@@ -14,6 +14,7 @@ public:
     bool init();
     QOpenGLShaderProgram * getModelShader() const;
     QOpenGLShaderProgram * getCollisionShader() const;
+    QOpenGLShaderProgram * getWireframeShader() const;
 
 protected:
     bool initDefaultShaders();

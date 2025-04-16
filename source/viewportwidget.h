@@ -59,6 +59,7 @@ protected:
     ViewMode getCamMode() const;
 
     void drawMesh(RenderMesh &mesh);
+    void drawMeshWireframe(RenderMesh &mesh);
 
 protected:
     QColor background_color = QColor(0.0f, 0.0f, 0.0f, 1.0f);

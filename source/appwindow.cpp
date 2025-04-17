@@ -61,6 +61,13 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
         this,
         &AppWindow::onExportCollisionClick
     );
+
+    connect(
+        this->ui.actionFrameAll,
+        &QAction::triggered,
+        this,
+        &AppWindow::onFrameAllClick
+    );
 }
 
 /// Event handler invoked when viewport graphics initialisation is completed.
@@ -108,7 +115,7 @@ void AppWindow::generateSimpleCollision()
     this->viewport_widget->addRenderMesh(this->collision_rendermeshes.back().get());
 }
 
-/// Event handler invoked when user clicks on 'Import Model' menu item.
+/// Event handler invoked when user clicks on 'File -> Import Model' menu item.
 void AppWindow::onImportModelClick()
 {
     QString filepath = QFileDialog::getOpenFileName(this, "Import USD Model", "*.usd*");
@@ -141,8 +148,15 @@ void AppWindow::onImportModelClick()
     }
 }
 
-/// Event handler invoked when user clicks on 'Export Collision' menu item.
+/// Event handler invoked when user clicks on 'File -> Export Collision' menu item.
 void AppWindow::onExportCollisionClick()
 {
 
+}
+
+/// Event handler invoked when user clicks on 'View -> Frame All' menu item.
+void AppWindow::onFrameAllClick()
+{
+    this->viewport_widget->autoFrameCamera();
+    this->viewport_widget->update();
 }

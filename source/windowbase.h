@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'mainwindowtBLfXC.ui'
+** Form generated from reading UI file 'mainwindowhnDCyY.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef MAINWINDOWTBLFXC_H
-#define MAINWINDOWTBLFXC_H
+#ifndef MAINWINDOWHNDCYY_H
+#define MAINWINDOWHNDCYY_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -28,6 +28,7 @@ class Ui_MainWindow
 public:
     QAction *actionImportModel;
     QAction *actionExportCollision;
+    QAction *actionFrameAll;
     QWidget *centralwidget;
     QHBoxLayout *horizontalLayout_3;
     QHBoxLayout *horizontalLayout;
@@ -38,6 +39,7 @@ public:
     QFrame *PropertyPanelFrame;
     QMenuBar *menubar;
     QMenu *menuFile;
+    QMenu *menuView;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -49,6 +51,8 @@ public:
         actionImportModel->setObjectName("actionImportModel");
         actionExportCollision = new QAction(MainWindow);
         actionExportCollision->setObjectName("actionExportCollision");
+        actionFrameAll = new QAction(MainWindow);
+        actionFrameAll->setObjectName("actionFrameAll");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         horizontalLayout_3 = new QHBoxLayout(centralwidget);
@@ -107,14 +111,18 @@ public:
         menubar->setGeometry(QRect(0, 0, 800, 24));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName("menuFile");
+        menuView = new QMenu(menubar);
+        menuView->setObjectName("menuView");
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
         MainWindow->setStatusBar(statusbar);
 
         menubar->addAction(menuFile->menuAction());
+        menubar->addAction(menuView->menuAction());
         menuFile->addAction(actionImportModel);
         menuFile->addAction(actionExportCollision);
+        menuView->addAction(actionFrameAll);
 
         retranslateUi(MainWindow);
 
@@ -129,7 +137,9 @@ public:
         actionImportModel->setToolTip(QCoreApplication::translate("MainWindow", "Import USD Model", nullptr));
 #endif // QT_CONFIG(tooltip)
         actionExportCollision->setText(QCoreApplication::translate("MainWindow", "Export Collision", nullptr));
+        actionFrameAll->setText(QCoreApplication::translate("MainWindow", "Frame All", nullptr));
         menuFile->setTitle(QCoreApplication::translate("MainWindow", "File", nullptr));
+        menuView->setTitle(QCoreApplication::translate("MainWindow", "View", nullptr));
     } // retranslateUi
 
 };
@@ -140,5 +150,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // MAINWINDOWTBLFXC_H
-
+#endif // MAINWINDOWHNDCYY_H

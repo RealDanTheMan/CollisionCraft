@@ -1,21 +1,23 @@
 #include "appwindow.h"
-#include "graphics.h"
 #include "logging.h"
 #include "logwidget.h"
 #include "modelloader.h"
 #include "rendermesh.h"
 #include "viewportwidget.h"
+#include "windowbase.h"
 
 #include <memory>
-#include <qboxlayout.h>
 #include <stdexcept>
 #include <vector>
+
+#include <QBoxLayout>
+#include <QFileDialog>
 
 AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
 {
     this->collision_gen = std::make_unique<CollisionGen>();
 
-    ui.setupUi(this);
+    this->ui.setupUi(this);
     this->resize(512, 512);
 
     Logger::active()->debug("Initialising viewport widget");
@@ -44,6 +46,20 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
         &ViewportWidget::graphicsReady,
         this,
         &AppWindow::onViewportReady
+    );
+
+    connect(
+        this->ui.actionImportModel,
+        &QAction::triggered,
+        this,
+        &AppWindow::onImportModelClick
+    );
+
+    connect(
+        this->ui.actionExportCollision,
+        &QAction::triggered,
+        this,
+        &AppWindow::onExportCollisionClick
     );
 }
 
@@ -90,4 +106,43 @@ void AppWindow::generateSimpleCollision()
     this->collision_rendermeshes.back()->setMaterial(RenderMeshMaterial::Collision);
     this->collision_rendermeshes.back()->setStyle(RenderMeshStyle::ShadedWireframe);
     this->viewport_widget->addRenderMesh(this->collision_rendermeshes.back().get());
+}
+
+/// Event handler invoked when user clicks on 'Import Model' menu item.
+void AppWindow::onImportModelClick()
+{
+    QString filepath = QFileDialog::getOpenFileName(this, "Import USD Model", "*.usd*");
+    if (!filepath.isEmpty())
+    {
+        this->model_meshes.clear();
+        this->model_rendermeshes.clear();
+        this->collision_meshes.clear();
+        this->collision_rendermeshes.clear();
+        this->viewport_widget->clearRenderMeshes();
+
+        std::vector<Mesh> meshes;
+        ModelLoader::LoadResourceUSD(filepath.toStdString(), meshes);
+
+        if (meshes.size() == 0)
+        {
+            logError("Failed to load usd model -> {}", filepath.toStdString());
+            return;
+        }
+
+        for (const Mesh &mesh : meshes)
+        {
+            this->model_meshes.push_back(std::make_unique<Mesh>(mesh));
+            this->model_rendermeshes.push_back(std::make_unique<RenderMesh>(mesh));
+            this->viewport_widget->addRenderMesh(this->model_rendermeshes.back().get());
+        }
+
+        logInfo("Loaded {} meshes into the scene", this->model_meshes.size());
+        this->viewport_widget->autoFrameCamera();
+    }
+}
+
+/// Event handler invoked when user clicks on 'Export Collision' menu item.
+void AppWindow::onExportCollisionClick()
+{
+
 }

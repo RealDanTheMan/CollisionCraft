@@ -22,6 +22,9 @@ public:
 
 protected:
     void onViewportReady();
+    void onImportModelClick();
+    void onExportCollisionClick();
+
     void generateSimpleCollision();
     void generateComplexCollision();
     std::unique_ptr<CollisionGen> collision_gen;

@@ -86,8 +86,29 @@
      <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionImportModel"/>
+    <addaction name="actionExportCollision"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionImportModel">
+   <property name="text">
+    <string>Import Model</string>
+   </property>
+   <property name="toolTip">
+    <string>Import USD Model</string>
+   </property>
+  </action>
+  <action name="actionExportCollision">
+   <property name="text">
+    <string>Export Collision</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

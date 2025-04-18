@@ -105,6 +105,15 @@ void AppWindow::onViewportReady()
 /// Generates simple collision hull for all loaded meshes and adds it to the viewport.
 void AppWindow::generateSimpleCollision()
 {
+    // Clear existing collision.
+    for (const std::unique_ptr<RenderMesh>& mesh : this->collision_rendermeshes)
+    {
+        this->viewport_widget->removeRenderMesh(mesh.get());
+    }
+    this->collision_rendermeshes.clear();
+    this->collision_meshes.clear();
+
+    // Reset collision generator.
     this->collision_gen->clearInputMeshes();
     for (const auto &mesh : this->model_meshes)
     {

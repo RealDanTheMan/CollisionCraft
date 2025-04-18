@@ -57,6 +57,21 @@ void ViewportWidget::addRenderMesh(RenderMesh *mesh)
     this->render_queue.push_back(mesh);
 }
 
+/// Remove given render mesh from this viewport render queue.
+void ViewportWidget::removeRenderMesh(RenderMesh *mesh)
+{
+    std::vector<RenderMesh*>::iterator it = std::find(
+        this->render_queue.begin(),
+        this->render_queue.end(),
+        mesh
+    );
+
+    if (it != this->render_queue.end())
+    {
+        this->render_queue.erase(it);
+    }
+}
+
 /// Update camera view transform to envelop currently loaded meshes.
 void ViewportWidget::autoFrameCamera()
 {

@@ -26,6 +26,7 @@ public:
 
     void clearRenderMeshes();
     void addRenderMesh(RenderMesh *mesh);
+    void removeRenderMesh(RenderMesh *mesh);
     void autoFrameCamera();
     void computeSceneBoundingSphere(QVector3D &center, double &radius) const;
 

@@ -80,6 +80,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/viewportwidget.cpp
     ${PROJECT_SOURCE_DIR}/viewportcamera.cpp
     ${PROJECT_SOURCE_DIR}/logwidget.cpp
+    ${PROJECT_SOURCE_DIR}/propertypanel.cpp
 )
 
 

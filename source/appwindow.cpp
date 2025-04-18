@@ -2,6 +2,7 @@
 #include "logging.h"
 #include "logwidget.h"
 #include "modelloader.h"
+#include "propertypanel.h"
 #include "rendermesh.h"
 #include "viewportwidget.h"
 #include "windowbase.h"
@@ -40,6 +41,11 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
     this->ui.ViewportFrame->layout()->setSpacing(0);
     this->viewport_widget->makeCurrent();
     this->viewport_widget->update();
+
+    logDebug("Initialising property panel");
+    this->property_panel = new PropertyPanelWidget(this);
+    this->ui.PropertyPanelFrame->setLayout(new QVBoxLayout());
+    this->ui.PropertyPanelFrame->layout()->addWidget(this->property_panel);
     
     connect(
         this->viewport_widget,

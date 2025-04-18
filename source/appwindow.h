@@ -11,6 +11,7 @@
 #include "windowbase.h"
 #include "viewportwidget.h"
 #include "logwidget.h"
+#include "propertypanel.h"
 
 
 class AppWindow : public QMainWindow
@@ -34,6 +35,7 @@ private:
     Ui_MainWindow ui;
     ViewportWidget *viewport_widget;
     LogWidget *log_widget;
+    PropertyPanelWidget *property_panel;
 
     std::vector<std::unique_ptr<Mesh>> model_meshes;
     std::vector<std::unique_ptr<Mesh>> collision_meshes;

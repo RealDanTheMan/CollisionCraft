@@ -74,6 +74,13 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
         this,
         &AppWindow::onFrameAllClick
     );
+
+    connect(
+        this->property_panel,
+        &PropertyPanelWidget::collisionGenerationRequested,
+        this,
+        &AppWindow::onCollisionGenerationRequested
+    );
 }
 
 /// Event handler invoked when viewport graphics initialisation is completed.
@@ -185,5 +192,12 @@ void AppWindow::onExportCollisionClick()
 void AppWindow::onFrameAllClick()
 {
     this->viewport_widget->autoFrameCamera();
+    this->viewport_widget->update();
+}
+
+/// Event handler invoked when user requests new collision generation.
+void AppWindow::onCollisionGenerationRequested()
+{
+    this->generateSimpleCollision();
     this->viewport_widget->update();
 }

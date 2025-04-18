@@ -26,6 +26,7 @@ protected:
     void onImportModelClick();
     void onExportCollisionClick();
     void onFrameAllClick();
+    void onCollisionGenerationRequested();
 
     void generateSimpleCollision();
 

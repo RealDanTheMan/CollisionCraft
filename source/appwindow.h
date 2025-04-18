@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "collisiongen.h"
-#include "rendermesh.h"
+#include "scenemodel.h"
 #include "windowbase.h"
 #include "viewportwidget.h"
 #include "logwidget.h"
@@ -39,9 +39,7 @@ private:
     LogWidget *log_widget;
     PropertyPanelWidget *property_panel;
 
-    std::vector<std::unique_ptr<Mesh>> model_meshes;
-    std::vector<std::unique_ptr<Mesh>> collision_meshes;
-    std::vector<std::unique_ptr<RenderMesh>> model_rendermeshes;
-    std::vector<std::unique_ptr<RenderMesh>> collision_rendermeshes;
+    std::vector<std::unique_ptr<SceneModel>> models;
+    std::vector<std::unique_ptr<SceneModel>> collision_models;
 };
 #endif

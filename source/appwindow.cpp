@@ -100,9 +100,8 @@ void AppWindow::onViewportReady()
 
     for (const Mesh &mesh : meshes)
     {
-        this->model_meshes.push_back(std::make_unique<Mesh>(mesh));
-        this->model_rendermeshes.push_back(std::make_unique<RenderMesh>(mesh));
-        this->viewport_widget->addRenderMesh(this->model_rendermeshes.back().get());
+        this->models.push_back(std::make_unique<SceneModel>(mesh));
+        this->viewport_widget->addRenderMesh(&this->models.back()->getRenderMesh());
     }
 
     this->viewport_widget->autoFrameCamera();
@@ -113,28 +112,27 @@ void AppWindow::onViewportReady()
 void AppWindow::generateSimpleCollision()
 {
     // Clear existing collision.
-    for (const std::unique_ptr<RenderMesh>& mesh : this->collision_rendermeshes)
+    for (const auto &collision : this->collision_models)
     {
-        this->viewport_widget->removeRenderMesh(mesh.get());
+        this->viewport_widget->removeRenderMesh(&collision->getRenderMesh());
     }
-    this->collision_rendermeshes.clear();
-    this->collision_meshes.clear();
+    this->collision_models.clear();
 
     // Reset collision generator.
     this->collision_gen->clearInputMeshes();
-    for (const auto &mesh : this->model_meshes)
+    for (const auto &model : this->models)
     {
-        this->collision_gen->addInputMesh(mesh.get());
+        this->collision_gen->addInputMesh(&model->getMesh());
     }
 
-    /// TODO: Reduce mesh copy operations.
     std::unique_ptr<Mesh> collision;
     this->collision_gen->generateCollisionHull(collision);
-    this->collision_meshes.push_back(std::make_unique<Mesh>(*collision));
-    this->collision_rendermeshes.push_back(std::make_unique<RenderMesh>(*collision));
-    this->collision_rendermeshes.back()->setMaterial(RenderMeshMaterial::Collision);
-    this->collision_rendermeshes.back()->setStyle(RenderMeshStyle::ShadedWireframe);
-    this->viewport_widget->addRenderMesh(this->collision_rendermeshes.back().get());
+    this->collision_models.push_back(std::make_unique<SceneModel>(*collision));
+
+    RenderMesh &rmesh = this->collision_models.back()->getRenderMesh();
+    rmesh.setMaterial(RenderMeshMaterial::Collision);
+    rmesh.setStyle(RenderMeshStyle::ShadedWireframe);
+    this->viewport_widget->addRenderMesh(&rmesh);
 }
 
 /// Event handler invoked when user clicks on 'File -> Import Model' menu item.
@@ -143,12 +141,12 @@ void AppWindow::onImportModelClick()
     QString filepath = QFileDialog::getOpenFileName(this, "Import USD Model", "*.usd*");
     if (!filepath.isEmpty())
     {
-        this->model_meshes.clear();
-        this->model_rendermeshes.clear();
-        this->collision_meshes.clear();
-        this->collision_rendermeshes.clear();
+        /// Reset entire scene.
         this->viewport_widget->clearRenderMeshes();
+        this->models.clear();
+        this->collision_models.clear();
 
+        /// Load models.
         std::vector<Mesh> meshes;
         ModelLoader::LoadResourceUSD(filepath.toStdString(), meshes);
 
@@ -160,12 +158,11 @@ void AppWindow::onImportModelClick()
 
         for (const Mesh &mesh : meshes)
         {
-            this->model_meshes.push_back(std::make_unique<Mesh>(mesh));
-            this->model_rendermeshes.push_back(std::make_unique<RenderMesh>(mesh));
-            this->viewport_widget->addRenderMesh(this->model_rendermeshes.back().get());
+            this->models.push_back(std::make_unique<SceneModel>(mesh));
+            this->viewport_widget->addRenderMesh(&this->models.back()->getRenderMesh());
         }
 
-        logInfo("Loaded {} meshes into the scene", this->model_meshes.size());
+        logInfo("Loaded {} meshes into the scene", this->models.size());
         this->viewport_widget->autoFrameCamera();
     }
 }
@@ -177,10 +174,10 @@ void AppWindow::onExportCollisionClick()
     if (!filepath.isEmpty())
     {
         std::vector<const Mesh*> meshes;
-        meshes.reserve(this->collision_meshes.size());
-        for (const std::unique_ptr<Mesh>& mesh : this->collision_meshes)
+        meshes.reserve(this->collision_models.size());
+        for (const auto &collision : this->collision_models)
         {
-            meshes.push_back(mesh.get());
+            meshes.push_back(&collision->getMesh());
         }
 
         logInfo("Writing {} meshes to USD file -> {}", meshes.size(), filepath.toStdString());

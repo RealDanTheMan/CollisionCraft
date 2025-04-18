@@ -3,6 +3,7 @@
 #include "mesh.h"
 #include "pxr/base/gf/matrix4d.h"
 #include "pxr/base/gf/vec3d.h"
+#include "pxr/usd/usd/common.h"
 
 #include <vector>
 #include <QString>
@@ -121,4 +122,43 @@ void ModelLoader::LoadUSD(const std::string &filepath, std::vector<Mesh>& meshes
         logDebug("USD mesh vertex count -> {}", meshes.back().numVertices());
         logDebug("USD mesh index count -> {}", meshes.back().numIndices());
     }
+}
+
+/// Save given meshes to USD model file on disk
+/// @param: filepath Location to write model file on disk.
+/// @param: meshes List of meshes to write to USD file.
+void ModelLoader::SaveUSD(const std::string &filepath, const std::vector<const Mesh*> &meshes)
+{
+    pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(filepath);
+    pxr::UsdGeomXform root_xform = pxr::UsdGeomXform::Define(stage, pxr::SdfPath("/Scene"));
+
+    for (const Mesh *mesh : meshes)
+    {
+        pxr::UsdGeomMesh usd_mesh = pxr::UsdGeomMesh::Define(stage, pxr::SdfPath("/Scene/Mesh"));
+
+        pxr::VtArray<pxr::GfVec3f> vertices;
+        vertices.reserve(mesh->numVertices());
+        for (const QVector3D &vertex : *mesh->getVertices())
+        {
+            vertices.emplace_back(vertex.x(), vertex.y(), vertex.z());
+        }
+
+        pxr::VtArray<pxr::GfVec3f> normals;
+        vertices.reserve(mesh->numNormals());
+        for (const QVector3D &normal : *mesh->getNormals())
+        {
+            normals.emplace_back(normal.x(), normal.y(), normal.z());
+        }
+
+        pxr::VtArray<int> indices(mesh->getIndices()->begin(), mesh->getIndices()->end());
+        pxr::VtArray<int> nums(mesh->numIndices() / 3, 3);
+
+        usd_mesh.CreatePointsAttr().Set(vertices);
+        usd_mesh.CreateNormalsAttr().Set(normals);
+        usd_mesh.SetNormalsInterpolation(pxr::UsdGeomTokens->vertex);
+        usd_mesh.CreateFaceVertexIndicesAttr().Set(indices);
+        usd_mesh.CreateFaceVertexCountsAttr().Set(nums);
+    }
+
+    stage->GetRootLayer()->Save(true);
 }

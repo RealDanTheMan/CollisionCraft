@@ -14,6 +14,9 @@ public:
     
     static void 
     LoadUSD(const std::string &filepath, std::vector<Mesh> &meshes);
+
+    static void
+    SaveUSD(const std::string &filepath, const std::vector<const Mesh*> &meshes);
 };
 
 #endif

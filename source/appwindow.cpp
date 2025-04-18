@@ -151,7 +151,19 @@ void AppWindow::onImportModelClick()
 /// Event handler invoked when user clicks on 'File -> Export Collision' menu item.
 void AppWindow::onExportCollisionClick()
 {
+    QString filepath = QFileDialog::getSaveFileName(this, "Export Collision USD");
+    if (!filepath.isEmpty())
+    {
+        std::vector<const Mesh*> meshes;
+        meshes.reserve(this->collision_meshes.size());
+        for (const std::unique_ptr<Mesh>& mesh : this->collision_meshes)
+        {
+            meshes.push_back(mesh.get());
+        }
 
+        logInfo("Writing {} meshes to USD file -> {}", meshes.size(), filepath.toStdString());
+        ModelLoader::SaveUSD(filepath.toStdString(), meshes);
+    }
 }
 
 /// Event handler invoked when user clicks on 'View -> Frame All' menu item.

@@ -11,9 +11,9 @@ public:
     Mesh(const std::vector<QVector3D> &vertices, const std::vector<int> &indices);
     Mesh(const Mesh &from);
 
-    const std::vector<QVector3D>* getVertices() const;
-    const std::vector<QVector3D>* getNormals() const;
-    const std::vector<int>* getIndices() const;
+    const std::vector<QVector3D>& getVertices() const;
+    const std::vector<QVector3D>& getNormals() const;
+    const std::vector<int>& getIndices() const;
 
     size_t numIndices() const;
     size_t numVertices() const;

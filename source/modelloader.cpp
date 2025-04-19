@@ -138,19 +138,19 @@ void ModelLoader::SaveUSD(const std::string &filepath, const std::vector<const M
 
         pxr::VtArray<pxr::GfVec3f> vertices;
         vertices.reserve(mesh->numVertices());
-        for (const QVector3D &vertex : *mesh->getVertices())
+        for (const QVector3D &vertex : mesh->getVertices())
         {
             vertices.emplace_back(vertex.x(), vertex.y(), vertex.z());
         }
 
         pxr::VtArray<pxr::GfVec3f> normals;
         vertices.reserve(mesh->numNormals());
-        for (const QVector3D &normal : *mesh->getNormals())
+        for (const QVector3D &normal : mesh->getNormals())
         {
             normals.emplace_back(normal.x(), normal.y(), normal.z());
         }
 
-        pxr::VtArray<int> indices(mesh->getIndices()->begin(), mesh->getIndices()->end());
+        pxr::VtArray<int> indices(mesh->getIndices().begin(), mesh->getIndices().end());
         pxr::VtArray<int> nums(mesh->numIndices() / 3, 3);
 
         usd_mesh.CreatePointsAttr().Set(vertices);

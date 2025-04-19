@@ -21,13 +21,13 @@ RenderMesh::RenderMesh(const Mesh &mesh)
 
     /// We write vertex buffer data sequentially by data type.
     /// Buffer layout example [[position], [normals], [other]]
-    this->vertex_buffer.write(0, mesh.getVertices()->data(), position_size);
-    this->vertex_buffer.write(position_size, mesh.getNormals()->data(), normal_size);
+    this->vertex_buffer.write(0, mesh.getVertices().data(), position_size);
+    this->vertex_buffer.write(position_size, mesh.getNormals().data(), normal_size);
 
     this->index_buffer.create();
     this->index_buffer.bind();
     this->index_buffer.allocate(
-        mesh.getIndices()->data(),
+        mesh.getIndices().data(),
         mesh.numIndices() * sizeof(int)
     );
 
@@ -39,7 +39,7 @@ RenderMesh::RenderMesh(const Mesh &mesh)
     this->vertex_attributes.release();
     this->vertex_buffer.release();
     this->index_buffer.release();
-    this->index_size = mesh.getIndices()->size();
+    this->index_size = mesh.getIndices().size();
 
     this->bsphere_center = mesh.getBoundingSphereCenter();
     this->bsphere_radius = mesh.getBoundingSphereRadius();

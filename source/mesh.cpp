@@ -101,21 +101,21 @@ void Mesh::computeBounds()
 }
 
 /// Get read-only access to mesh vertices.
-const std::vector<QVector3D>* Mesh::getVertices() const
+const std::vector<QVector3D>& Mesh::getVertices() const
 {
-    return &this->vertices;
+    return this->vertices;
 }
 
 /// Get read-only access to mesh normals.
-const std::vector<QVector3D>* Mesh::getNormals() const
+const std::vector<QVector3D>& Mesh::getNormals() const
 {
-    return &this->normals;
+    return this->normals;
 }
 
 /// Get read-only access to mesh triangle indices.
-const std::vector<int>* Mesh::getIndices() const
+const std::vector<int>& Mesh::getIndices() const
 {
-    return &this->indices;
+    return this->indices;
 }
 
 /// Get number of vertices stored in this mesh data.

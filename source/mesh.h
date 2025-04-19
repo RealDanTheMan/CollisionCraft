@@ -15,9 +15,9 @@ public:
     const std::vector<QVector3D>* getNormals() const;
     const std::vector<int>* getIndices() const;
 
-    int numIndices() const;
-    int numVertices() const;
-    int numNormals() const;
+    size_t numIndices() const;
+    size_t numVertices() const;
+    size_t numNormals() const;
     void generateNormals();
     void computeBounds();
 
@@ -25,9 +25,9 @@ public:
     const double getBoundingSphereRadius() const;
 
 protected:
-    std::unique_ptr<std::vector<QVector3D>> vertices;
-    std::unique_ptr<std::vector<QVector3D>> normals;
-    std::unique_ptr<std::vector<int>> indices;
+    std::vector<QVector3D> vertices;
+    std::vector<QVector3D> normals;
+    std::vector<int> indices;
 
     QVector3D bsphere_center;
     double bsphere_radius;

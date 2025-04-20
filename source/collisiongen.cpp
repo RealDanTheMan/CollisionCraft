@@ -5,18 +5,25 @@
 #include <vector>
 
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_hole.h>
+#include <CGAL/Polygon_mesh_processing/stitch_borders.h>
+#include <CGAL/polygon_mesh_processing/orient_polygon_soup.h>
+#include <CGAL/polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
 #include <CGAL/convex_hull_3.h>
+#include <CGAL/convex_decomposition_3.h>
 
 
 CollisionGen::CollisionGen()
 {
 }
 
+/// Adds new mesh to use as input for collision generation process.
 void CollisionGen::addInputMesh(const Mesh *mesh)
 {
     this->input_meshes.push_back(mesh);
 }
 
+/// Remove all input meshes.
 void CollisionGen::clearInputMeshes()
 {
     this->input_meshes.clear();
@@ -30,15 +37,84 @@ void CollisionGen::generateCollisionHull(std::unique_ptr<Mesh> &out_mesh)
     CGAL_Surface collision_surface;
 
     CGAL::convex_hull_3(points.begin(), points.end(), collision_surface);
-    std::unique_ptr<Mesh> mesh = CollisionGen::meshFromSurface(collision_surface);
 
-    logInfo("Generated collision mesh vertex count -> {}", mesh->numVertices());
-    logInfo("Generated collision mesh triangle count -> {}", mesh->numIndices() / 3);
-    out_mesh = std::make_unique<Mesh>(*mesh);
+    Mesh collision({}, {});
+    CollisionGen::meshFromSurface(collision_surface, collision);
+
+    logInfo("Generated collision mesh vertex count -> {}", collision.numVertices());
+    logInfo("Generated collision mesh triangle count -> {}", collision.numIndices() / 3);
+    out_mesh = std::make_unique<Mesh>(collision);
+}
+
+/// Generate collection of hull meshes which envelop all active input meshes using 
+/// convex decomposition technique.
+/// @param: out_meshes List to add newly generated collision hulls to.
+void CollisionGen::generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &out_meshes)
+{
+    for (const Mesh *mesh : this->input_meshes)
+    {
+        logDebug("Processing complex collision for mesh of {} vertices", mesh->numVertices());
+        CGAL_Surface surface_mesh;
+        CollisionGen::surfaceFromMesh(*mesh, surface_mesh);
+        //CollisionGen::capSurface(surface_mesh);
+
+        CGAL_Polyhedron polyhedron;
+        CGAL::copy_face_graph(surface_mesh, polyhedron);
+
+        if (!polyhedron.is_valid())
+        {
+            logError("Input mesh polyhedron is not valid");
+            continue;
+        }
+
+        if (!polyhedron.is_closed())
+        {
+            logError("Input mesh polyhedron is not closed");
+            continue;
+        }
+
+        CGAL_NefPolyhedron volume_poly(polyhedron);
+        if (!volume_poly.is_valid())
+        {
+            logError("Failed to generate polyhedron does not represent valid volume");
+            continue;
+        }
+
+        logDebug("Decomposing input polyhedron geometry");
+        CGAL::convex_decomposition_3(volume_poly);
+        logDebug("Convex decomposition generated {} volumes", volume_poly.number_of_volumes());
+        
+        for ( auto it = volume_poly.volumes_begin(); it != volume_poly.volumes_end(); ++it)
+        {
+            if (it->mark())
+            {
+                logDebug("Converting convex polyhedron to surface mesh");
+                CGAL_Polyhedron sub_convex;
+                volume_poly.convert_inner_shell_to_polyhedron(
+                    it->shells_begin(),
+                    sub_convex
+                );
+
+                if (!sub_convex.is_valid())
+                {
+                    logError("Convex decomposition generated invalid polyhedron convex hull");
+                    continue;
+                }
+
+                logInfo("Convex decomposition sub volume has {} faces", sub_convex.size_of_facets());
+                CGAL_Surface convex_surface;
+                CGAL::copy_face_graph(sub_convex, convex_surface);
+
+                Mesh convex_mesh({}, {});
+                CollisionGen::meshFromSurface(convex_surface, convex_mesh);
+                out_meshes.push_back(std::make_unique<Mesh>(convex_mesh));
+            }
+        }
+    }
 }
 
 /// Generate list of all vertex position across all input meshes.
-/// @param: padding Normalized padding value relative to bunding sphere diameter of each input mesh.
+/// @param: padding Normalized padding value relative to bounding sphere diameter of each input mesh.
 std::vector<CGAL_Point> CollisionGen::getInputPoints(float padding) const
 {
     std::vector<CGAL_Point> points;
@@ -47,7 +123,7 @@ std::vector<CGAL_Point> CollisionGen::getInputPoints(float padding) const
         const QVector3D center = mesh->getBoundingSphereCenter();
         const double diameter = mesh->getBoundingSphereRadius() * 2;
 
-        for (const QVector3D &vertex : *mesh->getVertices())
+        for (const QVector3D &vertex : mesh->getVertices())
         {
             if (qAbs(padding) > 0.0)
             {
@@ -67,7 +143,8 @@ std::vector<CGAL_Point> CollisionGen::getInputPoints(float padding) const
 
 /// Build triangulated mesh data from CGAL polyhedron.
 /// @param: polyhedron Polyhedron to build mesh from.
-std::unique_ptr<Mesh> CollisionGen::meshFromSurface(const CGAL_Surface &surface)
+/// @param: out_mesh Reference to newly built mesh object.
+void CollisionGen::meshFromSurface(const CGAL_Surface &surface, Mesh &out_mesh)
 {
     CGAL_Surface tri_surface = surface;
     CGAL::Polygon_mesh_processing::triangulate_faces(tri_surface);
@@ -84,7 +161,12 @@ std::unique_ptr<Mesh> CollisionGen::meshFromSurface(const CGAL_Surface &surface)
     for (const CGAL_Surface::Vertex_index &vertex : tri_surface.vertices())
     {
         const CGAL_Point &point = tri_surface.point(vertex);
-        vertices.emplace_back(point.x(), point.y(), point.z());
+        vertices.emplace_back(
+            CGAL::to_double(point.x()),
+            CGAL::to_double(point.y()),
+            CGAL::to_double(point.z())
+        );
+
         vertex_map[vertex] = idx;
         idx++;
     }
@@ -100,9 +182,93 @@ std::unique_ptr<Mesh> CollisionGen::meshFromSurface(const CGAL_Surface &surface)
         }
     }
 
-    auto mesh = std::make_unique<Mesh>(vertices, indices);
-    mesh->generateNormals();
-    mesh->computeBounds();
+    out_mesh = Mesh(vertices, indices);
+    out_mesh.generateNormals();
+    out_mesh.computeBounds();
 
-    return mesh;
+    return;
+}
+
+/// Builds CGAL surface mesh from standard mesh data.
+/// Resulting mesh will have enforced triangulation and consistent winding order.
+/// @param: mesh Standard mesh to build surface from.
+/// @param: out_surface Reference to newly built surface.
+bool CollisionGen::surfaceFromMesh(const Mesh &mesh, CGAL_Surface &out_surface)
+{
+    std::vector<CGAL_Point> points;
+    std::vector<std::vector<int>> faces;
+
+    for (const QVector3D &vertex : mesh.getVertices())
+    {
+        CGAL_Point vpos(
+            CGAL_Kernel::FT(vertex.x()),
+            CGAL_Kernel::FT(vertex.y()),
+            CGAL_Kernel::FT(vertex.z())
+        );
+
+        points.push_back(vpos);
+    }
+
+    for (int i=0; i+2 < mesh.numIndices(); i+=3)
+    {
+        const int idx0 = mesh.getIndices().at(i);
+        const int idx1 = mesh.getIndices().at(i+1);
+        const int idx2 = mesh.getIndices().at(i+2);
+        
+         faces.push_back({
+           idx0,
+           idx1,
+           idx2
+        });
+    }
+
+    CGAL_Surface surface;
+    CGAL::Polygon_mesh_processing::orient_polygon_soup(points, faces);
+    CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points, faces, surface);
+
+    if (surface.is_valid() && CGAL::is_valid_polygon_mesh(surface))
+    {
+        out_surface = surface;
+        return true;
+    }
+
+    return false;
+}
+
+/// Builds CGAL polyhedron from standard mesh data.
+/// @param: mesh Input mesh to generate polyhedron from.
+/// @param: out_poly Reference to newly built polyhedron object.
+bool CollisionGen::polyhedronFromMesh(const Mesh &mesh, CGAL_Polyhedron &out_poly)
+{
+
+    CGAL_Surface surface;
+    if (!CollisionGen::surfaceFromMesh(mesh, surface))
+    {
+        return false;
+    }
+
+    CGAL_Polyhedron polyhedron;
+    CGAL::copy_face_graph(surface, polyhedron);
+
+    if (polyhedron.is_valid())
+    {
+        out_poly = polyhedron;
+        return true;
+    }
+
+    return false;
+}
+
+/// Fill holes inside given CGAL surface mesh using simple fan triangle strips.
+void CollisionGen::capSurface(CGAL_Surface &surface)
+{
+    CGAL::Polygon_mesh_processing::stitch_borders(surface);
+
+    for (auto edge : CGAL::halfedges(surface))
+    {
+        if (CGAL::is_border(edge, surface))
+        {
+            CGAL::Polygon_mesh_processing::triangulate_hole(surface, edge);
+        }
+    }
 }

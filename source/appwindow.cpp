@@ -111,6 +111,8 @@ void AppWindow::onViewportReady()
 /// Generates simple collision hull for all loaded meshes and adds it to the viewport.
 void AppWindow::generateSimpleCollision()
 {
+    logDebug("Generating scene simple collision");
+
     // Clear existing collision.
     for (const auto &collision : this->collision_models)
     {
@@ -133,6 +135,39 @@ void AppWindow::generateSimpleCollision()
     rmesh.setMaterial(RenderMeshMaterial::Collision);
     rmesh.setStyle(RenderMeshStyle::ShadedWireframe);
     this->viewport_widget->addRenderMesh(&rmesh);
+}
+
+void AppWindow::generateComplexCollision()
+{
+    logDebug("Generating scene complex collision");
+
+    // Clear existing collision.
+    for (const auto &collision : this->collision_models)
+    {
+        this->viewport_widget->removeRenderMesh(&collision->getRenderMesh());
+    }
+    this->collision_models.clear();
+
+    // Reset collision generator.
+    this->collision_gen->clearInputMeshes();
+    for (const auto &model : this->models)
+    {
+        this->collision_gen->addInputMesh(&model->getMesh());
+    }
+
+    std::vector<std::unique_ptr<Mesh>> collisions;
+    this->collision_gen->generateCollisionHulls(collisions);
+
+    logInfo("Generated {} complex collision meshes", collisions.size());
+    for (const auto &collision : collisions)
+    {
+        this->collision_models.push_back(std::make_unique<SceneModel>(*collision));
+
+        RenderMesh &rmesh = this->collision_models.back()->getRenderMesh();
+        rmesh.setMaterial(RenderMeshMaterial::Collision);
+        rmesh.setStyle(RenderMeshStyle::ShadedWireframe);
+        this->viewport_widget->addRenderMesh(&rmesh);
+    }
 }
 
 /// Event handler invoked when user clicks on 'File -> Import Model' menu item.
@@ -195,6 +230,6 @@ void AppWindow::onFrameAllClick()
 /// Event handler invoked when user requests new collision generation.
 void AppWindow::onCollisionGenerationRequested()
 {
-    this->generateSimpleCollision();
+    this->generateComplexCollision();
     this->viewport_widget->update();
 }

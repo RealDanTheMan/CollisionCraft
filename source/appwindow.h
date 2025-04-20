@@ -29,6 +29,7 @@ protected:
     void onCollisionGenerationRequested();
 
     void generateSimpleCollision();
+    void generateComplexCollision();
 
 protected:
     std::unique_ptr<CollisionGen> collision_gen;

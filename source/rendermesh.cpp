@@ -56,7 +56,6 @@ void RenderMesh::Render(QOpenGLShaderProgram &shader)
     this->vertex_attributes.bind();
 
     glDrawElements(GL_TRIANGLES, this->index_size, GL_UNSIGNED_INT, nullptr);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
 
     this->index_buffer.release();
     this->vertex_buffer.release();

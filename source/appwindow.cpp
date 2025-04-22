@@ -1,4 +1,5 @@
 #include "appwindow.h"
+#include "collisiongen.h"
 #include "logging.h"
 #include "logwidget.h"
 #include "modelloader.h"
@@ -231,6 +232,19 @@ void AppWindow::onFrameAllClick()
 /// Event handler invoked when user requests new collision generation.
 void AppWindow::onCollisionGenerationRequested()
 {
-    this->generateComplexCollision();
+    CollisionTechnique technique = this->property_panel->getSelectedTechnique();
+    switch (technique)
+    {
+        case CollisionTechnique::SimpleHull:
+            this->generateSimpleCollision();
+            break;
+        case CollisionTechnique::ExactDecomposition:
+            this->generateComplexCollision();
+            break;
+        default:
+            logError("Invalid collision generation technique -> {}", static_cast<int>(technique));
+            return;
+    }
+
     this->viewport_widget->update();
 }

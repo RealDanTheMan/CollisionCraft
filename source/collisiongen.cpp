@@ -56,7 +56,7 @@ void CollisionGen::generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &ou
         logDebug("Processing complex collision for mesh of {} vertices", mesh->numVertices());
         CGAL_Surface surface_mesh;
         CollisionGen::surfaceFromMesh(*mesh, surface_mesh);
-        //CollisionGen::capSurface(surface_mesh);
+        CollisionGen::capSurface(surface_mesh);
 
         CGAL_Polyhedron polyhedron;
         CGAL::copy_face_graph(surface_mesh, polyhedron);

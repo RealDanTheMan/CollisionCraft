@@ -18,6 +18,13 @@ using CGAL_Polyhedron = CGAL::Polyhedron_3<CGAL_Kernel>;
 using CGAL_NefPolyhedron = CGAL::Nef_polyhedron_3<CGAL_Kernel>;
 
 
+enum CollisionTechnique
+{
+    SimpleHull = 0,
+    ExactDecomposition = 1
+};
+
+
 class CollisionGen
 {
 public:

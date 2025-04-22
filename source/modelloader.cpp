@@ -5,7 +5,6 @@
 #include "pxr/base/gf/vec3d.h"
 #include "pxr/usd/usd/common.h"
 
-#include <sys/_types/_u_int32_t.h>
 #include <vector>
 #include <QString>
 #include <QDir>
@@ -133,7 +132,7 @@ void ModelLoader::SaveUSD(const std::string &filepath, const std::vector<const M
     pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(filepath);
     pxr::UsdGeomXform root_xform = pxr::UsdGeomXform::Define(stage, pxr::SdfPath("/Scene"));
 
-    uint32_t id = 1;
+    unsigned int id = 1;
     for (const Mesh *mesh : meshes)
     {
         /// Note we use std::vformat as std::format is not fully implemented on MacOS

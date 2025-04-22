@@ -3,7 +3,6 @@
 #include "rendermesh.h"
 #include "viewportcamera.h"
 
-#include <OpenGL/gl.h>
 #include <algorithm>
 #include <cmath>
 #include <csignal>

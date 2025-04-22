@@ -199,6 +199,7 @@ void AppWindow::onImportModelClick()
 
         logInfo("Loaded {} meshes into the scene", this->models.size());
         this->viewport_widget->autoFrameCamera();
+        this->viewport_widget->update();
     }
 }
 

@@ -9,6 +9,8 @@
 		<file>shaders/wireframe.ps</file>
 		<file>models/suzanne.usdc</file>
 		<file>models/teapot.usdc</file>
+		<file>models/cube.usdc</file>
+		<file>models/sphere.usdc</file>
 		<file>models/arch.usdc</file>
 	</qresource>
 </RCC>

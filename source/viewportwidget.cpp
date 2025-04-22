@@ -165,7 +165,7 @@ void ViewportWidget::resizeGL(int width, int height)
 /// Event handler invoked when redraw is called for this widget.
 void ViewportWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     //logDebug("Drawing render queue of size -> {}", this->render_queue.size());
     for (RenderMesh *mesh : this->render_queue)
@@ -191,30 +191,31 @@ void ViewportWidget::drawMesh(RenderMesh &mesh)
     switch (mesh.getMaterial())
     {
         case RenderMeshMaterial::Standard:
-            shader = this->graphics->getModelShader();
+            mesh.bindShader(this->graphics->getModelShader());
             break;
         case RenderMeshMaterial::Collision:
-            shader = this->graphics->getCollisionShader();
+            mesh.bindShader(this->graphics->getCollisionShader());
             break;
         default:
             return;
     }
 
-    this->setShaderStandardInputs(mesh, *shader);
-    mesh.Render(*shader);
+    this->setShaderStandardInputs(mesh);
+    mesh.Render();
 }
 
 /// Draw given render mesh wireframe to viewport screen.
 void ViewportWidget::drawMeshWireframe(RenderMesh &mesh)
 {
     QOpenGLShaderProgram *shader = this->graphics->getWireframeShader();
-    this->setShaderStandardInputs(mesh, *shader);
+    mesh.bindShader(shader);
+    this->setShaderStandardInputs(mesh);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonOffset(-1.0, -1.0);
     glEnable(GL_POLYGON_OFFSET_LINE);
     glLineWidth(4.0);
-    mesh.Render(*shader);
+    mesh.Render();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPolygonOffset(0.0, 0.0);
     glDisable(GL_POLYGON_OFFSET_LINE);
@@ -238,14 +239,28 @@ void ViewportWidget::setBackgroundColor(float red, float green, float blue)
 
 /// Send standard input parameter the shader pipeline expects to receive to draw
 /// content to screen correctly.
-void ViewportWidget::setShaderStandardInputs(const RenderMesh &mesh, QOpenGLShaderProgram &shader)
+void ViewportWidget::setShaderStandardInputs(const RenderMesh &mesh)
 {
-    shader.bind();
-    shader.setUniformValue("SV_MODEL_MAT", mesh.getTransform());
-    shader.setUniformValue("SV_NORMAL_MAT", mesh.getTransform().normalMatrix());
-    shader.setUniformValue("SV_VIEW_MAT", this->camera->getViewMatrix());
-    shader.setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
-    shader.release();
+    mesh.shader()->bind();
+
+    if (mesh.shader()->uniformLocation("SV_MODEL_MAT") != -1)
+    {
+        mesh.shader()->setUniformValue("SV_MODEL_MAT", mesh.getTransform());
+    }
+    if (mesh.shader()->uniformLocation("SV_NORMAL_MAT") != -1)
+    {
+        mesh.shader()->setUniformValue("SV_NORMAL_MAT", mesh.getTransform().normalMatrix());
+    }
+    if (mesh.shader()->uniformLocation("SV_VIEW_MAT") != -1)
+    {
+        mesh.shader()->setUniformValue("SV_VIEW_MAT", this->camera->getViewMatrix());
+    }
+    if (mesh.shader()->uniformLocation("SV_PROJ_MAT") != -1)
+    {
+        mesh.shader()->setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
+    }
+
+    mesh.shader()->release();
 }
 
 void ViewportWidget::setCamMode(ViewportWidget::ViewMode mode)

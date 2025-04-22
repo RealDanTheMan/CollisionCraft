@@ -28,7 +28,7 @@ class RenderMesh : protected QOpenGLFunctions
 {
 public:
     RenderMesh(const Mesh &mesh);
-    void Render(QOpenGLShaderProgram &shader);
+    void Render();
 
     const QVector3D& getBoundingShereCenter() const;
     void setTransform(const QMatrix4x4 &transform);
@@ -40,9 +40,17 @@ public:
     RenderMeshMaterial getMaterial() const;
     RenderMeshStyle getStyle() const;
 
+    void bindShader(QOpenGLShaderProgram *shader);
+    QOpenGLShaderProgram* shader() const;
+    void updateVertexDataLayout();
+
 
 private:
-    int index_size = 0;
+    size_t vertex_size = 0;
+    size_t normal_size = 0;
+    size_t index_size = 0;
+
+    QOpenGLShaderProgram* shaderHandle;
     QOpenGLBuffer vertex_buffer;
     QOpenGLBuffer index_buffer;
     QOpenGLVertexArrayObject vertex_attributes;

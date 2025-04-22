@@ -1,5 +1,6 @@
 #include "rendermesh.h"
 #include <cstdint>
+#include <stdexcept>
 
 
 RenderMesh::RenderMesh(const Mesh &mesh)
@@ -31,36 +32,99 @@ RenderMesh::RenderMesh(const Mesh &mesh)
         mesh.numIndices() * sizeof(int)
     );
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(intptr_t)(position_size));
+    /// Note: Depending on platform (MacOS) OpenGL context can defer buffer writes causing first
+    /// draw call to not be able to access vertex data, flushing writes prevents that.
+    glFlush();
 
     this->vertex_attributes.release();
     this->vertex_buffer.release();
     this->index_buffer.release();
-    this->index_size = mesh.getIndices().size();
 
+    this->index_size = mesh.numIndices();
+    this->vertex_size = mesh.numVertices();
+    this->normal_size = mesh.numIndices();
     this->bsphere_center = mesh.getBoundingSphereCenter();
     this->bsphere_radius = mesh.getBoundingSphereRadius();
 }
 
+/// Assign shader program to use when rendering this mesh.
+void RenderMesh::bindShader(QOpenGLShaderProgram *shader)
+{
+    if (shader == this->shaderHandle)
+    {
+        return;
+    }
+
+    this->shaderHandle = shader;
+    if (this->shaderHandle)
+    {
+        this->updateVertexDataLayout();
+    }
+}
+
+/// Get shader program bound to this render mesh.
+QOpenGLShaderProgram* RenderMesh::shader() const
+{
+    return this->shaderHandle;
+}
+
+/// Updated this render mesh vertex attributes to match its shader layout specification.
+void RenderMesh::updateVertexDataLayout()
+{
+    GLint attributes = 0;
+    glGetProgramiv(this->shaderHandle->programId(), GL_ACTIVE_ATTRIBUTES, &attributes);
+
+    this->vertex_attributes.bind();
+    this->vertex_buffer.bind();
+    this->index_buffer.bind();
+    this->shaderHandle->bind();
+
+    /// Vertex position attribute layout.
+    if (attributes > 0)
+    {
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    }
+
+    /// Vertex normal attribute layout.
+    if (attributes > 1)
+    {
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(
+            1,
+            3,
+            GL_FLOAT,
+            GL_FALSE, 0,
+            (void*)(intptr_t)(this->vertex_size * sizeof(QVector3D))
+        );
+    }
+
+    this->vertex_attributes.release();
+    this->vertex_buffer.release();
+    this->index_buffer.release();
+    this->shaderHandle->release();
+}
+
 /// Draw this mesh to currently bound OpenGL rendering context.
 /// @param: shader Shader Program to use during rendering of this mesh.
-void RenderMesh::Render(QOpenGLShaderProgram &shader)
+void RenderMesh::Render()
 {
+    if (!this->shaderHandle || this->shaderHandle->programId() == 0)
+    {
+        throw std::runtime_error("Attempting to draw render mesh with invalid shader handle");
+    }
+
     this->vertex_attributes.bind();
     this->index_buffer.bind();
     this->vertex_buffer.bind();
-    shader.bind();
-    this->vertex_attributes.bind();
+    this->shaderHandle->bind();
 
     glDrawElements(GL_TRIANGLES, this->index_size, GL_UNSIGNED_INT, nullptr);
 
+    this->vertex_attributes.release();
     this->index_buffer.release();
     this->vertex_buffer.release();
-    this->vertex_attributes.release();
-    shader.release();
+    this->shaderHandle->release();
 }
 
 /// Get center of the bounding sphere of this render mesh.

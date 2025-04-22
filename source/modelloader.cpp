@@ -5,6 +5,7 @@
 #include "pxr/base/gf/vec3d.h"
 #include "pxr/usd/usd/common.h"
 
+#include <sys/_types/_u_int32_t.h>
 #include <vector>
 #include <QString>
 #include <QDir>
@@ -132,9 +133,15 @@ void ModelLoader::SaveUSD(const std::string &filepath, const std::vector<const M
     pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(filepath);
     pxr::UsdGeomXform root_xform = pxr::UsdGeomXform::Define(stage, pxr::SdfPath("/Scene"));
 
+    uint32_t id = 1;
     for (const Mesh *mesh : meshes)
     {
-        pxr::UsdGeomMesh usd_mesh = pxr::UsdGeomMesh::Define(stage, pxr::SdfPath("/Scene/Mesh"));
+        /// Note we use std::vformat as std::format is not fully implemented on MacOS
+        std::string mesh_name = std::vformat(
+        "/Scene/Mesh_{}",
+        std::make_format_args(id)
+    );
+        pxr::UsdGeomMesh usd_mesh = pxr::UsdGeomMesh::Define(stage, pxr::SdfPath(mesh_name));
 
         pxr::VtArray<pxr::GfVec3f> vertices;
         vertices.reserve(mesh->numVertices());
@@ -158,6 +165,7 @@ void ModelLoader::SaveUSD(const std::string &filepath, const std::vector<const M
         usd_mesh.SetNormalsInterpolation(pxr::UsdGeomTokens->vertex);
         usd_mesh.CreateFaceVertexIndicesAttr().Set(indices);
         usd_mesh.CreateFaceVertexCountsAttr().Set(nums);
+        id ++;
     }
 
     stage->GetRootLayer()->Save(true);

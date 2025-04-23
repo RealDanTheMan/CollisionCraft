@@ -105,21 +105,16 @@ void RenderMesh::updateVertexDataLayout()
     /// Vertex position attribute layout.
     if (attributes > 0)
     {
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        this->shaderHandle->enableAttributeArray(0);
+        this->shaderHandle->setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(QVector3D));
     }
 
     /// Vertex normal attribute layout.
     if (attributes > 1)
     {
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(
-            1,
-            3,
-            GL_FLOAT,
-            GL_FALSE, 0,
-            (void*)(intptr_t)(this->vertex_size * sizeof(QVector3D))
-        );
+        const int offset = this->vertex_size * sizeof(QVector3D);
+        this->shaderHandle->enableAttributeArray(1);
+        this->shaderHandle->setAttributeBuffer(1, GL_FLOAT, offset, 3, sizeof(QVector3D));
     }
 
     this->vertex_attributes.release();

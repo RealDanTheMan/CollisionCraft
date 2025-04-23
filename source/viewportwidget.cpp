@@ -3,6 +3,7 @@
 #include "rendermesh.h"
 #include "viewportcamera.h"
 
+#include <GL/gl.h>
 #include <algorithm>
 #include <cmath>
 #include <csignal>
@@ -225,6 +226,12 @@ void ViewportWidget::drawMeshWireframe(RenderMesh &mesh)
 void ViewportWidget::setBackgroundColor(const QColor &color)
 {
     this->background_color = color;
+    glClearColor(
+        this->background_color.redF(),
+        this->background_color.greenF(),
+        this->background_color.blueF(),
+        1.0f
+    );
 }
 
 /// Set the color of the OpenGL surface background.
@@ -234,6 +241,12 @@ void ViewportWidget::setBackgroundColor(const QColor &color)
 void ViewportWidget::setBackgroundColor(float red, float green, float blue)
 {
     this->background_color = QColor::fromRgbF(red, green, blue, 1.0f);
+    glClearColor(
+        this->background_color.redF(),
+        this->background_color.greenF(),
+        this->background_color.blueF(),
+        1.0f
+    );
 }
 
 /// Send standard input parameter the shader pipeline expects to receive to draw

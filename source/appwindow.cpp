@@ -109,6 +109,7 @@ void AppWindow::loadModel(const std::string &filepath, bool clear_scene)
     ModelLoader::LoadResourceUSD(filepath, meshes);
     logDebug("Loaded {} meshes from file -> {}", meshes.size(), filepath);
 
+    this->viewport_widget->makeCurrent();
     for (const Mesh &mesh : meshes)
     {
         this->models.push_back(std::make_unique<SceneModel>(mesh));

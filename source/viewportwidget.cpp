@@ -197,6 +197,10 @@ void ViewportWidget::drawMesh(RenderMesh &mesh)
             mesh.bindShader(this->graphics->getCollisionShader());
             break;
         default:
+            logError(
+                "Invalid render mesh material [Material Flag: {}]",
+                static_cast<int>(mesh.getMaterial())
+            );
             return;
     }
 

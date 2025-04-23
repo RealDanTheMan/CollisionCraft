@@ -84,6 +84,38 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
     );
 }
 
+/// Unloads all models and collisions from active scene.
+void AppWindow::clearScene()
+{
+    logDebug("Clearing active scene content");
+    this->viewport_widget->clearRenderMeshes();
+    this->viewport_widget->update();
+    this->models.clear();
+    this->collision_models.clear();
+}
+
+/// Loads model from asset file.
+/// @param: filepath Location of model file on disk on in app resources.
+/// @param: clear_scene Reset active scene before loading.
+void AppWindow::loadModel(const std::string &filepath, bool clear_scene)
+{
+    if (clear_scene)
+    {
+        this->clearScene();
+    }
+
+    logDebug("Loading model file -> {}", filepath);
+    std::vector<Mesh> meshes;
+    ModelLoader::LoadResourceUSD(filepath, meshes);
+    logDebug("Loaded {} meshes from file -> {}", meshes.size(), filepath);
+
+    for (const Mesh &mesh : meshes)
+    {
+        this->models.push_back(std::make_unique<SceneModel>(mesh));
+        this->viewport_widget->addRenderMesh(&this->models.back()->getRenderMesh());
+    }
+}
+
 /// Event handler invoked when viewport graphics initialisation is completed.
 /// Currently loads default test assets & generates test collision.
 void AppWindow::onViewportReady()
@@ -92,22 +124,13 @@ void AppWindow::onViewportReady()
     /// Load default model into the viewport for the time being to better test
     /// viewport logic and onging changes.
     Logger::active()->debug("Loading default viewport model");
-    const std::string model_res0 = ":models/teapot.usdc";
-    const std::string model_res1 = ":models/arch.usdc";
-
-    std::vector<Mesh> meshes;
-    ModelLoader::LoadResourceUSD(model_res0, meshes);
-    ModelLoader::LoadResourceUSD(model_res1, meshes);
-
-    for (const Mesh &mesh : meshes)
-    {
-        this->models.push_back(std::make_unique<SceneModel>(mesh));
-        this->viewport_widget->addRenderMesh(&this->models.back()->getRenderMesh());
-    }
+    this->loadModel(":models/arch.usdc");
 
     this->viewport_widget->setBackgroundColor(0.15, 0.15, 0.15);
     this->viewport_widget->autoFrameCamera();
+    this->viewport_widget->update();
 }
+
 
 /// Generates simple collision hull for all loaded meshes and adds it to the viewport.
 void AppWindow::generateSimpleCollision()
@@ -177,28 +200,7 @@ void AppWindow::onImportModelClick()
     QString filepath = QFileDialog::getOpenFileName(this, "Import USD Model", "*.usd*");
     if (!filepath.isEmpty())
     {
-        /// Reset entire scene.
-        this->viewport_widget->clearRenderMeshes();
-        this->models.clear();
-        this->collision_models.clear();
-
-        /// Load models.
-        std::vector<Mesh> meshes;
-        ModelLoader::LoadResourceUSD(filepath.toStdString(), meshes);
-
-        if (meshes.size() == 0)
-        {
-            logError("Failed to load usd model -> {}", filepath.toStdString());
-            return;
-        }
-
-        for (const Mesh &mesh : meshes)
-        {
-            this->models.push_back(std::make_unique<SceneModel>(mesh));
-            this->viewport_widget->addRenderMesh(&this->models.back()->getRenderMesh());
-        }
-
-        logInfo("Loaded {} meshes into the scene", this->models.size());
+        this->loadModel(filepath.toStdString(), true);
         this->viewport_widget->autoFrameCamera();
         this->viewport_widget->update();
     }

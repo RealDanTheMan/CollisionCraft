@@ -20,6 +20,8 @@ class AppWindow : public QMainWindow
 
 public:
     AppWindow(QWidget *parent = nullptr);
+    void loadModel(const std::string &filepath, bool clear_scene=false);
+    void clearScene();
 
 protected:
     void onViewportReady();

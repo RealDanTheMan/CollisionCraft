@@ -106,7 +106,6 @@ void AppWindow::onViewportReady()
     }
 
     this->viewport_widget->autoFrameCamera();
-    this->generateSimpleCollision();
 }
 
 /// Generates simple collision hull for all loaded meshes and adds it to the viewport.

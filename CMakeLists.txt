@@ -54,17 +54,21 @@ find_package(Qt6 REQUIRED COMPONENTS
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     message(STATUS "Targeting MacOS OpenUSD libraries")
     set(USD_PATH lib/openusd/macos)
+    set(VHACD_PATH lib/vhacd/macos)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Targeting Linux OpenUSD libraries")
     set(USD_PATH lib/openusd/linux)
+    set(VHACD_PATH lib/vhacd/linux)
 else()
-    message(FATAL_ERROR "Unsupported target architecture for USD")
+    message(FATAL_ERROR "Unsupported target architecture for USD or VHACD")
 endif()
 
 set(EIGEN_INCLUDES "${CMAKE_SOURCE_DIR}/lib/eigen")
 set(CGAL_INCLUDES "${CMAKE_SOURCE_DIR}/lib/cgal")
 set(USD_INCLUDES ${USD_PATH}/include)
 set(USD_LIB ${USD_PATH}/lib)
+set(VHACD_INCLUDES ${VHACD_PATH}/include)
+set(VHACD_LIB ${VHACD_PATH}/lib)
 include_directories(BEFORE "${EIGEN_INCLUDES}")
 
 
@@ -98,10 +102,12 @@ target_include_directories(CollisionCraft PRIVATE
     ${EIGEN_INCLUDES}
     ${CGAL_INCLUDES}
     ${USD_INCLUDES}
+    ${VHACD_INCLUDES}
 )
 
 target_link_directories(CollisionCraft PRIVATE
     ${USD_LIB}
+    ${VHACD_LIB}
 )
 
 target_link_libraries(CollisionCraft PRIVATE
@@ -124,4 +130,7 @@ target_link_libraries(CollisionCraft PRIVATE
     Boost::boost
     Eigen3::Eigen
     CGAL::CGAL
+
+    # VHACD dependency
+    libvhacd
 )

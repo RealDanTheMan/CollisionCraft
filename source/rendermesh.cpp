@@ -5,7 +5,12 @@
 
 RenderMesh::RenderMesh(const Mesh &mesh)
     : vertex_buffer(QOpenGLBuffer::VertexBuffer),
-      index_buffer(QOpenGLBuffer::IndexBuffer)
+      index_buffer(QOpenGLBuffer::IndexBuffer),
+      style(RenderMeshStyle::Shaded),
+      material(RenderMeshMaterial::Standard),
+      vertex_size(0),
+      normal_size(0),
+      index_size(0)
 {
     initializeOpenGLFunctions();
 
@@ -45,6 +50,24 @@ RenderMesh::RenderMesh(const Mesh &mesh)
     this->normal_size = mesh.numIndices();
     this->bsphere_center = mesh.getBoundingSphereCenter();
     this->bsphere_radius = mesh.getBoundingSphereRadius();
+}
+
+/// Get number of vertices stored in this mesh vertex buffer.
+size_t RenderMesh::numVertices() const
+{
+    return this->vertex_size;
+}
+
+/// Get number if normal vectors stored in this mesh vertex buffer.
+size_t RenderMesh::numNormals() const
+{
+    return this->normal_size;
+}
+
+/// Get number if triangle indices stored in this mesh element buffer.
+size_t RenderMesh::numIndices() const
+{
+    return this->index_size;
 }
 
 /// Assign shader program to use when rendering this mesh.

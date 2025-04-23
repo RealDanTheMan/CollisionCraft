@@ -39,6 +39,9 @@ public:
     const QMatrix4x4& getTransform() const;
     RenderMeshMaterial getMaterial() const;
     RenderMeshStyle getStyle() const;
+    size_t numVertices() const;
+    size_t numNormals() const;
+    size_t numIndices() const;
 
     void bindShader(QOpenGLShaderProgram *shader);
     QOpenGLShaderProgram* shader() const;

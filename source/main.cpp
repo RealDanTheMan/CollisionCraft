@@ -80,11 +80,13 @@ int main(int argc, char *argv[])
     /// Define OpenGL context specification.
     QSurfaceFormat format;
     format.setRenderableType(QSurfaceFormat::OpenGL);
-    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setProfile(QSurfaceFormat::OpenGLContextProfile::CoreProfile);
+    format.setVersion(3, 3);
     format.setDepthBufferSize(32);
     format.setAlphaBufferSize(8);
     format.setStencilBufferSize(8);
-    format.setVersion(3, 3);
+    format.setSamples(4);
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     QSurfaceFormat::setDefaultFormat(format);
     
     std::string stylesheet = ":/ui/stylesheet.qss";

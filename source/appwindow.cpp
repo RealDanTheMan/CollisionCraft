@@ -152,6 +152,7 @@ void AppWindow::generateSimpleCollision()
         this->collision_gen->addInputMesh(&model->getMesh());
     }
 
+    this->viewport_widget->makeCurrent();
     std::unique_ptr<Mesh> collision;
     this->collision_gen->generateCollisionHull(collision);
     this->collision_models.push_back(std::make_unique<SceneModel>(*collision));
@@ -184,6 +185,7 @@ void AppWindow::generateComplexCollision()
     this->collision_gen->generateCollisionHulls(collisions);
 
     logInfo("Generated {} complex collision meshes", collisions.size());
+    this->viewport_widget->makeCurrent();
     for (const auto &collision : collisions)
     {
         this->collision_models.push_back(std::make_unique<SceneModel>(*collision));

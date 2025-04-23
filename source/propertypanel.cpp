@@ -5,7 +5,9 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) : QWidget(parent)
+PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) : 
+    QWidget(parent),
+    selected_technique(CollisionTechnique::SimpleHull)
 {
     QLabel *technique_label = new QLabel("Collision Generation Technique", this);
 

@@ -105,6 +105,7 @@ void AppWindow::onViewportReady()
         this->viewport_widget->addRenderMesh(&this->models.back()->getRenderMesh());
     }
 
+    this->viewport_widget->setBackgroundColor(0.15, 0.15, 0.15);
     this->viewport_widget->autoFrameCamera();
 }
 

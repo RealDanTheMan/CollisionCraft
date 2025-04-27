@@ -20,6 +20,10 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
         "Exact Decomposition",
         QVariant::fromValue(static_cast<int>(CollisionTechnique::ExactDecomposition))
     );
+    this->technique_menu->addItem(
+        "Approximate Decomposition",
+        QVariant::fromValue(static_cast<int>(CollisionTechnique::ApproximateDecomposition))
+    );
 
     this->generate_button = new QPushButton("Generate Collision", this);
     this->generate_button->setMinimumHeight(32);

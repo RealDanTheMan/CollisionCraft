@@ -32,6 +32,7 @@ protected:
 
     void generateSimpleCollision();
     void generateComplexCollision();
+    void generateApproximateCollision();
 
 protected:
     std::unique_ptr<CollisionGen> collision_gen;

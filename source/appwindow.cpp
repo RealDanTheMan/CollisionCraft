@@ -163,6 +163,7 @@ void AppWindow::generateSimpleCollision()
     this->viewport_widget->addRenderMesh(&rmesh);
 }
 
+/// Generate complex collision hulls using exact convex decomposition technique.
 void AppWindow::generateComplexCollision()
 {
     logDebug("Generating scene complex collision");
@@ -185,6 +186,41 @@ void AppWindow::generateComplexCollision()
     this->collision_gen->generateCollisionHulls(collisions);
 
     logInfo("Generated {} complex collision meshes", collisions.size());
+    this->viewport_widget->makeCurrent();
+    for (const auto &collision : collisions)
+    {
+        this->collision_models.push_back(std::make_unique<SceneModel>(*collision));
+
+        RenderMesh &rmesh = this->collision_models.back()->getRenderMesh();
+        rmesh.setMaterial(RenderMeshMaterial::Collision);
+        rmesh.setStyle(RenderMeshStyle::ShadedWireframe);
+        this->viewport_widget->addRenderMesh(&rmesh);
+    }
+}
+
+/// Generate approximate collision using approximate convex decomposition technique.
+void AppWindow::generateApproximateCollision()
+{
+    logDebug("Generating scene approximate collision");
+
+    // Clear existing collision.
+    for (const auto &collision : this->collision_models)
+    {
+        this->viewport_widget->removeRenderMesh(&collision->getRenderMesh());
+    }
+    this->collision_models.clear();
+
+    // Reset collision generator.
+    this->collision_gen->clearInputMeshes();
+    for (const auto &model : this->models)
+    {
+        this->collision_gen->addInputMesh(&model->getMesh());
+    }
+
+    std::vector<std::unique_ptr<Mesh>> collisions;
+    this->collision_gen->generateVHACD(collisions);
+
+    logInfo("Generated {} approximate collision meshes", collisions.size());
     this->viewport_widget->makeCurrent();
     for (const auto &collision : collisions)
     {
@@ -245,6 +281,9 @@ void AppWindow::onCollisionGenerationRequested()
             break;
         case CollisionTechnique::ExactDecomposition:
             this->generateComplexCollision();
+            break;
+        case CollisionTechnique::ApproximateDecomposition:
+            this->generateApproximateCollision();
             break;
         default:
             logError("Invalid collision generation technique -> {}", static_cast<int>(technique));

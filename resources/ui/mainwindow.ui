@@ -92,6 +92,7 @@
     </property>
     <addaction name="actionImportModel"/>
     <addaction name="actionExportCollision"/>
+    <addaction name="actionExportModels"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -119,6 +120,11 @@
   <action name="actionFrameAll">
    <property name="text">
     <string>Frame All</string>
+   </property>
+  </action>
+  <action name="actionExportModels">
+   <property name="text">
+    <string>Export Models</string>
    </property>
   </action>
  </widget>

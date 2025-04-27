@@ -70,6 +70,13 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
     );
 
     connect(
+        this->ui.actionExportModels,
+        &QAction::triggered,
+        this,
+        &AppWindow::onExportModelsClick
+    );
+
+    connect(
         this->ui.actionFrameAll,
         &QAction::triggered,
         this,
@@ -256,6 +263,24 @@ void AppWindow::onExportCollisionClick()
         for (const auto &collision : this->collision_models)
         {
             meshes.push_back(&collision->getMesh());
+        }
+
+        logInfo("Writing {} meshes to USD file -> {}", meshes.size(), filepath.toStdString());
+        ModelLoader::SaveUSD(filepath.toStdString(), meshes);
+    }
+}
+
+/// Event handler invoked when user click on 'File -> Export Models' menu item.
+void AppWindow::onExportModelsClick()
+{
+    QString filepath = QFileDialog::getSaveFileName(this, "Export Models To USD");
+    if (!filepath.isEmpty())
+    {
+        std::vector<const Mesh*> meshes;
+        meshes.reserve(this->models.size());
+        for (const auto &model : this->models)
+        {
+            meshes.push_back(&model->getMesh());
         }
 
         logInfo("Writing {} meshes to USD file -> {}", meshes.size(), filepath.toStdString());

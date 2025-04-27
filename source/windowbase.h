@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'mainwindowhnDCyY.ui'
+** Form generated from reading UI file 'mainwindowmaAwkz.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef MAINWINDOWHNDCYY_H
-#define MAINWINDOWHNDCYY_H
+#ifndef MAINWINDOWMAAWKZ_H
+#define MAINWINDOWMAAWKZ_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -29,6 +29,7 @@ public:
     QAction *actionImportModel;
     QAction *actionExportCollision;
     QAction *actionFrameAll;
+    QAction *actionExportModels;
     QWidget *centralwidget;
     QHBoxLayout *horizontalLayout_3;
     QHBoxLayout *horizontalLayout;
@@ -53,6 +54,8 @@ public:
         actionExportCollision->setObjectName("actionExportCollision");
         actionFrameAll = new QAction(MainWindow);
         actionFrameAll->setObjectName("actionFrameAll");
+        actionExportModels = new QAction(MainWindow);
+        actionExportModels->setObjectName("actionExportModels");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         horizontalLayout_3 = new QHBoxLayout(centralwidget);
@@ -122,6 +125,7 @@ public:
         menubar->addAction(menuView->menuAction());
         menuFile->addAction(actionImportModel);
         menuFile->addAction(actionExportCollision);
+        menuFile->addAction(actionExportModels);
         menuView->addAction(actionFrameAll);
 
         retranslateUi(MainWindow);
@@ -138,6 +142,7 @@ public:
 #endif // QT_CONFIG(tooltip)
         actionExportCollision->setText(QCoreApplication::translate("MainWindow", "Export Collision", nullptr));
         actionFrameAll->setText(QCoreApplication::translate("MainWindow", "Frame All", nullptr));
+        actionExportModels->setText(QCoreApplication::translate("MainWindow", "Export Models", nullptr));
         menuFile->setTitle(QCoreApplication::translate("MainWindow", "File", nullptr));
         menuView->setTitle(QCoreApplication::translate("MainWindow", "View", nullptr));
     } // retranslateUi
@@ -150,4 +155,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // MAINWINDOWHNDCYY_H
+#endif // MAINWINDOWMAAWKZ_H
+

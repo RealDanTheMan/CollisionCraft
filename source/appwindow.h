@@ -26,6 +26,7 @@ public:
 protected:
     void onViewportReady();
     void onImportModelClick();
+    void onExportModelsClick();
     void onExportCollisionClick();
     void onFrameAllClick();
     void onCollisionGenerationRequested();

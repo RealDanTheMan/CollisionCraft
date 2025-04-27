@@ -17,11 +17,14 @@ using CGAL_Surface = CGAL::Surface_mesh<CGAL_Point>;
 using CGAL_Polyhedron = CGAL::Polyhedron_3<CGAL_Kernel>;
 using CGAL_NefPolyhedron = CGAL::Nef_polyhedron_3<CGAL_Kernel>;
 
+#include <VHACD.h>
+
 
 enum CollisionTechnique
 {
     SimpleHull = 0,
-    ExactDecomposition = 1
+    ExactDecomposition = 1,
+    ApproximateDecomposition = 2
 };
 
 
@@ -34,6 +37,8 @@ public:
     void clearInputMeshes();
     void generateCollisionHull(std::unique_ptr<Mesh> &out_mesh);
     void generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &out_meshes);
+
+    void generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes);
 
     static void meshFromSurface(const CGAL_Surface &surface, Mesh &out_mesh);
     static bool surfaceFromMesh(const Mesh &mesh, CGAL_Surface &out_surface);

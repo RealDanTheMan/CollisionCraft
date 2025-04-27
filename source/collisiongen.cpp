@@ -1,4 +1,5 @@
 #include "collisiongen.h"
+#include "VHACD.h"
 #include "logging.h"
 #include <memory>
 #include <unordered_map>
@@ -108,6 +109,73 @@ void CollisionGen::generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &ou
                 Mesh convex_mesh({}, {});
                 CollisionGen::meshFromSurface(convex_surface, convex_mesh);
                 out_meshes.push_back(std::make_unique<Mesh>(convex_mesh));
+            }
+        }
+    }
+}
+
+void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
+{
+    for (const Mesh *mesh : this->input_meshes)
+    {
+        logDebug("Processing approximate collision for mesh of {} vertices", mesh->numVertices());
+
+        std::vector<float> points;
+        points.reserve(mesh->numVertices() * 3);
+        for (const QVector3D &vertex : mesh->getVertices())
+        {
+            points.push_back(vertex.x());
+            points.push_back(vertex.y());
+            points.push_back(vertex.z());
+        }
+
+        std::vector<unsigned int> indices;
+        indices.reserve(mesh->numIndices());
+        for (const int &idx : mesh->getIndices())
+        {
+            indices.push_back(idx);
+        }
+
+        VHACD::IVHACD::Parameters params;
+        params.m_resolution = 1024;
+        params.m_maxConvexHulls = 16;
+
+        logDebug("Starting decomposition");
+        auto vhacd = VHACD::CreateVHACD();
+        bool success = vhacd->Compute(
+            points.data(),
+            mesh->numVertices(),
+            indices.data(),
+            mesh->numIndices() / 3,
+            params
+        );
+
+        if (success)
+        {
+            unsigned int num_hulls = vhacd->GetNConvexHulls();
+            logDebug("VHACD Convex Decomposition succeeded generating {} hulls", num_hulls);
+
+            VHACD::IVHACD::ConvexHull hull;
+            for (unsigned int i=0; i < num_hulls; i++)
+            {
+                vhacd->GetConvexHull(i, hull);
+                std::vector<QVector3D> vertices;
+                std::vector<int> indices;
+
+                for (int i=0; i+2<hull.m_nPoints*3; i+=3)
+                {
+                    float x = hull.m_points[i];
+                    float y = hull.m_points[i+1];
+                    float z = hull.m_points[i+2];
+                    vertices.emplace_back(x, y, z);
+                }
+
+                for (int i=0; i<hull.m_nTriangles*3; i++)
+                {
+                    indices.push_back(hull.m_triangles[i]);
+                }
+
+                out_meshes.push_back(std::make_unique<Mesh>(vertices, indices));
             }
         }
     }

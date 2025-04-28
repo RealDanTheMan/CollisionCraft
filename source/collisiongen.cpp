@@ -48,7 +48,7 @@ void CollisionGen::generateCollisionHull(std::unique_ptr<Mesh> &out_mesh)
 }
 
 /// Generate collection of hull meshes which envelop all active input meshes using 
-/// convex decomposition technique.
+/// exact convex decomposition technique via CGAL.
 /// @param: out_meshes List to add newly generated collision hulls to.
 void CollisionGen::generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &out_meshes)
 {
@@ -114,15 +114,26 @@ void CollisionGen::generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &ou
     }
 }
 
+/// Generate collection of hull meshes which envelop all active input meshes using 
+/// approximate convex decomposition technique via VHACD.
+/// @param: out_meshes List to add newly generated collision hulls to.
 void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
 {
-    for (const Mesh *mesh : this->input_meshes)
+    for (const Mesh *in_mesh : this->input_meshes)
     {
-        logDebug("Processing approximate collision for mesh of {} vertices", mesh->numVertices());
+        logDebug("Processing approximate collision for mesh of {} vertices", in_mesh->numVertices());
+
+        Mesh mesh(*in_mesh);
+        CollisionGen::cleanupMesh(mesh);
+        if (!Mesh::isValid(mesh))
+        {
+            logError("Encountered degenerate input mesh data, skipping mesh");
+            continue;
+        }
 
         std::vector<float> points;
-        points.reserve(mesh->numVertices() * 3);
-        for (const QVector3D &vertex : mesh->getVertices())
+        points.reserve(mesh.numVertices() * 3);
+        for (const QVector3D &vertex : mesh.getVertices())
         {
             points.push_back(vertex.x());
             points.push_back(vertex.y());
@@ -130,23 +141,27 @@ void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
         }
 
         std::vector<unsigned int> indices;
-        indices.reserve(mesh->numIndices());
-        for (const int &idx : mesh->getIndices())
+        indices.reserve(mesh.numIndices());
+        for (const int &idx : mesh.getIndices())
         {
             indices.push_back(idx);
         }
 
         VHACD::IVHACD::Parameters params;
-        params.m_resolution = 1024;
-        params.m_maxConvexHulls = 16;
+        params.m_resolution = 128;
+        params.m_maxConvexHulls = 8;
+        params.m_maxNumVerticesPerCH = 16;
+        params.m_minVolumePerCH = 0.1;
+        params.m_planeDownsampling = 8;
+        params.m_convexhullDownsampling = 8;
+        params.m_logger = &this->vhacd_logger;
 
-        logDebug("Starting decomposition");
         auto vhacd = VHACD::CreateVHACD();
         bool success = vhacd->Compute(
             points.data(),
-            mesh->numVertices(),
+            mesh.numVertices(),
             indices.data(),
-            mesh->numIndices() / 3,
+            mesh.numIndices() / 3,
             params
         );
 
@@ -178,6 +193,9 @@ void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
                 out_meshes.push_back(std::make_unique<Mesh>(vertices, indices));
             }
         }
+
+        vhacd->Clean();
+        vhacd->Release();
     }
 }
 
@@ -207,6 +225,42 @@ std::vector<CGAL_Point> CollisionGen::getInputPoints(float padding) const
     }
 
     return points;
+}
+
+/// Clean up given mesh to ensure consistent winding order and water tightness.
+bool CollisionGen::cleanupMesh(Mesh &mesh)
+{
+    CGAL_Surface surface;
+    CollisionGen::surfaceFromMesh(mesh, surface);
+    CollisionGen::capSurface(surface);
+
+    CGAL_Polyhedron polyhedron;
+    CGAL::copy_face_graph(surface, polyhedron);
+
+    if (!polyhedron.is_valid())
+    {
+        logError("Input mesh polyhedron is not valid");
+        return false;
+    }
+
+    if (!polyhedron.is_closed())
+    {
+        logError("Input mesh polyhedron is not closed");
+        return false;
+    }
+
+    CGAL_NefPolyhedron volume_poly(polyhedron);
+    if (!volume_poly.is_valid())
+    {
+        logError("Failed to generate polyhedron does not represent valid volume");
+        return false;
+    }
+    
+    volume_poly.convert_to_Polyhedron(polyhedron);
+    CGAL::copy_face_graph(polyhedron, surface);
+    CollisionGen::meshFromSurface(surface, mesh);
+
+    return true;
 }
 
 /// Build triangulated mesh data from CGAL polyhedron.

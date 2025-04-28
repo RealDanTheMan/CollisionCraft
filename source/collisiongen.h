@@ -1,6 +1,7 @@
 #ifndef COLLISION_GEN_H
 #define COLLISION_GEN_H
 
+#include "logging.h"
 #include "mesh.h"
 
 #include <vector>
@@ -17,6 +18,7 @@ using CGAL_Surface = CGAL::Surface_mesh<CGAL_Point>;
 using CGAL_Polyhedron = CGAL::Polyhedron_3<CGAL_Kernel>;
 using CGAL_NefPolyhedron = CGAL::Nef_polyhedron_3<CGAL_Kernel>;
 
+#define VHACD_USE_OPENCL 0
 #include <VHACD.h>
 
 
@@ -25,6 +27,16 @@ enum CollisionTechnique
     SimpleHull = 0,
     ExactDecomposition = 1,
     ApproximateDecomposition = 2
+};
+
+
+class VHACDDebugLogger : public VHACD::IVHACD::IUserLogger
+{
+public:
+    void Log(const char *const msg) override
+    {
+        logDebug("VHACD Debug message -> {}", msg);
+    }
 };
 
 
@@ -47,9 +59,11 @@ public:
 
 protected:
     std::vector<CGAL_Point> getInputPoints(float padding = 0.0) const;
+    bool cleanupMesh(Mesh &mesh);
 
 private:
     std::vector<const Mesh*> input_meshes;
+    VHACDDebugLogger vhacd_logger;
 };
 
 #endif

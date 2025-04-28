@@ -148,12 +148,12 @@ void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
         }
 
         VHACD::IVHACD::Parameters params;
-        params.m_resolution = 128;
-        params.m_maxConvexHulls = 8;
-        params.m_maxNumVerticesPerCH = 16;
-        params.m_minVolumePerCH = 0.1;
-        params.m_planeDownsampling = 8;
-        params.m_convexhullDownsampling = 8;
+        params.m_resolution = 100000;
+        params.m_maxConvexHulls = 16;
+        params.m_maxNumVerticesPerCH = 32;
+        params.m_minVolumePerCH = 0.001;
+        params.m_planeDownsampling = 1;
+        params.m_convexhullDownsampling = 1;
         params.m_logger = &this->vhacd_logger;
 
         auto vhacd = VHACD::CreateVHACD();

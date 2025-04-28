@@ -149,3 +149,33 @@ const double Mesh::getBoundingSphereRadius() const
 {
     return this->bsphere_radius;
 }
+
+bool Mesh::isValid(const Mesh &mesh)
+{
+    const float epsilon = 1e-6f;
+    for (int i=0; i+2<mesh.numIndices(); i+=3)
+    {
+        const int p0 = mesh.getIndices()[i];
+        const int p1 = mesh.getIndices()[i+1];
+        const int p2 = mesh.getIndices()[i+2];
+
+        if (p0 < 0 || p0 >= mesh.numVertices())
+        {
+            return false;
+        }
+
+        const QVector3D a = mesh.getVertices()[p0];
+        const QVector3D b = mesh.getVertices()[p1];
+        const QVector3D c = mesh.getVertices()[p2];
+
+        QVector3D ab = b - a;
+        QVector3D ac = c - a;
+        QVector3D cross = QVector3D::crossProduct(ab, ac);
+        if (cross.length() * 0.5 < epsilon)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}

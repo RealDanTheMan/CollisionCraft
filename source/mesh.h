@@ -24,6 +24,8 @@ public:
     const QVector3D& getBoundingSphereCenter() const;
     const double getBoundingSphereRadius() const;
 
+    static bool isValid(const Mesh &mesh);
+
 protected:
     std::vector<QVector3D> vertices;
     std::vector<QVector3D> normals;

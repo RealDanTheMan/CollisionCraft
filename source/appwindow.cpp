@@ -46,6 +46,8 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
     logDebug("Initialising property panel");
     this->property_panel = new PropertyPanelWidget(this);
     this->ui.PropertyPanelFrame->setLayout(new QVBoxLayout());
+    this->ui.PropertyPanelFrame->layout()->setContentsMargins(0, 0, 0, 0);
+    this->ui.PropertyPanelFrame->layout()->setSpacing(0);
     this->ui.PropertyPanelFrame->layout()->addWidget(this->property_panel);
     
     connect(

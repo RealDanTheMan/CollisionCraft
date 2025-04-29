@@ -155,6 +155,12 @@ void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
         params.m_planeDownsampling = 1;
         params.m_convexhullDownsampling = 1;
         params.m_logger = &this->vhacd_logger;
+        
+        /// New version of MacOS have poor support of OpenCL a best so we disable acceleration
+        /// to avoid crashes during decomposition process.
+#if defined(__APPLE__)
+        params.m_oclAcceleration = false;
+#endif
 
         auto vhacd = VHACD::CreateVHACD();
         bool success = vhacd->Compute(

@@ -7,7 +7,13 @@
 
 
 /// Decimal property widget default constructor.
-DecimalPropertyWidget::DecimalPropertyWidget(const QString &text, double value, QWidget *parent)
+DecimalPropertyWidget::DecimalPropertyWidget(
+    const QString &text,
+    double value,
+    double min,
+    double max,
+    QWidget *parent
+)
 {
     this->setLayout(new QVBoxLayout());
     this->layout()->setContentsMargins(0, 0, 0, 0);
@@ -20,6 +26,7 @@ DecimalPropertyWidget::DecimalPropertyWidget(const QString &text, double value, 
 
     this->label = new QLabel(text, this->frame);
     this->spinner = new QDoubleSpinBox(this->frame);
+    this->spinner->setRange(min, max);
     this->spinner->setValue(value);
 
     this->layout()->addWidget(this->frame);
@@ -47,7 +54,13 @@ double DecimalPropertyWidget::getValue() const
 
 
 /// Decimal property widget default constructor.
-IntegerPropertyWidget::IntegerPropertyWidget(const QString &text, int value, QWidget *parent)
+IntegerPropertyWidget::IntegerPropertyWidget(
+    const QString &text,
+    int value,
+    int min,
+    int max,
+    QWidget *parent
+)
 {
     this->setLayout(new QVBoxLayout());
     this->layout()->setContentsMargins(0, 0, 0, 0);
@@ -60,6 +73,7 @@ IntegerPropertyWidget::IntegerPropertyWidget(const QString &text, int value, QWi
 
     this->label = new QLabel(text, this->frame);
     this->spinner = new QSpinBox(this->frame);
+    this->spinner->setRange(min, max);
     this->spinner->setValue(value);
 
     this->layout()->addWidget(this->frame);
@@ -123,10 +137,37 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
         &PropertyPanelWidget::onTechniqueSelectionChanged
     );
 
-    this->scale_property = new DecimalPropertyWidget("Collision Scale", 1.0, this);
-    this->resolution_property = new DecimalPropertyWidget("Collision Resolution", 100000.0, this);
-    this->hull_count_property = new IntegerPropertyWidget("Collision Maximum Hull Count", 16, this);
-    this->downsampling_property = new IntegerPropertyWidget("Collision Downsampling", 1, this);
+    this->scale_property = new DecimalPropertyWidget(
+        "Collision Scale",
+        1.0,
+        0.01,
+        2.0,
+        this
+    );
+
+    this->resolution_property = new DecimalPropertyWidget(
+        "Collision Resolution",
+        100000.0,
+        1000.0,
+        1000000.0,
+        this
+    );
+
+    this->hull_count_property = new IntegerPropertyWidget(
+        "Collision Maximum Hull Count",
+        16,
+        1,
+        255,
+        this
+    );
+
+    this->downsampling_property = new IntegerPropertyWidget(
+        "Collision Downsampling",
+        1,
+        1,
+        32,
+        this
+    );
 
     QVBoxLayout *panel_layout = new QVBoxLayout();
     panel_layout->setContentsMargins(QMargins(0.0, 0.0, 0.0, 0.0));
@@ -180,4 +221,16 @@ void PropertyPanelWidget::onTechniqueSelectionChanged()
             break;
     }
     logDebug("Selected collision technique changed -> {}", technique_id);
+}
+
+/// Get collision generation settings from property values.
+CollisionGenSettings PropertyPanelWidget::getSettings() const
+{
+    CollisionGenSettings settings;
+    settings.scale = this->scale_property->getValue();
+    settings.resolution = this->resolution_property->getValue();
+    settings.max_hulls = this->hull_count_property->getValue();
+    settings.downsample = this->downsampling_property->getValue();
+
+    return settings;
 }

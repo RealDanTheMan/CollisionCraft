@@ -32,9 +32,13 @@ void CollisionGen::clearInputMeshes()
 
 /// Generate simple collision hull mesh which envelops all active input meshes.
 /// @param: out_mesh Output mesh handle to allocate generated collision hull.
-void CollisionGen::generateCollisionHull(std::unique_ptr<Mesh> &out_mesh)
+void CollisionGen::generateCollisionHull(
+    const CollisionGenSettings &settings,
+    std::unique_ptr<Mesh> &out_mesh
+)
 {
-    std::vector<CGAL_Point> points = this->getInputPoints(0.01);
+    const double padding = 100.0 - settings.scale * 100.0;
+    std::vector<CGAL_Point> points = this->getInputPoints(padding);
     CGAL_Surface collision_surface;
 
     CGAL::convex_hull_3(points.begin(), points.end(), collision_surface);
@@ -45,12 +49,17 @@ void CollisionGen::generateCollisionHull(std::unique_ptr<Mesh> &out_mesh)
     logInfo("Generated collision mesh vertex count -> {}", collision.numVertices());
     logInfo("Generated collision mesh triangle count -> {}", collision.numIndices() / 3);
     out_mesh = std::make_unique<Mesh>(collision);
+    out_mesh->generateNormals();
+    out_mesh->computeBounds();
 }
 
 /// Generate collection of hull meshes which envelop all active input meshes using 
 /// exact convex decomposition technique via CGAL.
 /// @param: out_meshes List to add newly generated collision hulls to.
-void CollisionGen::generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &out_meshes)
+void CollisionGen::generateCollisionHulls(
+    const CollisionGenSettings &settings,
+    std::vector<std::unique_ptr<Mesh>> &out_meshes
+)
 {
     for (const Mesh *mesh : this->input_meshes)
     {
@@ -109,6 +118,8 @@ void CollisionGen::generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &ou
                 Mesh convex_mesh({}, {});
                 CollisionGen::meshFromSurface(convex_surface, convex_mesh);
                 out_meshes.push_back(std::make_unique<Mesh>(convex_mesh));
+                out_meshes.back()->generateNormals();
+                out_meshes.back()->computeBounds();
             }
         }
     }
@@ -117,7 +128,10 @@ void CollisionGen::generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &ou
 /// Generate collection of hull meshes which envelop all active input meshes using 
 /// approximate convex decomposition technique via VHACD.
 /// @param: out_meshes List to add newly generated collision hulls to.
-void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
+void CollisionGen::generateVHACD(
+    const CollisionGenSettings &settings,
+    std::vector<std::unique_ptr<Mesh>> &out_meshes
+)
 {
     for (const Mesh *in_mesh : this->input_meshes)
     {
@@ -148,12 +162,12 @@ void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
         }
 
         VHACD::IVHACD::Parameters params;
-        params.m_resolution = 100000;
-        params.m_maxConvexHulls = 16;
+        params.m_resolution = settings.resolution;
+        params.m_maxConvexHulls = settings.max_hulls;
         params.m_maxNumVerticesPerCH = 32;
         params.m_minVolumePerCH = 0.001;
-        params.m_planeDownsampling = 1;
-        params.m_convexhullDownsampling = 1;
+        params.m_planeDownsampling = settings.downsample;
+        params.m_convexhullDownsampling = settings.downsample;
         params.m_logger = &this->vhacd_logger;
         
         /// New version of MacOS have poor support of OpenCL a best so we disable acceleration
@@ -197,6 +211,8 @@ void CollisionGen::generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes)
                 }
 
                 out_meshes.push_back(std::make_unique<Mesh>(vertices, indices));
+                out_meshes.back()->generateNormals();
+                out_meshes.back()->computeBounds();
             }
         }
 

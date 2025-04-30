@@ -161,11 +161,12 @@ void AppWindow::generateSimpleCollision()
         this->collision_gen->addInputMesh(&model->getMesh());
     }
 
-    this->viewport_widget->makeCurrent();
+    CollisionGenSettings settings = this->property_panel->getSettings();
     std::unique_ptr<Mesh> collision;
-    this->collision_gen->generateCollisionHull(collision);
+    this->collision_gen->generateCollisionHull(settings, collision);
+    
+    this->viewport_widget->makeCurrent();
     this->collision_models.push_back(std::make_unique<SceneModel>(*collision));
-
     RenderMesh &rmesh = this->collision_models.back()->getRenderMesh();
     rmesh.setMaterial(RenderMeshMaterial::Collision);
     rmesh.setStyle(RenderMeshStyle::ShadedWireframe);
@@ -191,8 +192,9 @@ void AppWindow::generateComplexCollision()
         this->collision_gen->addInputMesh(&model->getMesh());
     }
 
+    CollisionGenSettings settings = this->property_panel->getSettings();
     std::vector<std::unique_ptr<Mesh>> collisions;
-    this->collision_gen->generateCollisionHulls(collisions);
+    this->collision_gen->generateCollisionHulls(settings, collisions);
 
     logInfo("Generated {} complex collision meshes", collisions.size());
     this->viewport_widget->makeCurrent();
@@ -226,8 +228,9 @@ void AppWindow::generateApproximateCollision()
         this->collision_gen->addInputMesh(&model->getMesh());
     }
 
+    CollisionGenSettings settings = this->property_panel->getSettings();
     std::vector<std::unique_ptr<Mesh>> collisions;
-    this->collision_gen->generateVHACD(collisions);
+    this->collision_gen->generateVHACD(settings, collisions);
 
     logInfo("Generated {} approximate collision meshes", collisions.size());
     this->viewport_widget->makeCurrent();
@@ -301,6 +304,7 @@ void AppWindow::onFrameAllClick()
 void AppWindow::onCollisionGenerationRequested()
 {
     CollisionTechnique technique = this->property_panel->getSelectedTechnique();
+    CollisionGenSettings settings = this->property_panel->getSettings();
     switch (technique)
     {
         case CollisionTechnique::SimpleHull:

@@ -17,7 +17,13 @@ class DecimalPropertyWidget : public QWidget
     Q_OBJECT
 
 public:
-    DecimalPropertyWidget(const QString &text, double value, QWidget *parent = nullptr);
+    DecimalPropertyWidget(
+        const QString &text,
+        double value,
+        double min = -1000000.0,
+        double max = 1000000.0,
+        QWidget *parent = nullptr
+);
     void setEnabled(bool enabled);
     void setValue(double);
     double getValue() const;
@@ -35,7 +41,13 @@ class IntegerPropertyWidget : public QWidget
     Q_OBJECT
 
 public:
-    IntegerPropertyWidget(const QString &text, int value, QWidget *parent = nullptr);
+    IntegerPropertyWidget(
+        const QString &text,
+        int value,
+        int min = -1000000,
+        int max = 1000000,
+        QWidget *parent = nullptr
+);
     void setEnabled(bool enabled);
     void setValue(double);
     double getValue() const;
@@ -54,6 +66,7 @@ class PropertyPanelWidget : public QWidget
 public:
     PropertyPanelWidget(QWidget *parent = nullptr);
     CollisionTechnique getSelectedTechnique() const;
+    CollisionGenSettings getSettings() const;
 
     Q_SIGNAL
     void collisionGenerationRequested();

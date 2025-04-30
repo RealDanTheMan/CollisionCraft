@@ -40,6 +40,15 @@ public:
 };
 
 
+struct CollisionGenSettings
+{
+    double  scale;
+    double  resolution;
+    int     max_hulls;
+    int     downsample;
+};
+
+
 class CollisionGen
 {
 public:
@@ -47,10 +56,21 @@ public:
 
     void addInputMesh(const Mesh *mesh);
     void clearInputMeshes();
-    void generateCollisionHull(std::unique_ptr<Mesh> &out_mesh);
-    void generateCollisionHulls(std::vector<std::unique_ptr<Mesh>> &out_meshes);
 
-    void generateVHACD(std::vector<std::unique_ptr<Mesh>> &out_meshes);
+    void generateCollisionHull(
+        const CollisionGenSettings &settings,
+        std::unique_ptr<Mesh> &out_mesh
+    );
+
+    void generateCollisionHulls(
+        const CollisionGenSettings &settings,
+        std::vector<std::unique_ptr<Mesh>> &out_meshes
+    );
+
+    void generateVHACD(
+        const CollisionGenSettings &settings,
+        std::vector<std::unique_ptr<Mesh>> &out_meshes
+    );
 
     static void meshFromSurface(const CGAL_Surface &surface, Mesh &out_mesh);
     static bool surfaceFromMesh(const Mesh &mesh, CGAL_Surface &out_surface);

@@ -5,6 +5,7 @@
 #include "modelloader.h"
 #include "propertypanel.h"
 #include "rendermesh.h"
+#include "viewportsettingswidget.h"
 #include "viewportwidget.h"
 #include "windowbase.h"
 
@@ -13,7 +14,9 @@
 #include <vector>
 
 #include <QBoxLayout>
+#include <QStackedLayout>
 #include <QFileDialog>
+#include <QPushButton>
 
 AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -35,13 +38,24 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
     this->ui.ConsoleFrame->layout()->setSpacing(0);
     
     Logger::active()->debug("Initialising viewport widget");
-    this->viewport_widget = new ViewportWidget(this);
-    this->ui.ViewportFrame->setLayout(new QVBoxLayout());
+    this->viewport_widget = new ViewportWidget(this->ui.ViewportFrame);
+    this->ui.ViewportFrame->setLayout(new QStackedLayout());
     this->ui.ViewportFrame->layout()->addWidget(this->viewport_widget);
     this->ui.ViewportFrame->layout()->setContentsMargins(0, 0, 0, 0);
     this->ui.ViewportFrame->layout()->setSpacing(0);
     this->viewport_widget->makeCurrent();
     this->viewport_widget->update();
+
+    this->viewport_settings_button = new QPushButton(this->ui.ViewportFrame);
+    this->viewport_settings_button->setText("⚙");
+    this->viewport_settings_button->setFixedSize(32, 32);
+    this->viewport_settings_button->move(10, 10);
+    this->viewport_settings_button->raise();
+    this->viewport_settings_button->show();
+
+    this->viewport_settings_widget = new ViewportSettingsWidget(this->ui.ViewportFrame);
+    this->viewport_settings_widget->raise();
+    this->viewport_settings_widget->hide();
 
     logDebug("Initialising property panel");
     this->property_panel = new PropertyPanelWidget(this);
@@ -90,6 +104,27 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
         &PropertyPanelWidget::collisionGenerationRequested,
         this,
         &AppWindow::onCollisionGenerationRequested
+    );
+
+    connect(
+        this->viewport_settings_button,
+        &QPushButton::pressed,
+        this,
+        &AppWindow::onViewportSettingsClick
+    );
+
+    connect(
+        this->viewport_settings_widget,
+        &ViewportSettingsWidget::applyButtonClicked,
+        this,
+        &AppWindow::onViewportSettingsApplyClick
+    );
+
+    connect(
+        this->viewport_settings_widget,
+        &ViewportSettingsWidget::cancelButtonClicked,
+        this,
+        &AppWindow::onViewportSettingsCancelClick
     );
 }
 
@@ -322,4 +357,32 @@ void AppWindow::onCollisionGenerationRequested()
     }
 
     this->viewport_widget->update();
+}
+
+/// Event handler invoked when the user clicks on 'settings cog' button in the viewport.
+void AppWindow::onViewportSettingsClick()
+{
+    if (this->viewport_settings_widget->isVisible())
+    {
+        logDebug("Disabling viewport settings widget");
+        this->viewport_settings_widget->hide();
+    }
+    else
+    {
+        logDebug("Enabling viewport settings widget");
+        this->viewport_settings_widget->raise();
+        this->viewport_settings_widget->show();
+    }
+}
+
+/// Event handler invoked when user clicks on 'apply' button on viewport settings panel.
+void AppWindow::onViewportSettingsApplyClick()
+{
+    this->viewport_settings_widget->hide();
+}
+
+/// Event handler invoked when user clicks on 'cancel' button on viewport settings panel.
+void AppWindow::onViewportSettingsCancelClick()
+{
+    this->viewport_settings_widget->hide();
 }

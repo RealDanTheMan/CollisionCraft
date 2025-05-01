@@ -10,6 +10,7 @@
 #include "scenemodel.h"
 #include "windowbase.h"
 #include "viewportwidget.h"
+#include "viewportsettingswidget.h"
 #include "logwidget.h"
 #include "propertypanel.h"
 
@@ -30,6 +31,9 @@ protected:
     void onExportCollisionClick();
     void onFrameAllClick();
     void onCollisionGenerationRequested();
+    void onViewportSettingsClick();
+    void onViewportSettingsApplyClick();
+    void onViewportSettingsCancelClick();
 
     void generateSimpleCollision();
     void generateComplexCollision();
@@ -43,6 +47,8 @@ private:
     ViewportWidget *viewport_widget;
     LogWidget *log_widget;
     PropertyPanelWidget *property_panel;
+    QPushButton *viewport_settings_button;
+    ViewportSettingsWidget *viewport_settings_widget;
 
     std::vector<std::unique_ptr<SceneModel>> models;
     std::vector<std::unique_ptr<SceneModel>> collision_models;

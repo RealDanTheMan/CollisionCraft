@@ -43,6 +43,9 @@ protected:
     std::unique_ptr<CollisionGen> collision_gen;
 
 private:
+    void initWidgets();
+    void registerEvents();
+
     Ui_MainWindow ui;
     ViewportWidget *viewport_widget;
     LogWidget *log_widget;

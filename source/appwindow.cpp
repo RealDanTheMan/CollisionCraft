@@ -31,6 +31,13 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
         throw std::runtime_error("Cannot initialise log widget with no active logger!");
     }
 
+    this->initWidgets();
+    this->registerEvents();
+}
+
+/// Create and append all UI widgets to this window.
+void AppWindow::initWidgets()
+{
     this->log_widget = new LogWidget(*Logger::active(), this);
     this->ui.ConsoleFrame->setLayout(new QVBoxLayout());
     this->ui.ConsoleFrame->layout()->addWidget(this->log_widget);
@@ -63,7 +70,11 @@ AppWindow::AppWindow(QWidget *parent) : QMainWindow(parent)
     this->ui.PropertyPanelFrame->layout()->setContentsMargins(0, 0, 0, 0);
     this->ui.PropertyPanelFrame->layout()->setSpacing(0);
     this->ui.PropertyPanelFrame->layout()->addWidget(this->property_panel);
-    
+}
+
+/// Enable and connect UI event across all widgets.
+void AppWindow::registerEvents()
+{
     connect(
         this->viewport_widget,
         &ViewportWidget::graphicsReady,

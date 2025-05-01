@@ -61,6 +61,7 @@ void AppWindow::initWidgets()
     this->viewport_settings_button->show();
 
     this->viewport_settings_widget = new ViewportSettingsWidget(this->ui.ViewportFrame);
+    this->viewport_settings_widget->setSettings(ViewportSettings::Default());
     this->viewport_settings_widget->raise();
     this->viewport_settings_widget->hide();
 

@@ -14,6 +14,27 @@
 #include "rendermesh.h"
 #include "viewportcamera.h"
 
+struct ViewportSettings
+{
+    bool collisionShaded;
+    bool collisionWireframe;
+    bool modelShaded;
+    bool modelWireframe;
+    bool modelLighting;
+
+    static ViewportSettings Default()
+    {
+        ViewportSettings settings;
+        settings.collisionShaded = false;
+        settings.collisionWireframe = true;
+        settings.modelShaded = true;
+        settings.modelWireframe = false;
+        settings.modelLighting = false;
+
+        return settings;
+    }
+};
+
 class ViewportWidget : public QOpenGLWidget, public QOpenGLFunctions
 {
     Q_OBJECT

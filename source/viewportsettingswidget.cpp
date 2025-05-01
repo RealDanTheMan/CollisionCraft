@@ -1,4 +1,5 @@
 #include "viewportsettingswidget.h"
+#include "viewportwidget.h"
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QLabel>
@@ -21,4 +22,19 @@ ViewportSettingsWidget::ViewportSettingsWidget(QWidget *parent) :
         this,
         &ViewportSettingsWidget::cancelButtonClicked
     );
+}
+
+void ViewportSettingsWidget::setSettings(const ViewportSettings &settings)
+{
+    this->settings = settings;
+    this->ui.collision_shaded_checkbox->setChecked(this->settings.collisionShaded);
+    this->ui.collision_wireframe_checkbox->setChecked(this->settings.collisionWireframe);
+    this->ui.model_shaded_checkbox->setChecked(this->settings.modelShaded);
+    this->ui.model_wireframe_checkbox->setChecked(this->settings.modelWireframe);
+    this->ui.model_lighting_checkbox->setChecked(this->settings.modelLighting);
+}
+
+const ViewportSettings& ViewportSettingsWidget::getSettings() const
+{
+    return this->settings;
 }

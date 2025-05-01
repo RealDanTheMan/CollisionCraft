@@ -2,6 +2,7 @@
 #define VIEWPORT_SETTINGS_WIDGET_H
 
 #include "viewportsettingsbase.h"
+#include "viewportwidget.h"
 #include <QWidget>
 
 class ViewportSettingsWidget : public QWidget
@@ -17,8 +18,12 @@ public:
     Q_SIGNAL
     void applyButtonClicked();
 
+    void setSettings(const ViewportSettings &settings);
+    const ViewportSettings& getSettings() const;
+
 private:
     Ui_ViewportSettingsBase ui;
+    ViewportSettings settings;
 };
 
 #endif

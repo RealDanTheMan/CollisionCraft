@@ -96,21 +96,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_2">
+          <widget class="QCheckBox" name="model_shaded_checkbox">
            <property name="text">
             <string>Shaded</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_3">
+          <widget class="QCheckBox" name="model_lighting_checkbox">
            <property name="text">
             <string>Lighting</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="model_wireframe_checkbox">
            <property name="text">
             <string>Wireframe</string>
            </property>
@@ -159,14 +159,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_4">
+          <widget class="QCheckBox" name="collision_shaded_checkbox">
            <property name="text">
             <string>Shaded</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_5">
+          <widget class="QCheckBox" name="collision_wireframe_checkbox">
            <property name="text">
             <string>Wireframe</string>
            </property>

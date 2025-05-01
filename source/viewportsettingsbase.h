@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'viewport_settingsSJltaX.ui'
+** Form generated from reading UI file 'viewport_settingshJJxny.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef VIEWPORT_SETTINGSSJLTAX_H
-#define VIEWPORT_SETTINGSSJLTAX_H
+#ifndef VIEWPORT_SETTINGSHJJXNY_H
+#define VIEWPORT_SETTINGSHJJXNY_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -30,14 +30,14 @@ public:
     QFrame *model_frame;
     QVBoxLayout *verticalLayout_3;
     QLabel *label;
-    QCheckBox *checkBox_2;
-    QCheckBox *checkBox_3;
-    QCheckBox *checkBox;
+    QCheckBox *model_shaded_checkbox;
+    QCheckBox *model_lighting_checkbox;
+    QCheckBox *model_wireframe_checkbox;
     QFrame *collision_frame;
     QVBoxLayout *verticalLayout_4;
     QLabel *label_2;
-    QCheckBox *checkBox_4;
-    QCheckBox *checkBox_5;
+    QCheckBox *collision_shaded_checkbox;
+    QCheckBox *collision_wireframe_checkbox;
     QFrame *button_frame;
     QHBoxLayout *horizontalLayout;
     QPushButton *apply_button;
@@ -87,20 +87,20 @@ public:
 
         verticalLayout_3->addWidget(label);
 
-        checkBox_2 = new QCheckBox(model_frame);
-        checkBox_2->setObjectName("checkBox_2");
+        model_shaded_checkbox = new QCheckBox(model_frame);
+        model_shaded_checkbox->setObjectName("model_shaded_checkbox");
 
-        verticalLayout_3->addWidget(checkBox_2);
+        verticalLayout_3->addWidget(model_shaded_checkbox);
 
-        checkBox_3 = new QCheckBox(model_frame);
-        checkBox_3->setObjectName("checkBox_3");
+        model_lighting_checkbox = new QCheckBox(model_frame);
+        model_lighting_checkbox->setObjectName("model_lighting_checkbox");
 
-        verticalLayout_3->addWidget(checkBox_3);
+        verticalLayout_3->addWidget(model_lighting_checkbox);
 
-        checkBox = new QCheckBox(model_frame);
-        checkBox->setObjectName("checkBox");
+        model_wireframe_checkbox = new QCheckBox(model_frame);
+        model_wireframe_checkbox->setObjectName("model_wireframe_checkbox");
 
-        verticalLayout_3->addWidget(checkBox);
+        verticalLayout_3->addWidget(model_wireframe_checkbox);
 
 
         verticalLayout_2->addWidget(model_frame);
@@ -120,15 +120,15 @@ public:
 
         verticalLayout_4->addWidget(label_2);
 
-        checkBox_4 = new QCheckBox(collision_frame);
-        checkBox_4->setObjectName("checkBox_4");
+        collision_shaded_checkbox = new QCheckBox(collision_frame);
+        collision_shaded_checkbox->setObjectName("collision_shaded_checkbox");
 
-        verticalLayout_4->addWidget(checkBox_4);
+        verticalLayout_4->addWidget(collision_shaded_checkbox);
 
-        checkBox_5 = new QCheckBox(collision_frame);
-        checkBox_5->setObjectName("checkBox_5");
+        collision_wireframe_checkbox = new QCheckBox(collision_frame);
+        collision_wireframe_checkbox->setObjectName("collision_wireframe_checkbox");
 
-        verticalLayout_4->addWidget(checkBox_5);
+        verticalLayout_4->addWidget(collision_wireframe_checkbox);
 
 
         verticalLayout_2->addWidget(collision_frame);
@@ -167,12 +167,12 @@ public:
     {
         ViewportSettingsBase->setWindowTitle(QCoreApplication::translate("ViewportSettingsBase", "Form", nullptr));
         label->setText(QCoreApplication::translate("ViewportSettingsBase", "Model Rendering", nullptr));
-        checkBox_2->setText(QCoreApplication::translate("ViewportSettingsBase", "Shaded", nullptr));
-        checkBox_3->setText(QCoreApplication::translate("ViewportSettingsBase", "Lighting", nullptr));
-        checkBox->setText(QCoreApplication::translate("ViewportSettingsBase", "Wireframe", nullptr));
+        model_shaded_checkbox->setText(QCoreApplication::translate("ViewportSettingsBase", "Shaded", nullptr));
+        model_lighting_checkbox->setText(QCoreApplication::translate("ViewportSettingsBase", "Lighting", nullptr));
+        model_wireframe_checkbox->setText(QCoreApplication::translate("ViewportSettingsBase", "Wireframe", nullptr));
         label_2->setText(QCoreApplication::translate("ViewportSettingsBase", "Collision Rendering", nullptr));
-        checkBox_4->setText(QCoreApplication::translate("ViewportSettingsBase", "Shaded", nullptr));
-        checkBox_5->setText(QCoreApplication::translate("ViewportSettingsBase", "Wireframe", nullptr));
+        collision_shaded_checkbox->setText(QCoreApplication::translate("ViewportSettingsBase", "Shaded", nullptr));
+        collision_wireframe_checkbox->setText(QCoreApplication::translate("ViewportSettingsBase", "Wireframe", nullptr));
         apply_button->setText(QCoreApplication::translate("ViewportSettingsBase", "Apply", nullptr));
         cancel_button->setText(QCoreApplication::translate("ViewportSettingsBase", "Cancel", nullptr));
     } // retranslateUi
@@ -185,4 +185,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // VIEWPORT_SETTINGSSJLTAX_H
+#endif // VIEWPORT_SETTINGSHJJXNY_H

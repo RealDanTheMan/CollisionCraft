@@ -5,6 +5,7 @@
 #include "modelloader.h"
 #include "propertypanel.h"
 #include "rendermesh.h"
+#include "scenemodel.h"
 #include "viewportsettingswidget.h"
 #include "viewportwidget.h"
 #include "windowbase.h"
@@ -390,7 +391,51 @@ void AppWindow::onViewportSettingsClick()
 /// Event handler invoked when user clicks on 'apply' button on viewport settings panel.
 void AppWindow::onViewportSettingsApplyClick()
 {
+    logDebug("Updating viewport settings");
+    ViewportSettings settings = this->viewport_settings_widget->getSettings();
+    RenderMeshStyle collision_style;
+    RenderMeshStyle model_style;
+
+    /// Update collision object rendering style.
+    if (settings.collisionShaded && settings.collisionWireframe)
+    {
+        collision_style = RenderMeshStyle::ShadedWireframe;
+    }
+    else if (!settings.collisionShaded && settings.collisionWireframe)
+    {
+        collision_style = RenderMeshStyle::WireframeOnly;
+    }
+    else
+    {
+        collision_style = RenderMeshStyle::Shaded;
+    }
+
+    for (const std::unique_ptr<SceneModel> &model : this->collision_models)
+    {
+        model->getRenderMesh().setStyle(collision_style);
+    }
+
+    /// Update standard models rendering style.
+    if (settings.modelShaded && settings.modelWireframe)
+    {
+        model_style = RenderMeshStyle::ShadedWireframe;
+    }
+    else if (!settings.modelShaded && settings.modelWireframe)
+    {
+        model_style = RenderMeshStyle::WireframeOnly;
+    }
+    else
+    {
+        model_style = RenderMeshStyle::Shaded;
+    }
+
+    for (const std::unique_ptr<SceneModel> &model : this->models)
+    {
+        model->getRenderMesh().setStyle(model_style);
+    }
+
     this->viewport_settings_widget->hide();
+    this->viewport_widget->update();
 }
 
 /// Event handler invoked when user clicks on 'cancel' button on viewport settings panel.

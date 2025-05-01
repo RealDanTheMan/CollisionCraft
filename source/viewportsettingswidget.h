@@ -21,6 +21,10 @@ public:
     void setSettings(const ViewportSettings &settings);
     const ViewportSettings& getSettings() const;
 
+protected:
+    void updateSettings();
+    void onApplyClick();
+
 private:
     Ui_ViewportSettingsBase ui;
     ViewportSettings settings;

@@ -22,6 +22,9 @@ class AppWindow : public QMainWindow
 public:
     AppWindow(QWidget *parent = nullptr);
     void loadModel(const std::string &filepath, bool clear_scene=false);
+    void addCollisionModel(const Mesh &collision_mesh);
+    void clearAllModels();
+    void clearAllCollisionModels();
     void clearScene();
 
 protected:

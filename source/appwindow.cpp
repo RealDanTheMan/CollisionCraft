@@ -141,14 +141,36 @@ void AppWindow::registerEvents()
     );
 }
 
+/// Unloads and removes any active standard models in the current scene.
+void AppWindow::clearAllModels()
+{
+    logDebug("Clearing all {} standard models in the scene", this->models.size());
+    for (const std::unique_ptr<SceneModel> &model : this->models)
+    {
+        this->viewport_widget->removeRenderMesh(&model->getRenderMesh());
+    }
+
+    this->models.clear();
+}
+
+/// Unloads and removes any active collision models in the current scene.
+void AppWindow::clearAllCollisionModels()
+{
+
+    logDebug("Clearing all {} collision models in the scene", this->collision_models.size());
+    for (const std::unique_ptr<SceneModel> &model : this->collision_models)
+    {
+        this->viewport_widget->removeRenderMesh(&model->getRenderMesh());
+    }
+
+    this->collision_models.clear();
+}
+
 /// Unloads all models and collisions from active scene.
 void AppWindow::clearScene()
 {
-    logDebug("Clearing active scene content");
-    this->viewport_widget->clearRenderMeshes();
-    this->viewport_widget->update();
-    this->models.clear();
-    this->collision_models.clear();
+    this->clearAllModels();
+    this->clearAllCollisionModels();
 }
 
 /// Loads model from asset file.
@@ -172,6 +194,16 @@ void AppWindow::loadModel(const std::string &filepath, bool clear_scene)
         this->models.push_back(std::make_unique<SceneModel>(mesh));
         this->viewport_widget->addRenderMesh(&this->models.back()->getRenderMesh());
     }
+}
+
+/// Create collision model from given mesh and add it to current scene.
+void AppWindow::addCollisionModel(const Mesh &collision_mesh)
+{
+    this->viewport_widget->makeCurrent();
+    this->collision_models.push_back(std::make_unique<SceneModel>(collision_mesh));
+    this->collision_models.back()->getRenderMesh().setMaterial(RenderMeshMaterial::Collision);
+    this->collision_models.back()->getRenderMesh().setStyle(RenderMeshStyle::ShadedWireframe);
+    this->viewport_widget->addRenderMesh(&this->collision_models.back()->getRenderMesh());
 }
 
 /// Event handler invoked when viewport graphics initialisation is completed.
@@ -212,13 +244,10 @@ void AppWindow::generateSimpleCollision()
     CollisionGenSettings settings = this->property_panel->getSettings();
     std::unique_ptr<Mesh> collision;
     this->collision_gen->generateCollisionHull(settings, collision);
-    
-    this->viewport_widget->makeCurrent();
-    this->collision_models.push_back(std::make_unique<SceneModel>(*collision));
-    RenderMesh &rmesh = this->collision_models.back()->getRenderMesh();
-    rmesh.setMaterial(RenderMeshMaterial::Collision);
-    rmesh.setStyle(RenderMeshStyle::ShadedWireframe);
-    this->viewport_widget->addRenderMesh(&rmesh);
+    if (collision)
+    {
+        this->addCollisionModel(*collision);
+    }
 }
 
 /// Generate complex collision hulls using exact convex decomposition technique.
@@ -248,12 +277,7 @@ void AppWindow::generateComplexCollision()
     this->viewport_widget->makeCurrent();
     for (const auto &collision : collisions)
     {
-        this->collision_models.push_back(std::make_unique<SceneModel>(*collision));
-
-        RenderMesh &rmesh = this->collision_models.back()->getRenderMesh();
-        rmesh.setMaterial(RenderMeshMaterial::Collision);
-        rmesh.setStyle(RenderMeshStyle::ShadedWireframe);
-        this->viewport_widget->addRenderMesh(&rmesh);
+        this->addCollisionModel(*collision);
     }
 }
 
@@ -284,12 +308,7 @@ void AppWindow::generateApproximateCollision()
     this->viewport_widget->makeCurrent();
     for (const auto &collision : collisions)
     {
-        this->collision_models.push_back(std::make_unique<SceneModel>(*collision));
-
-        RenderMesh &rmesh = this->collision_models.back()->getRenderMesh();
-        rmesh.setMaterial(RenderMeshMaterial::Collision);
-        rmesh.setStyle(RenderMeshStyle::ShadedWireframe);
-        this->viewport_widget->addRenderMesh(&rmesh);
+        this->addCollisionModel(*collision);
     }
 }
 

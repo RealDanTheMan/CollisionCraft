@@ -1,6 +1,8 @@
 <RCC>
 	<qresource prefix="/">
 		<file>ui/stylesheet.qss</file>
+		<file>icons/chevron-up.png</file>
+		<file>icons/chevron-down.png</file>
 		<file>shaders/model.vs</file>
 		<file>shaders/model.ps</file>
 		<file>shaders/collision.vs</file>

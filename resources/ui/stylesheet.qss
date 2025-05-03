@@ -23,3 +23,58 @@ LogWidget QListWidget
 	font-weight			: bold;
 	color               : rgb(192, 192, 192);
 }
+
+QSpinBox, QDoubleSpinBox
+{
+    background-color    : rgb(16, 16, 16);
+    color               : rgb(192, 192, 192); 
+}
+
+QSpinBox::down-button, QDoubleSpinBox::down-button
+{
+    width               : 16;
+    background-color    : rgb(50, 50, 50);
+}
+
+QSpinBox::up-button, QDoubleSpinBox::up-button
+{
+    width               : 16;
+    background-color    : rgb(50, 50, 50);
+}
+
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow
+{
+    image               : url(:/icons/chevron-down.png);
+    width               : 10;
+    height              : 10;
+}
+
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow
+{
+    image               : url(:icons/chevron-up.png);
+    width               : 10;
+    height              : 10;
+}
+
+QLabel
+{
+    color               : rgb(192, 192, 192); 
+    font-weight         : bold;
+    font-size           : 14;
+}
+
+QPushButton
+{
+    background-color    : rgb(60, 60, 60);
+    color               : rgb(192, 192, 192);
+    font-weight         : bold;
+    font-size           : 16;
+}
+
+QComboBox
+{
+    background-color    : rgb(60, 60, 60);
+    color               : rgb(192, 192, 192);
+    font-weight         : bold;
+    font-size           : 16;
+}

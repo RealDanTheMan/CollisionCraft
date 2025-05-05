@@ -67,6 +67,26 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     collision_expander->addWidget(this->hull_count_property);
     collision_expander->addWidget(this->downsampling_property);
 
+    this->collision_hidden_property = new TogglePropertyWidget("Hidden", false, this);
+    this->collision_fill_property = new TogglePropertyWidget("Draw Solid", true, this);
+    this->collision_wire_property = new TogglePropertyWidget("Draw Wireframe", true, this);
+
+    ExpanderWidget *collision_rendering_expander= new ExpanderWidget("Collision Draw Settings", this);
+    collision_rendering_expander->addWidget(this->collision_hidden_property);
+    collision_rendering_expander->addWidget(this->collision_fill_property);
+    collision_rendering_expander->addWidget(this->collision_wire_property);
+
+    this->model_hidden_property = new TogglePropertyWidget("Hidden", false, this);
+    this->model_fill_property = new TogglePropertyWidget("Draw Solid", true, this);
+    this->model_wire_property = new TogglePropertyWidget("Draw Wireframe", false, this);
+    this->model_light_property = new TogglePropertyWidget("Lighting", true, this);
+
+    ExpanderWidget *model_rendering_expander = new ExpanderWidget("Model Draw Settings", this);
+    model_rendering_expander->addWidget(model_hidden_property);
+    model_rendering_expander->addWidget(model_fill_property);
+    model_rendering_expander->addWidget(model_wire_property);
+    model_rendering_expander->addWidget(model_light_property);
+
     this->generate_button = new QPushButton("Generate Collision", this);
     this->generate_button->setMinimumHeight(32);
     
@@ -74,6 +94,8 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     panel_layout->setContentsMargins(QMargins(0.0, 0.0, 0.0, 0.0));
     panel_layout->setSpacing(4);
     panel_layout->addWidget(collision_expander);
+    panel_layout->addWidget(collision_rendering_expander);
+    panel_layout->addWidget(model_rendering_expander);
     panel_layout->addStretch();
     panel_layout->addWidget(this->generate_button);
 

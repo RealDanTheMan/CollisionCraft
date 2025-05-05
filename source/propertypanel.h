@@ -31,6 +31,16 @@ private:
     DecimalPropertyWidget   *resolution_property;
     IntegerPropertyWidget   *hull_count_property;
     IntegerPropertyWidget   *downsampling_property;
+
+    TogglePropertyWidget    *collision_hidden_property;
+    TogglePropertyWidget    *collision_fill_property;
+    TogglePropertyWidget    *collision_wire_property;
+
+    TogglePropertyWidget    *model_hidden_property;
+    TogglePropertyWidget    *model_fill_property;
+    TogglePropertyWidget    *model_wire_property;
+    TogglePropertyWidget    *model_light_property;
+
 };
 
 

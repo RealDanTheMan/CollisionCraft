@@ -21,6 +21,12 @@ LogWidget QListWidget
 	color               : rgb(192, 192, 192);
 }
 
+ExpanderWidget QToolButton
+{
+    font-size           : 12px;
+    font-weight         : bold;
+}
+
 PropertyPanelWidget
 {
     border              : 2px solid rgb(180, 33, 33);
@@ -86,10 +92,9 @@ QSpinBox::up-arrow, QDoubleSpinBox::up-arrow
 QLabel
 {
     color               : rgb(192, 192, 192); 
-    font-weight         : bold;
-    font-size           : 14;
     margin              : 0px;
     padding             : 0px;
+    font-size           : 10px;
 }
 
 QPushButton

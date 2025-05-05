@@ -1,6 +1,7 @@
 #include "propertywidgets.h"
 
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 
 /// Decimal property widget default constructor.
 DecimalPropertyWidget::DecimalPropertyWidget(
@@ -16,7 +17,7 @@ DecimalPropertyWidget::DecimalPropertyWidget(
     this->layout()->setSpacing(0);
 
     this->frame = new QFrame(this);
-    this->frame->setLayout(new QVBoxLayout());
+    this->frame->setLayout(new QHBoxLayout());
     this->frame->layout()->setContentsMargins(0, 0, 0, 0);
     this->frame->layout()->setSpacing(0);
 
@@ -63,7 +64,7 @@ IntegerPropertyWidget::IntegerPropertyWidget(
     this->layout()->setSpacing(0);
 
     this->frame = new QFrame(this);
-    this->frame->setLayout(new QVBoxLayout());
+    this->frame->setLayout(new QHBoxLayout());
     this->frame->layout()->setContentsMargins(0, 0, 0, 0);
     this->frame->layout()->setSpacing(0);
 

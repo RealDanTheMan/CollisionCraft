@@ -86,6 +86,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/viewportsettingswidget.cpp
     ${PROJECT_SOURCE_DIR}/viewportcamera.cpp
     ${PROJECT_SOURCE_DIR}/logwidget.cpp
+    ${PROJECT_SOURCE_DIR}/propertywidgets.cpp
     ${PROJECT_SOURCE_DIR}/propertypanel.cpp
     ${PROJECT_SOURCE_DIR}/expanderwidget.cpp
 )

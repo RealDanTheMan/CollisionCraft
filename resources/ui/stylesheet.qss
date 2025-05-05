@@ -6,9 +6,6 @@ QMainWindow
 QFrame
 {
 	background-color	: rgb(33, 33, 33);
-	border				: 2px solid rgb(40, 40, 40);
-	border-radius		: 2px;
-	padding				: 0px;
 }
 
 LogWidget
@@ -24,22 +21,50 @@ LogWidget QListWidget
 	color               : rgb(192, 192, 192);
 }
 
+PropertyPanelWidget
+{
+    border              : 2px solid rgb(180, 33, 33);
+}
+
+DecimalPropertyWidget QFrame, IntegerPropertyWidget QFrame
+{
+    background-color    : rgb(42, 42, 42);
+    margin              : 0;
+    padding             : 6;
+}
+
+DecimalPropertyWidget QLabel, IntegerPropertyWidget QLabel
+{
+    margin              : 0;
+    padding             : 0;
+}
+
 QSpinBox, QDoubleSpinBox
 {
-    background-color    : rgb(16, 16, 16);
-    color               : rgb(192, 192, 192); 
+    background-color    : rgb(24, 24, 24);
+    color               : rgb(192, 192, 192);
+    border              : 1px solid rgb(56, 56, 56);
+    border-radius       : 5px;
+    margin              : 0px;
+    padding             : 0px;
 }
 
 QSpinBox::down-button, QDoubleSpinBox::down-button
 {
-    width               : 16;
-    background-color    : rgb(50, 50, 50);
+    width                       : 16;
+    background-color            : rgb(50, 50, 50);
+    border-bottom-right-radius  : 5px;
+    margin                      : 0px;
+    padding                     : 0px;
 }
 
 QSpinBox::up-button, QDoubleSpinBox::up-button
 {
-    width               : 16;
-    background-color    : rgb(50, 50, 50);
+    width                       : 16;
+    background-color            : rgb(50, 50, 50);
+    border-top-right-radius     : 5px;
+    margin                      : 0px;
+    padding                     : 0px;
 }
 
 QSpinBox::down-arrow, QDoubleSpinBox::down-arrow
@@ -54,6 +79,8 @@ QSpinBox::up-arrow, QDoubleSpinBox::up-arrow
     image               : url(:/icons/chevron-up.png);
     width               : 10;
     height              : 10;
+    margin              : 0px;
+    padding             : 0px;
 }
 
 QLabel
@@ -61,6 +88,8 @@ QLabel
     color               : rgb(192, 192, 192); 
     font-weight         : bold;
     font-size           : 14;
+    margin              : 0px;
+    padding             : 0px;
 }
 
 QPushButton
@@ -77,4 +106,6 @@ QComboBox
     color               : rgb(192, 192, 192);
     font-weight         : bold;
     font-size           : 16;
+    padding             : 4;
+    margin              : 4;
 }

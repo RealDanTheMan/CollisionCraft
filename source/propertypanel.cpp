@@ -169,15 +169,18 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
         this
     );
 
+    ExpanderWidget *collision_expander = new ExpanderWidget("Collision Generation", this);
+    collision_expander->addWidget(technique_label);
+    collision_expander->addWidget(this->technique_menu);
+    collision_expander->addWidget(this->scale_property);
+    collision_expander->addWidget(this->resolution_property);
+    collision_expander->addWidget(this->hull_count_property);
+    collision_expander->addWidget(this->downsampling_property);
+
     QVBoxLayout *panel_layout = new QVBoxLayout();
     panel_layout->setContentsMargins(QMargins(0.0, 0.0, 0.0, 0.0));
     panel_layout->setSpacing(4);
-    panel_layout->addWidget(technique_label);
-    panel_layout->addWidget(this->technique_menu);
-    panel_layout->addWidget(this->scale_property);
-    panel_layout->addWidget(this->resolution_property);
-    panel_layout->addWidget(this->hull_count_property);
-    panel_layout->addWidget(this->downsampling_property);
+    panel_layout->addWidget(collision_expander);
     panel_layout->addStretch();
     panel_layout->addWidget(this->generate_button);
 

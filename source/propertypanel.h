@@ -2,6 +2,8 @@
 #define PROPERTY_PANEL_H
 
 #include "collisiongen.h"
+#include "expanderwidget.h"
+
 #include <QWidget>
 #include <QPushButton>
 #include <QComboBox>

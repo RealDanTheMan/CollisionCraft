@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
 
     /// Create main window and start application loop.
     Logger::active()->debug("Starting application");
+    QApplication::setStyle("Fusion");
     QApplication app(argc, argv);
     
     /// Define OpenGL context specification.
@@ -95,6 +96,7 @@ int main(int argc, char *argv[])
         Logger::active()->warning("Failed to load default application stylesheet");
     }
 
+    logInfo("Theme style loaded -> {}", app.style()->objectName().toStdString());
     Logger::active()->debug("Initialising application main window");
     AppWindow win;
     win.setWindowTitle("CollisionCraft");

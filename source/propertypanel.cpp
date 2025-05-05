@@ -2,6 +2,7 @@
 #include "collisiongen.h"
 #include "logging.h"
 #include "expanderwidget.h"
+#include "propertywidgets.h"
 
 #include <QVBoxLayout>
 #include <QLabel>
@@ -11,37 +12,20 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     QWidget(parent),
     selected_technique(CollisionTechnique::SimpleHull)
 {
-    QLabel *technique_label = new QLabel("Collision Generation Technique", this);
-
-    this->technique_menu = new QComboBox(this);
+    this->technique_menu = new DropdownPropertyWidget("Technique", this);
     this->technique_menu->addItem(
-        "Volume Hull",
-        QVariant::fromValue(static_cast<int>(CollisionTechnique::SimpleHull))
+        "Simple Hull",
+        static_cast<int>(CollisionTechnique::SimpleHull)
     );
+
     this->technique_menu->addItem(
         "Exact Decomposition",
-        QVariant::fromValue(static_cast<int>(CollisionTechnique::ExactDecomposition))
+        static_cast<int>(CollisionTechnique::ExactDecomposition)
     );
+
     this->technique_menu->addItem(
         "Approximate Decomposition",
-        QVariant::fromValue(static_cast<int>(CollisionTechnique::ApproximateDecomposition))
-    );
-
-    this->generate_button = new QPushButton("Generate Collision", this);
-    this->generate_button->setMinimumHeight(32);
-
-    connect(
-        this->generate_button,
-        &QPushButton::clicked,
-        this,
-        &PropertyPanelWidget::collisionGenerationRequested
-    );
-
-    connect(
-        this->technique_menu,
-        &QComboBox::currentIndexChanged,
-        this,
-        &PropertyPanelWidget::onTechniqueSelectionChanged
+        static_cast<int>(CollisionTechnique::ApproximateDecomposition)
     );
 
     this->scale_property = new DecimalPropertyWidget(
@@ -77,13 +61,15 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     );
 
     ExpanderWidget *collision_expander = new ExpanderWidget("Collision Generation", this);
-    collision_expander->addWidget(technique_label);
     collision_expander->addWidget(this->technique_menu);
     collision_expander->addWidget(this->scale_property);
     collision_expander->addWidget(this->resolution_property);
     collision_expander->addWidget(this->hull_count_property);
     collision_expander->addWidget(this->downsampling_property);
 
+    this->generate_button = new QPushButton("Generate Collision", this);
+    this->generate_button->setMinimumHeight(32);
+    
     QVBoxLayout *panel_layout = new QVBoxLayout();
     panel_layout->setContentsMargins(QMargins(0.0, 0.0, 0.0, 0.0));
     panel_layout->setSpacing(4);
@@ -92,6 +78,20 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     panel_layout->addWidget(this->generate_button);
 
     this->setLayout(panel_layout);
+
+    connect(
+        this->generate_button,
+        &QPushButton::clicked,
+        this,
+        &PropertyPanelWidget::collisionGenerationRequested
+    );
+
+    connect(
+        this->technique_menu,
+        &DropdownPropertyWidget::selectedValueChanged,
+        this,
+        &PropertyPanelWidget::onTechniqueSelectionChanged
+    );
 }
 
 /// Get currently selected value in collision generation drop-down menu.
@@ -101,12 +101,9 @@ CollisionTechnique PropertyPanelWidget::getSelectedTechnique() const
 }
 
 /// Event handler invoked when user changes the 'Collision Generation Technique' menu option.
-void PropertyPanelWidget::onTechniqueSelectionChanged()
+void PropertyPanelWidget::onTechniqueSelectionChanged(int technique)
 {
-    const int idx = this->technique_menu->currentIndex();
-    const int technique_id = this->technique_menu->itemData(idx).toInt();
-
-    this->selected_technique = static_cast<CollisionTechnique>(technique_id);
+    this->selected_technique = static_cast<CollisionTechnique>(technique);
     switch (this->selected_technique)
     {
         case CollisionTechnique::SimpleHull:
@@ -130,7 +127,8 @@ void PropertyPanelWidget::onTechniqueSelectionChanged()
         Default:
             break;
     }
-    logDebug("Selected collision technique changed -> {}", technique_id);
+
+    logDebug("Selected collision technique changed -> {}", this->technique_menu->getSelected());
 }
 
 /// Get collision generation settings from property values.

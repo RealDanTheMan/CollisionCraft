@@ -21,16 +21,16 @@ public:
     void collisionGenerationRequested();
 
 protected:
-    void onTechniqueSelectionChanged();
+    void onTechniqueSelectionChanged(int technique);
     CollisionTechnique selected_technique;
 
 private:
-    QPushButton *generate_button;
-    QComboBox *technique_menu;
-    DecimalPropertyWidget *scale_property;
-    DecimalPropertyWidget *resolution_property;
-    IntegerPropertyWidget *hull_count_property;
-    IntegerPropertyWidget *downsampling_property;
+    QPushButton             *generate_button;
+    DropdownPropertyWidget  *technique_menu;
+    DecimalPropertyWidget   *scale_property;
+    DecimalPropertyWidget   *resolution_property;
+    IntegerPropertyWidget   *hull_count_property;
+    IntegerPropertyWidget   *downsampling_property;
 };
 
 

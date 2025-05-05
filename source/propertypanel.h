@@ -25,6 +25,11 @@ protected:
     CollisionTechnique selected_technique;
 
 private:
+    void initGenerationProperties(QLayout *parent_layout);
+    void initCollisionProperties(QLayout *parent_layout);
+    void initModelProperties(QLayout *parent_layout);
+
+private:
     QPushButton             *generate_button;
     DropdownPropertyWidget  *technique_menu;
     DecimalPropertyWidget   *scale_property;
@@ -40,7 +45,6 @@ private:
     TogglePropertyWidget    *model_fill_property;
     TogglePropertyWidget    *model_wire_property;
     TogglePropertyWidget    *model_light_property;
-
 };
 
 

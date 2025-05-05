@@ -32,14 +32,14 @@ PropertyPanelWidget
     border              : 2px solid rgb(180, 33, 33);
 }
 
-DecimalPropertyWidget QFrame, IntegerPropertyWidget QFrame
+DecimalPropertyWidget QFrame, IntegerPropertyWidget QFrame, DropdownPropertyWidget QFrame
 {
     background-color    : rgb(42, 42, 42);
     margin              : 0;
     padding             : 6;
 }
 
-DecimalPropertyWidget QLabel, IntegerPropertyWidget QLabel
+DecimalPropertyWidget QLabel, IntegerPropertyWidget QLabel, DropdownPropertyWidget QLabel
 {
     margin              : 0;
     padding             : 0;

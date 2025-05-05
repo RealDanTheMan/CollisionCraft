@@ -54,4 +54,32 @@ protected:
     QSpinBox *spinner;
 };
 
+
+class DropdownPropertyWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    DropdownPropertyWidget(const QString &text, QWidget *parent = nullptr);
+    void addItem(const QString &text, int value);
+    void setEnabled(bool enabled);
+    void setSelected(int value);
+    void setSelectedIndex(int idx);
+    int getSelected() const;
+    int getSelectedIndex() const;
+
+    Q_SIGNAL
+    void selectedValueChanged(int selected_value);
+
+    Q_SIGNAL
+    void selectedIndexChanged(int idx);
+
+protected:
+    QFrame  *frame;
+    QLabel *label;
+    QComboBox *menu;
+
+    void onMenuSelectionChanged(int index);
+};
+
 #endif

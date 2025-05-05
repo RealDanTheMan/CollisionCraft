@@ -45,7 +45,7 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     );
 
     this->scale_property = new DecimalPropertyWidget(
-        "Collision Scale",
+        "Scale",
         1.0,
         0.01,
         2.0,
@@ -53,7 +53,7 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     );
 
     this->resolution_property = new DecimalPropertyWidget(
-        "Collision Resolution",
+        "Resolution",
         100000.0,
         1000.0,
         1000000.0,
@@ -61,7 +61,7 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     );
 
     this->hull_count_property = new IntegerPropertyWidget(
-        "Collision Maximum Hull Count",
+        "Max Hull Count",
         16,
         1,
         255,
@@ -69,7 +69,7 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     );
 
     this->downsampling_property = new IntegerPropertyWidget(
-        "Collision Downsampling",
+        "Downsampling",
         1,
         1,
         32,

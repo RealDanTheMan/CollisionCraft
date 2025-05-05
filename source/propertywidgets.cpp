@@ -3,6 +3,58 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
+/// Toggle property widget default constructor.
+TogglePropertyWidget::TogglePropertyWidget(
+    const QString &text,
+    bool value,
+    QWidget *parent
+) : QWidget(parent)
+{
+    this->setLayout(new QVBoxLayout());
+    this->layout()->setContentsMargins(0, 0, 0, 0);
+    this->layout()->setSpacing(0);
+
+    this->frame = new QFrame(this);
+    this->frame->setLayout(new QHBoxLayout());
+    this->frame->layout()->setContentsMargins(0, 0, 0, 0);
+    this->frame->layout()->setSpacing(0);
+
+    this->label = new QLabel(text, this->frame);
+    this->toggle = new QCheckBox(this->frame);
+    this->toggle->setCheckable(true);
+    this->toggle->setChecked(value);
+
+    connect(
+        this->toggle,
+        &QCheckBox::checkStateChanged,
+        this,
+        &TogglePropertyWidget::valueChanged
+    );
+
+    this->layout()->addWidget(this->frame);
+    this->frame->layout()->addWidget(this->label);
+    this->frame->layout()->addWidget(this->toggle);
+}
+
+/// Disable or enable this property widget.
+void TogglePropertyWidget::setEnabled(bool enabled)
+{
+    this->toggle->setEnabled(enabled);
+}
+
+/// Set value of this toggle property.
+void TogglePropertyWidget::setValue(bool value)
+{
+    this->toggle->setChecked(value);
+}
+
+/// Get value of this toggle property.
+bool TogglePropertyWidget::getValue() const
+{
+    return this->toggle->isChecked();
+}
+
+
 /// Decimal property widget default constructor.
 DecimalPropertyWidget::DecimalPropertyWidget(
     const QString &text,

@@ -7,6 +7,27 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QComboBox>
+#include <QCheckBox>
+
+class TogglePropertyWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    TogglePropertyWidget(const QString &text, bool value, QWidget *parent = nullptr);
+    void setEnabled(bool enabled);
+    void setValue(bool value);
+    bool getValue() const;
+
+    Q_SIGNAL
+    void valueChanged(Qt::CheckState state);
+
+protected:
+    QFrame      *frame;
+    QLabel      *label;
+    QCheckBox   *toggle;
+};
+
 
 class DecimalPropertyWidget : public QWidget
 {

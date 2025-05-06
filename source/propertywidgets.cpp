@@ -15,9 +15,7 @@ TogglePropertyWidget::TogglePropertyWidget(
     this->layout()->setSpacing(0);
 
     this->frame = new QFrame(this);
-    this->frame->setLayout(new QHBoxLayout());
-    this->frame->layout()->setContentsMargins(0, 0, 0, 0);
-    this->frame->layout()->setSpacing(0);
+    this->layout()->addWidget(this->frame);
 
     this->label = new QLabel(text, this->frame);
     this->toggle = new QCheckBox(this->frame);
@@ -31,9 +29,13 @@ TogglePropertyWidget::TogglePropertyWidget(
         &TogglePropertyWidget::valueChanged
     );
 
-    this->layout()->addWidget(this->frame);
-    this->frame->layout()->addWidget(this->label);
-    this->frame->layout()->addWidget(this->toggle);
+    QHBoxLayout *frame_layout = new QHBoxLayout();
+    frame_layout->setContentsMargins(0, 0, 0, 0);
+    frame_layout->setSpacing(0);
+    frame_layout->addWidget(this->label);
+    frame_layout->addStretch();
+    frame_layout->addWidget(this->toggle);
+    this->frame->setLayout(frame_layout);
 }
 
 /// Disable or enable this property widget.
@@ -69,18 +71,21 @@ DecimalPropertyWidget::DecimalPropertyWidget(
     this->layout()->setSpacing(0);
 
     this->frame = new QFrame(this);
-    this->frame->setLayout(new QHBoxLayout());
-    this->frame->layout()->setContentsMargins(0, 0, 0, 0);
-    this->frame->layout()->setSpacing(0);
+    this->layout()->addWidget(this->frame);
 
     this->label = new QLabel(text, this->frame);
     this->spinner = new QDoubleSpinBox(this->frame);
+    this->spinner->setMinimumWidth(128);
     this->spinner->setRange(min, max);
     this->spinner->setValue(value);
 
-    this->layout()->addWidget(this->frame);
-    this->frame->layout()->addWidget(this->label);
-    this->frame->layout()->addWidget(this->spinner);
+    QHBoxLayout *frame_layout = new QHBoxLayout();
+    frame_layout->setContentsMargins(0, 0, 0, 0);
+    frame_layout->setSpacing(0);
+    frame_layout->addWidget(this->label);
+    frame_layout->addStretch();
+    frame_layout->addWidget(this->spinner);
+    this->frame->setLayout(frame_layout);
 }
 
 /// Disable or enable this property widget.
@@ -116,18 +121,21 @@ IntegerPropertyWidget::IntegerPropertyWidget(
     this->layout()->setSpacing(0);
 
     this->frame = new QFrame(this);
-    this->frame->setLayout(new QHBoxLayout());
-    this->frame->layout()->setContentsMargins(0, 0, 0, 0);
-    this->frame->layout()->setSpacing(0);
+    this->layout()->addWidget(this->frame);
 
     this->label = new QLabel(text, this->frame);
     this->spinner = new QSpinBox(this->frame);
+    this->spinner->setMinimumWidth(128);
     this->spinner->setRange(min, max);
     this->spinner->setValue(value);
 
-    this->layout()->addWidget(this->frame);
-    this->frame->layout()->addWidget(this->label);
-    this->frame->layout()->addWidget(this->spinner);
+    QHBoxLayout *frame_layout = new QHBoxLayout();
+    frame_layout->setContentsMargins(0, 0, 0, 0);
+    frame_layout->setSpacing(0);
+    frame_layout->addWidget(this->label);
+    frame_layout->addStretch();
+    frame_layout->addWidget(this->spinner);
+    this->frame->setLayout(frame_layout);
 }
 
 /// Disable or enable this property widget.
@@ -161,12 +169,11 @@ DropdownPropertyWidget::DropdownPropertyWidget(
     this->layout()->setSpacing(0);
 
     this->frame = new QFrame(this);
-    this->frame->setLayout(new QHBoxLayout());
-    this->frame->layout()->setContentsMargins(0, 0, 0, 0);
-    this->frame->layout()->setSpacing(0);
+    this->layout()->addWidget(this->frame);
 
     this->label = new QLabel(text, this->frame);
     this->menu = new QComboBox(this->frame);
+    this->menu->setMinimumWidth(128);
 
     connect(
         this->menu,
@@ -175,9 +182,13 @@ DropdownPropertyWidget::DropdownPropertyWidget(
         &DropdownPropertyWidget::onMenuSelectionChanged
     );
 
-    this->layout()->addWidget(this->frame);
-    this->frame->layout()->addWidget(this->label);
-    this->frame->layout()->addWidget(this->menu);
+    QHBoxLayout *frame_layout = new QHBoxLayout();
+    frame_layout->setContentsMargins(0, 0, 0, 0);
+    frame_layout->setSpacing(0);
+    frame_layout->addWidget(this->label);
+    frame_layout->addStretch();
+    frame_layout->addWidget(this->menu);
+    this->frame->setLayout(frame_layout);
 }
 
 /// Add dropdown menu entry

@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     logInfo("Theme style loaded -> {}", app.style()->objectName().toStdString());
     Logger::active()->debug("Initialising application main window");
     AppWindow win;
-    win.setWindowTitle("CollisionCraft");
+    win.setWindowTitle("Collision Craft");
     win.resize(1000, 720);
     win.show();
 

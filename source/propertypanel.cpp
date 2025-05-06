@@ -3,6 +3,7 @@
 #include "logging.h"
 #include "expanderwidget.h"
 #include "propertywidgets.h"
+#include "viewportwidget.h"
 
 #include <QVBoxLayout>
 #include <QLabel>
@@ -116,8 +117,28 @@ void PropertyPanelWidget::initCollisionProperties(QLayout *parent_layout)
     expander->addWidget(this->collision_hidden_property);
     expander->addWidget(this->collision_fill_property);
     expander->addWidget(this->collision_wire_property);
-
     parent_layout->addWidget(expander);
+
+    connect(
+        this->collision_hidden_property,
+        &TogglePropertyWidget::valueChanged,
+        this,
+        &PropertyPanelWidget::onViewportSettingsPropertyChanged
+    );
+
+    connect(
+        this->collision_fill_property,
+        &TogglePropertyWidget::valueChanged,
+        this,
+        &PropertyPanelWidget::onViewportSettingsPropertyChanged
+    );
+
+    connect(
+        this->collision_wire_property,
+        &TogglePropertyWidget::valueChanged,
+        this,
+        &PropertyPanelWidget::onViewportSettingsPropertyChanged
+    );
 }
 
 /// Initial setup of all properties controlling models in the viewport.
@@ -134,8 +155,28 @@ void PropertyPanelWidget::initModelProperties(QLayout *parent_layout)
     expander->addWidget(model_fill_property);
     expander->addWidget(model_wire_property);
     expander->addWidget(model_light_property);
-
     parent_layout->addWidget(expander);
+
+    connect(
+        this->model_hidden_property,
+        &TogglePropertyWidget::valueChanged,
+        this,
+        &PropertyPanelWidget::onViewportSettingsPropertyChanged
+    );
+
+    connect(
+        this->model_fill_property,
+        &TogglePropertyWidget::valueChanged,
+        this,
+        &PropertyPanelWidget::onViewportSettingsPropertyChanged
+    );
+
+    connect(
+        this->model_wire_property,
+        &TogglePropertyWidget::valueChanged,
+        this,
+        &PropertyPanelWidget::onViewportSettingsPropertyChanged
+    );
 }
 
 /// Get currently selected value in collision generation drop-down menu.
@@ -173,6 +214,20 @@ void PropertyPanelWidget::onTechniqueSelectionChanged(int technique)
     }
 
     logDebug("Selected collision technique changed -> {}", this->technique_menu->getSelected());
+}
+
+/// Event handler invoked when the user edits the values of any properties which
+/// control the rendering behavior of the contents in the scene.
+void PropertyPanelWidget::onViewportSettingsPropertyChanged()
+{
+    ViewportSettings settings;
+    settings.collisionShaded = this->collision_fill_property->getValue();
+    settings.collisionWireframe = this->collision_wire_property->getValue();
+    settings.modelShaded = this->model_fill_property->getValue();
+    settings.modelWireframe = this->model_wire_property->getValue();
+    settings.modelLighting = this->model_light_property->getValue();
+
+    Q_EMIT this->viewportSettingsChanged(settings);
 }
 
 /// Get collision generation settings from property values.

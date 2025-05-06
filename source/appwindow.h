@@ -34,6 +34,7 @@ protected:
     void onExportCollisionClick();
     void onFrameAllClick();
     void onCollisionGenerationRequested();
+    void onPropertyPanelViewportSettingsChanged(ViewportSettings settings);
     void onViewportSettingsClick();
     void onViewportSettingsApplyClick();
     void onViewportSettingsCancelClick();
@@ -41,6 +42,7 @@ protected:
     void generateSimpleCollision();
     void generateComplexCollision();
     void generateApproximateCollision();
+    void updateViewportSettings(const ViewportSettings &settings);
 
 protected:
     std::unique_ptr<CollisionGen> collision_gen;

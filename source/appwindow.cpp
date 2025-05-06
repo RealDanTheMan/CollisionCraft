@@ -139,6 +139,13 @@ void AppWindow::registerEvents()
         this,
         &AppWindow::onViewportSettingsCancelClick
     );
+
+    connect(
+        this->property_panel,
+        &PropertyPanelWidget::viewportSettingsChanged,
+        this,
+        &AppWindow::onPropertyPanelViewportSettingsChanged
+    );
 }
 
 /// Unloads and removes any active standard models in the current scene.
@@ -388,6 +395,63 @@ void AppWindow::onCollisionGenerationRequested()
             return;
     }
 
+    this->viewport_widget->update();
+}
+
+/// Event handler invoked when the user updates any of the viewport settings properties on
+/// the property panel.
+void AppWindow::onPropertyPanelViewportSettingsChanged(ViewportSettings settings)
+{
+    this->updateViewportSettings(settings);
+}
+
+/// Update the active viewport settings.
+/// Viewport settings control the rendering behavior of models and collision in the scene.
+void AppWindow::updateViewportSettings(const ViewportSettings &settings)
+{
+    logDebug("Updating viewport settings");
+    RenderMeshStyle collision_style;
+    RenderMeshStyle model_style;
+
+    /// Update collision object rendering style.
+    if (settings.collisionShaded && settings.collisionWireframe)
+    {
+        collision_style = RenderMeshStyle::ShadedWireframe;
+    }
+    else if (!settings.collisionShaded && settings.collisionWireframe)
+    {
+        collision_style = RenderMeshStyle::WireframeOnly;
+    }
+    else
+    {
+        collision_style = RenderMeshStyle::Shaded;
+    }
+
+    for (const std::unique_ptr<SceneModel> &model : this->collision_models)
+    {
+        model->getRenderMesh().setStyle(collision_style);
+    }
+
+    /// Update standard models rendering style.
+    if (settings.modelShaded && settings.modelWireframe)
+    {
+        model_style = RenderMeshStyle::ShadedWireframe;
+    }
+    else if (!settings.modelShaded && settings.modelWireframe)
+    {
+        model_style = RenderMeshStyle::WireframeOnly;
+    }
+    else
+    {
+        model_style = RenderMeshStyle::Shaded;
+    }
+
+    for (const std::unique_ptr<SceneModel> &model : this->models)
+    {
+        model->getRenderMesh().setStyle(model_style);
+    }
+
+    this->viewport_settings_widget->hide();
     this->viewport_widget->update();
 }
 

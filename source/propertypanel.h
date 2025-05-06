@@ -3,6 +3,7 @@
 
 #include "collisiongen.h"
 #include "propertywidgets.h"
+#include "viewportwidget.h"
 
 #include <QWidget>
 #include <QPushButton>
@@ -20,8 +21,12 @@ public:
     Q_SIGNAL
     void collisionGenerationRequested();
 
+    Q_SIGNAL
+    void viewportSettingsChanged(ViewportSettings settings);
+
 protected:
     void onTechniqueSelectionChanged(int technique);
+    void onViewportSettingsPropertyChanged();
     CollisionTechnique selected_technique;
 
 private:

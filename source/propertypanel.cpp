@@ -20,20 +20,8 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
     this->initCollisionProperties(panel_layout);
     this->initGenerationProperties(panel_layout);
 
-    this->generate_button = new QPushButton("Generate Collision", this);
-    this->generate_button->setMinimumHeight(32);
-    
     panel_layout->addStretch();
-    panel_layout->addWidget(this->generate_button);
     this->setLayout(panel_layout);
-
-    connect(
-        this->generate_button,
-        &QPushButton::clicked,
-        this,
-        &PropertyPanelWidget::collisionGenerationRequested
-    );
-
 }
 
 /// Initial setup of all properties supporting collision generation.
@@ -87,6 +75,9 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         32,
         this
     );
+    
+    this->generate_button = new QPushButton("Generate Collision", this);
+    this->generate_button->setMinimumHeight(32);
 
     ExpanderWidget *expander = new ExpanderWidget("Collision Generation", this);
     expander->addWidget(this->technique_menu);
@@ -94,6 +85,7 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
     expander->addWidget(this->resolution_property);
     expander->addWidget(this->hull_count_property);
     expander->addWidget(this->downsampling_property);
+    expander->addWidget(this->generate_button);
 
     parent_layout->addWidget(expander);
 
@@ -102,6 +94,13 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         &DropdownPropertyWidget::selectedValueChanged,
         this,
         &PropertyPanelWidget::onTechniqueSelectionChanged
+    );
+
+    connect(
+        this->generate_button,
+        &QPushButton::clicked,
+        this,
+        &PropertyPanelWidget::collisionGenerationRequested
     );
 }
 

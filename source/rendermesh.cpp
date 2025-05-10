@@ -1,5 +1,4 @@
 #include "rendermesh.h"
-#include <cstdint>
 #include <stdexcept>
 
 
@@ -10,7 +9,8 @@ RenderMesh::RenderMesh(const Mesh &mesh)
       material(RenderMeshMaterial::Standard),
       vertex_size(0),
       normal_size(0),
-      index_size(0)
+      index_size(0),
+      visibility(true)
 {
     initializeOpenGLFunctions();
 
@@ -191,4 +191,16 @@ RenderMeshMaterial RenderMesh::getMaterial() const
 RenderMeshStyle RenderMesh::getStyle() const
 {
     return this->style;
+}
+
+/// Set visibility sate of this mesh.
+void RenderMesh::setVisibility(bool visible)
+{
+    this->visibility = visible;
+}
+
+/// Get visibility state of this mesh.
+bool RenderMesh::getVisibility() const
+{
+    return this->visibility;
 }

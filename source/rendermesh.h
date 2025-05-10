@@ -34,11 +34,13 @@ public:
     void setTransform(const QMatrix4x4 &transform);
     void setMaterial(RenderMeshMaterial material);
     void setStyle(RenderMeshStyle style);
+    void setVisibility(bool visible);
 
     const double getBoundingShereRadius() const;
     const QMatrix4x4& getTransform() const;
     RenderMeshMaterial getMaterial() const;
     RenderMeshStyle getStyle() const;
+    bool getVisibility() const;
     size_t numVertices() const;
     size_t numNormals() const;
     size_t numIndices() const;
@@ -49,6 +51,7 @@ public:
 
 
 private:
+    bool visibility;
     size_t vertex_size = 0;
     size_t normal_size = 0;
     size_t index_size = 0;

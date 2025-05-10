@@ -220,12 +220,14 @@ void PropertyPanelWidget::onTechniqueSelectionChanged(int technique)
 /// control the rendering behavior of the contents in the scene.
 void PropertyPanelWidget::onViewportSettingsPropertyChanged()
 {
-    ViewportSettings settings;
+    ViewportSettings settings = ViewportSettings::Default();
     settings.collisionShaded = this->collision_fill_property->getValue();
     settings.collisionWireframe = this->collision_wire_property->getValue();
+    settings.collisionHidden = this->collision_hidden_property->getValue();
     settings.modelShaded = this->model_fill_property->getValue();
     settings.modelWireframe = this->model_wire_property->getValue();
     settings.modelLighting = this->model_light_property->getValue();
+    settings.modelHidden = this->model_hidden_property->getValue();
 
     Q_EMIT this->viewportSettingsChanged(settings);
 }

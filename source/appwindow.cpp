@@ -393,9 +393,10 @@ void AppWindow::updateViewportSettings(const ViewportSettings &settings)
         collision_style = RenderMeshStyle::Shaded;
     }
 
-    for (const std::unique_ptr<SceneModel> &model : this->collision_models)
+    for (const std::unique_ptr<SceneModel> &collision : this->collision_models)
     {
-        model->getRenderMesh().setStyle(collision_style);
+        collision->getRenderMesh().setStyle(collision_style);
+        collision->getRenderMesh().setVisibility(!settings.collisionHidden);
     }
 
     /// Update standard models rendering style.
@@ -413,8 +414,9 @@ void AppWindow::updateViewportSettings(const ViewportSettings &settings)
     }
 
     for (const std::unique_ptr<SceneModel> &model : this->models)
-    {
+    {   
         model->getRenderMesh().setStyle(model_style);
+        model->getRenderMesh().setVisibility(!settings.modelHidden);
     }
 
     this->viewport_widget->update();

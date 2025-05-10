@@ -196,6 +196,15 @@ void ViewportWidget::drawMesh(RenderMesh &mesh)
     {
         case RenderMeshMaterial::Standard:
             mesh.bindShader(this->graphics->getModelShader());
+            mesh.shader()->bind();
+            mesh.shader()->setUniformValue("unlit", false);
+            mesh.shader()->release();
+            break;
+        case RenderMeshMaterial::StandardUnlit:
+            mesh.bindShader(this->graphics->getModelShader());
+            mesh.shader()->bind();
+            mesh.shader()->setUniformValue("unlit", true);
+            mesh.shader()->release();
             break;
         case RenderMeshMaterial::Collision:
             mesh.bindShader(this->graphics->getCollisionShader());

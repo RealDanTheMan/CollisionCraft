@@ -20,7 +20,8 @@ enum class RenderMeshStyle
 enum class RenderMeshMaterial
 {
     Standard = 0,
-    Collision = 1
+    StandardUnlit = 1,
+    Collision = 2
 };
 
 

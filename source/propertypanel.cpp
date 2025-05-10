@@ -177,6 +177,13 @@ void PropertyPanelWidget::initModelProperties(QLayout *parent_layout)
         this,
         &PropertyPanelWidget::onViewportSettingsPropertyChanged
     );
+
+    connect(
+        this->model_light_property,
+        &TogglePropertyWidget::valueChanged,
+        this,
+        &PropertyPanelWidget::onViewportSettingsPropertyChanged
+    );
 }
 
 /// Get currently selected value in collision generation drop-down menu.

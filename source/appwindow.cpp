@@ -417,6 +417,15 @@ void AppWindow::updateViewportSettings(const ViewportSettings &settings)
     {   
         model->getRenderMesh().setStyle(model_style);
         model->getRenderMesh().setVisibility(!settings.model_hidden);
+
+        if (settings.model_lighting)
+        {
+            model->getRenderMesh().setMaterial(RenderMeshMaterial::Standard);
+        }
+        else
+        {
+            model->getRenderMesh().setMaterial(RenderMeshMaterial::StandardUnlit);
+        }
     }
 
     this->viewport_widget->update();

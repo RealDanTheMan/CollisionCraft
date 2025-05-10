@@ -169,6 +169,11 @@ void ViewportWidget::paintGL()
     //logDebug("Drawing render queue of size -> {}", this->render_queue.size());
     for (RenderMesh *mesh : this->render_queue)
     {
+        if (!mesh->getVisibility())
+        {
+            continue;
+        }
+
         if (mesh->getStyle() == RenderMeshStyle::Shaded ||
             mesh->getStyle() == RenderMeshStyle::ShadedWireframe)
         {

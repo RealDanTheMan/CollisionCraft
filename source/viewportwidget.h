@@ -18,18 +18,22 @@ struct ViewportSettings
 {
     bool collisionShaded;
     bool collisionWireframe;
+    bool collisionHidden;
     bool modelShaded;
     bool modelWireframe;
     bool modelLighting;
+    bool modelHidden;
 
     static ViewportSettings Default()
     {
         ViewportSettings settings;
         settings.collisionShaded = false;
         settings.collisionWireframe = true;
+        settings.collisionHidden = false;
         settings.modelShaded = true;
         settings.modelWireframe = false;
         settings.modelLighting = false;
+        settings.modelHidden = false;
 
         return settings;
     }

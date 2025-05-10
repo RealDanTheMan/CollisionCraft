@@ -380,11 +380,11 @@ void AppWindow::updateViewportSettings(const ViewportSettings &settings)
     RenderMeshStyle model_style;
 
     /// Update collision object rendering style.
-    if (settings.collisionShaded && settings.collisionWireframe)
+    if (settings.collision_shaded && settings.collision_wireframe)
     {
         collision_style = RenderMeshStyle::ShadedWireframe;
     }
-    else if (!settings.collisionShaded && settings.collisionWireframe)
+    else if (!settings.collision_shaded && settings.collision_wireframe)
     {
         collision_style = RenderMeshStyle::WireframeOnly;
     }
@@ -396,15 +396,15 @@ void AppWindow::updateViewportSettings(const ViewportSettings &settings)
     for (const std::unique_ptr<SceneModel> &collision : this->collision_models)
     {
         collision->getRenderMesh().setStyle(collision_style);
-        collision->getRenderMesh().setVisibility(!settings.collisionHidden);
+        collision->getRenderMesh().setVisibility(!settings.collision_hidden);
     }
 
     /// Update standard models rendering style.
-    if (settings.modelShaded && settings.modelWireframe)
+    if (settings.model_shaded && settings.model_wireframe)
     {
         model_style = RenderMeshStyle::ShadedWireframe;
     }
-    else if (!settings.modelShaded && settings.modelWireframe)
+    else if (!settings.model_shaded && settings.model_wireframe)
     {
         model_style = RenderMeshStyle::WireframeOnly;
     }
@@ -416,7 +416,7 @@ void AppWindow::updateViewportSettings(const ViewportSettings &settings)
     for (const std::unique_ptr<SceneModel> &model : this->models)
     {   
         model->getRenderMesh().setStyle(model_style);
-        model->getRenderMesh().setVisibility(!settings.modelHidden);
+        model->getRenderMesh().setVisibility(!settings.model_hidden);
     }
 
     this->viewport_widget->update();

@@ -96,7 +96,19 @@ qt_add_resources(PROCESSED_RESOURCES resources/resources.qrc)
 
 # Create executable target and link modules
 add_executable(CollisionCraft ${SOURCES} ${PROCESSED_RESOURCES})
-target_compile_definitions(CollisionCraft PRIVATE QT_NO_KEYWORDS)
+
+# Add preprocessor flags depedig o build flavour
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(CollisionCraft PRIVATE 
+        QT_NO_KEYWORDS
+        DEBUG
+    )
+else()
+    target_compile_definitions(CollisionCraft PRIVATE 
+        QT_NO_KEYWORDS
+    )
+endif()
+
 
 target_include_directories(CollisionCraft PRIVATE
     ${PROJECT_SOURCE_DIR}

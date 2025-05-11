@@ -73,6 +73,10 @@ int main(int argc, char *argv[])
     log->initLogFile();
     Logger::setActive(log);
 
+#ifdef DEBUG
+    Logger::active()->setDebugEnabled(true);
+#endif
+
     /// Create main window and start application loop.
     Logger::active()->debug("Starting application");
     QApplication::setStyle("Fusion");

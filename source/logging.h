@@ -31,6 +31,9 @@ public:
     void warning(const std::string &msg);
     void error(const std::string &msg);
 
+    void setDebugEnabled(bool enabled);
+    bool getDebugEnabled() const;
+
     static Logger* active();
     static void setActive(std::weak_ptr<Logger> logger);
 
@@ -39,6 +42,7 @@ public:
 
 
 private:
+    bool debug_enabled;
     std::string log_filepath;
     std::unique_ptr<std::ofstream> log_file;
     static std::weak_ptr<Logger> active_log;

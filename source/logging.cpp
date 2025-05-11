@@ -7,7 +7,8 @@
 std::weak_ptr<Logger> Logger::active_log;
 
 /// Default constructor.
-Logger::Logger(const std::string &filepath)
+Logger::Logger(const std::string &filepath) :
+    debug_enabled(false)
 {
     this->log_filepath = filepath;
 }
@@ -58,11 +59,28 @@ void Logger::initLogFile()
     this->logMessage("Log file opened", LogLevel::Info);
 }
 
+/// Enable or disable debug logging.
+void Logger::setDebugEnabled(bool enabled)
+{
+    this->debug_enabled = enabled;
+}
+
+/// Get values indicating if debug logging is enabled.
+bool Logger::getDebugEnabled() const
+{
+    return this->debug_enabled;
+}
+
 /// Add new message to this logger.
 /// @param msg New message to log.
 /// @param level Message severity level.
 void Logger::logMessage(const std::string &msg, LogLevel level)
 {
+    if (level == LogLevel::Debug && !this->getDebugEnabled())
+    {
+        return;
+    }
+
     if (!this->log_file)
     {
         throw std::runtime_error("Attempting to log a message while the logger is uninitialized!");

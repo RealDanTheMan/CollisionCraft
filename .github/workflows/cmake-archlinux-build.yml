@@ -20,7 +20,7 @@ jobs:
       run: |
         pacman -Syu --noconfirm
         pacman -S --noconfirm cmake git base-devel qt6-base
-        pacman -S --noconfirm boost cgal qt6 eigen
+        pacman -S --noconfirm boost cgal qt6 eigen intel-oneapi-tbb
 
     - name: Checkout
       uses: actions/checkout@v4

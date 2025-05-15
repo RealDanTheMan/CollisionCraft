@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
           brew update
-          brew install cgal boost eigen ttb
+          brew install cgal boost eigen tbb
     - name: Checkout Repository
       uses: actions/checkout@v4
 

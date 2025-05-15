@@ -17,16 +17,9 @@ jobs:
     - name: Install dependencies
       run: |
           brew update
-          brew install cgal boost eigen tbb
+          brew install cgal boost eigen tbb python3 qt6
     - name: Checkout Repository
       uses: actions/checkout@v4
-
-    - name: Set up Qt
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: '6.6.2'
-        modules: 'qtbase qttools qtgui qtwidgets'
-        target: 'desktop'
 
     - name: Configure with CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}

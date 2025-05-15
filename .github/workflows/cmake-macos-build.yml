@@ -1,0 +1,39 @@
+name: CMake on MacOS
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Install dependencies
+      run: |
+          brew update
+          brew install cgal boost eigen ttb
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.6.2'
+        modules: 'qtbase qttools qtgui qtwidgets'
+        target: 'desktop'
+
+    - name: Configure with CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+    - name: List output
+      run: ls -R build
+

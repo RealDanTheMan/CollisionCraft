@@ -12,6 +12,7 @@
 
 #include "graphics.h"
 #include "rendermesh.h"
+#include "gridrendermesh.h"
 #include "viewportcamera.h"
 
 struct ViewportSettings
@@ -86,6 +87,7 @@ protected:
 
     void drawMesh(RenderMesh &mesh);
     void drawMeshWireframe(RenderMesh &mesh);
+    void drawGridMesh(GridRenderMesh &grid);
 
 protected:
     QColor background_color = QColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -93,6 +95,7 @@ protected:
     std::unique_ptr<ViewportCamera> camera = nullptr;
 
 private:
+    std::unique_ptr<GridRenderMesh> grid_mesh;
     std::vector<RenderMesh*> render_queue;
     QPoint mouse_pos;
     ViewMode view_mode;

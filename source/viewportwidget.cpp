@@ -1,4 +1,5 @@
 #include "viewportwidget.h"
+#include "gridrendermesh.h"
 #include "logging.h"
 #include "rendermesh.h"
 #include "viewportcamera.h"
@@ -145,6 +146,8 @@ void ViewportWidget::initializeGL()
         1.0f
     );
 
+    this->grid_mesh = std::make_unique<GridRenderMesh>(128, 128, 100.0);
+    this->grid_mesh->bindShader(this->graphics->getGridShader());
     this->resizeGL(this->width(), this->height());
     Q_EMIT this->graphicsReady();
 }
@@ -165,6 +168,7 @@ void ViewportWidget::resizeGL(int width, int height)
 void ViewportWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    this->drawGridMesh(*this->grid_mesh);
 
     //logDebug("Drawing render queue of size -> {}", this->render_queue.size());
     for (RenderMesh *mesh : this->render_queue)
@@ -236,6 +240,24 @@ void ViewportWidget::drawMeshWireframe(RenderMesh &mesh)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPolygonOffset(0.0, 0.0);
     glDisable(GL_POLYGON_OFFSET_LINE);
+}
+
+/// Draw given grid render mesh to viewport screen.
+void ViewportWidget::drawGridMesh(GridRenderMesh &grid)
+{
+    grid.shader()->bind();
+
+    if (grid.shader()->uniformLocation("SV_VIEW_MAT") != -1)
+    {
+        grid.shader()->setUniformValue("SV_VIEW_MAT", this->camera->getViewMatrix());
+    }
+    if (grid.shader()->uniformLocation("SV_PROJ_MAT") != -1)
+    {
+        grid.shader()->setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
+    }
+
+    grid.shader()->release();
+    grid.render();
 }
 
 /// Set the color of the OpenGL surface background

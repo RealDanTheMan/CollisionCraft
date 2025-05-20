@@ -18,13 +18,13 @@ GridRenderMesh::GridRenderMesh(unsigned int rows, unsigned int columns, double s
     const int half_columns = columns / 2;
     std::vector<QVector3D> vertices;
 
-    for (int x=-half_rows; x<half_rows; ++x)
+    for (int x=-half_columns; x<half_columns; ++x)
     {
         vertices.emplace_back(x * spacing, 0.0, -half_rows * spacing);
         vertices.emplace_back(x * spacing, 0.0, half_rows * spacing);
     }
     
-    for (int y=-half_columns; y<half_columns; ++y)
+    for (int y=-half_rows; y<half_rows; ++y)
     {
         vertices.emplace_back(-half_columns * spacing, 0.0, y * spacing);
         vertices.emplace_back(half_columns * spacing, 0.0, y * spacing);

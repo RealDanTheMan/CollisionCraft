@@ -17,6 +17,7 @@ public:
     PropertyPanelWidget(QWidget *parent = nullptr);
     CollisionTechnique getSelectedTechnique() const;
     CollisionGenSettings getSettings() const;
+    ViewportSettings getViewportSettings() const;
 
     Q_SIGNAL
     void collisionGenerationRequested();

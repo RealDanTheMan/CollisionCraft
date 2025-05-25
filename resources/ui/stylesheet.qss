@@ -112,6 +112,11 @@ QSpinBox, QDoubleSpinBox
     padding             : 0px;
 }
 
+QSpinBox:read-only, QDoubleSpinBox:read-only
+{
+    color               : rgb(50, 50, 50);
+}
+
 QSpinBox::down-button, QDoubleSpinBox::down-button
 {
     width                       : 16;

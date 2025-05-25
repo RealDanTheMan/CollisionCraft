@@ -103,6 +103,11 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         this,
         &PropertyPanelWidget::collisionGenerationRequested
     );
+
+    /// Poke technique menu to trigger a callback which is going enable/disable
+    /// other properties in the panel.
+    this->technique_menu->setSelectedIndex(2);
+    this->technique_menu->setSelectedIndex(0);
 }
 
 /// Initial setup of all properties controlling collision in the viewport.

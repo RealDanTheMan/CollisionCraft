@@ -76,12 +76,13 @@ int main(int argc, char *argv[])
 #ifdef DEBUG
     Logger::active()->setDebugEnabled(true);
 #endif
-
-    /// Create main window and start application loop.
-    Logger::active()->debug("Starting application");
-    QApplication::setStyle("Fusion");
-    QApplication app(argc, argv);
     
+#if defined(__linux__)
+    /// Force X11 session & disable window alpha to avoid issues with window alpha sorting
+    /// when dealing with many window composititors available on linux distros.
+    qputenv("QT_QPA_PLATFORM", QByteArray("xcb"));
+    qputenv("QT_WAYLAND_DISABLE_WINDOW_ALPHA", QByteArray("1"));
+#endif
     /// Define OpenGL context specification.
     QSurfaceFormat format;
     format.setRenderableType(QSurfaceFormat::OpenGL);
@@ -93,6 +94,12 @@ int main(int argc, char *argv[])
     format.setSamples(4);
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     QSurfaceFormat::setDefaultFormat(format);
+
+    /// Create main window and start application loop.
+    Logger::active()->debug("Starting application");
+    QApplication::setStyle("Fusion");
+    QApplication app(argc, argv);
+    
     
     std::string stylesheet = ":/ui/stylesheet.qss";
     if(!applyStyleSheet(app, stylesheet))

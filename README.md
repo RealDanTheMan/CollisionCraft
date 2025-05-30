@@ -51,11 +51,25 @@ brew install cmake git qt6 eigen tbb boost cgal
 
 ```
 
-#### Run Build Script
+#### Installing Dependencies | Windows
+```powershell
+vcpkg install boost:x64-windows cgal:x64-windows eigen3:x64-windows python3:x64-windows qtbase:x64-windows python3:x64-windows usd:x64-windows
+
+```
+
+#### Run Build Script | Linux & MacOS
 ```bash
 git clone https://github.com/RealDanTheMan/CollisionCraft
 cd CollisionCraft
 ./shell/build.sh
+./shell/run.sh
+```
+
+#### Run Build Script | Windows
+```bash
+git clone https://github.com/RealDanTheMan/CollisionCraft
+cd CollisionCraft
+./shell/build.bat
 ./shell/run.sh
 ```
 

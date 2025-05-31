@@ -35,6 +35,10 @@ std::string getLocalAppDataLocation()
     {
         location = std::string(home) + "/.local/CollisionCraft/";
     }
+
+#elif defined(_WIN32)
+    const char * app_data = std::getenv("LOCALAPPDATA");
+    location = std::string(app_data) + "/CollisionCraft/";
 #endif
 
     return location;

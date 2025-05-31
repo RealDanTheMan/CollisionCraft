@@ -87,6 +87,11 @@ int main(int argc, char *argv[])
     qputenv("QT_QPA_PLATFORM", QByteArray("xcb"));
     qputenv("QT_WAYLAND_DISABLE_WINDOW_ALPHA", QByteArray("1"));
 #endif
+#if defined(_WIN32)
+    qputenv("QT_QPA_PLATFORM_PLUGIN_PATH", "C:\\dev\\apps\\collisioncraft\\CollisionCraft\\build\\bin\\Release");
+    qputenv("PXR_PLUGINPATH_NAME", "C:\\dev\\apps\\collisioncraft\\CollisionCraft\\build\\bin\\Release\\usd");
+#endif
+
     /// Define OpenGL context specification.
     QSurfaceFormat format;
     format.setRenderableType(QSurfaceFormat::OpenGL);

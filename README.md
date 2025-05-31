@@ -52,6 +52,15 @@ brew install cmake git qt6 eigen tbb boost cgal
 ```
 
 #### Installing Dependencies | Windows
+> [!NOTE]
+> Ensure you have **VCPKG** installed and added to the *PATH* to manage dependencies. VCPKG packages sources and build them locally, this can take some time but it only needs to happen once.
+```bash
+git clone https://github.com/microsoft/vcpkg
+.\vcpkg\bootstrap-vcpkg.bat
+.\vcpkg\vcpkg.exe update
+
+```
+
 ```powershell
 vcpkg install boost:x64-windows cgal:x64-windows eigen3:x64-windows python3:x64-windows qtbase:x64-windows python3:x64-windows usd:x64-windows
 
@@ -66,11 +75,12 @@ cd CollisionCraft
 ```
 
 #### Run Build Script | Windows
+
 ```bash
 git clone https://github.com/RealDanTheMan/CollisionCraft
 cd CollisionCraft
 ./shell/build.bat
-./shell/run.sh
+./shell/run.bat
 ```
 
 ---

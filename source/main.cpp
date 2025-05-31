@@ -60,8 +60,8 @@ bool applyStyleSheet(QApplication& app, const std::string &filepath)
 int main(int argc, char *argv[])
 {
     /// Enable USD debug output.
-    pxr::TfDiagnosticMgr::GetInstance().EnableNotification2();
-    pxr::TfDiagnosticMgr::GetInstance().SetQuiet(false);
+    //pxr::TfDiagnosticMgr::GetInstance().EnableNotification2();
+    //pxr::TfDiagnosticMgr::GetInstance().SetQuiet(false);
 
     /// Initialise local app data storage.
     std::string local_app_data = getLocalAppDataLocation();

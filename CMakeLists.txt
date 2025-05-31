@@ -160,13 +160,13 @@ elseif(WIN32)
         Qt6::OpenGLWidgets
         
         # OpenUSD Modules
-        PXR::usd
-        PXR::usdGeom
-        PXR::usdUtils
-        PXR::tf
-        PXR::gf
-        PXR::sdf
-        PXR::vt
+        usd
+        usdGeom
+        usdUtils
+        tf
+        gf
+        sdf
+        vt
 
         # CGAL Modules & its dependencies
         Boost::boost

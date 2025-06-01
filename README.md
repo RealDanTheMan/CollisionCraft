@@ -3,7 +3,8 @@
   <tr>
     <td><a href="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/cmake-macos-build.yml" alt="Arch Build"><img src="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/cmake-archlinux-build.yml/badge.svg" alt="CMake build"/></a></td>
     <td><a href="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/cmake-archlinux-build.yml" alt="MacOSX Build"><img src="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/cmake-macos-build.yml/badge.svg" alt="MS Build"/></a></td>
-    <td></td>
+    <td><a href="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/test-build-windows.yml" alt="MacOSX Build"><img src="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/test-build-windows.yml/badge.svg" alt="MS Build"/></a></td>
+   
   </tr>
   <tr>
     <td><img src="https://img.shields.io/badge/Solution-C++17-blue.svg?style=flat&logo=c%2B%2B&logoColor=b0c0c0&labelColor=363D44" alt="C++ solution"/></td>

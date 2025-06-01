@@ -235,7 +235,7 @@ void ViewportWidget::drawMeshWireframe(RenderMesh &mesh)
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonOffset(-1.0, -1.0);
     glEnable(GL_POLYGON_OFFSET_LINE);
-    glLineWidth(4.0);
+    glLineWidth(1.0);
     mesh.Render();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPolygonOffset(0.0, 0.0);

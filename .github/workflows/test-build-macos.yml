@@ -1,4 +1,4 @@
-name: CMake on MacOS
+name: Release build on MacOS
 
 on:
   push:

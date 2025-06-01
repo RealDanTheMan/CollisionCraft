@@ -1,4 +1,4 @@
-name: CMake on Arch Linux
+name: Release build on Arch Linux
 
 on:
   push:

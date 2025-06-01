@@ -59,6 +59,7 @@ brew install cmake git qt6 eigen tbb boost cgal
 git clone https://github.com/microsoft/vcpkg
 .\vcpkg\bootstrap-vcpkg.bat
 .\vcpkg\vcpkg.exe update
+set PATH=%PATH%;%CD%\vcpkg
 
 ```
 

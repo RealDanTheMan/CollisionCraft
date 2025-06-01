@@ -1,8 +1,8 @@
 # 🇨​​​​​🇴​​​​​🇱​​​​​🇱​​​​​🇮​​​​​🇸​​​​​🇮​​​​​🇴​​​​​🇳​​​​​ 🇨​​​​​🇷​​​​​🇦​​​​​🇫​​​​​🇹​​​​​
 <table class="no-border">
   <tr>
-    <td><a href="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/cmake-macos-build.yml" alt="Arch Build"><img src="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/cmake-archlinux-build.yml/badge.svg" alt="CMake build"/></a></td>
-    <td><a href="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/cmake-archlinux-build.yml" alt="MacOSX Build"><img src="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/cmake-macos-build.yml/badge.svg" alt="MS Build"/></a></td>
+    <td><a href="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/test-build-macos.yml" alt="Arch Build"><img src="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/test-build-macos.yml/badge.svg" alt="CMake build"/></a></td>
+    <td><a href="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/test-build-archlinux.yml" alt="MacOSX Build"><img src="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/test-build-archlinux.yml/badge.svg" alt="MS Build"/></a></td>
     <td><a href="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/test-build-windows.yml" alt="MacOSX Build"><img src="https://github.com/RealDanTheMan/CollisionCraft/actions/workflows/test-build-windows.yml/badge.svg" alt="MS Build"/></a></td>
    
   </tr>

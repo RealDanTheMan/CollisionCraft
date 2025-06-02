@@ -192,6 +192,9 @@ void AppWindow::onViewportReady()
     this->viewport_widget->setBackgroundColor(0.15, 0.15, 0.15);
     this->viewport_widget->autoFrameCamera();
     this->viewport_widget->update();
+    
+    /// Updated initial viewport settings;
+    this->updateViewportSettings(this->property_panel->getViewportSettings());
 }
 
 

@@ -12,6 +12,7 @@ Graphics::Graphics()
     this->model_shader = std::make_unique<QOpenGLShaderProgram>();
     this->collision_shader = std::make_unique<QOpenGLShaderProgram>();
     this->wireframe_shader = std::make_unique<QOpenGLShaderProgram>();
+    this->grid_shader = std::make_unique<QOpenGLShaderProgram>();
 }
 
 /// Initialise graphics.
@@ -46,6 +47,12 @@ QOpenGLShaderProgram* Graphics::getWireframeShader() const
     return this->wireframe_shader.get();
 }
 
+/// Get handle to the default grid shader program.
+QOpenGLShaderProgram* Graphics::getGridShader() const
+{
+    return this->grid_shader.get();
+}
+
 /// Initialise default set of shaders used during graphics operations.
 /// Shader source code lives in resources/shaders/
 bool Graphics::initDefaultShaders()
@@ -67,7 +74,14 @@ bool Graphics::initDefaultShaders()
     /// Load and compile default wireframe_shader.
     if (!Graphics::compileShaderResource("wireframe", *this->wireframe_shader))
     {
-        logError("Failed to initialise default wireframe_shader");
+        logError("Failed to initialise default wireframe shader");
+        return false;
+    }
+
+    /// Load and compile default wireframe_shader.
+    if (!Graphics::compileShaderResource("grid", *this->grid_shader))
+    {
+        logError("Failed to initialise default grid shader");
         return false;
     }
 

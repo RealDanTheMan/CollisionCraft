@@ -15,6 +15,7 @@ public:
     QOpenGLShaderProgram * getModelShader() const;
     QOpenGLShaderProgram * getCollisionShader() const;
     QOpenGLShaderProgram * getWireframeShader() const;
+    QOpenGLShaderProgram * getGridShader() const;
 
 protected:
     bool initDefaultShaders();
@@ -34,6 +35,7 @@ private:
     std::unique_ptr<QOpenGLShaderProgram> model_shader;
     std::unique_ptr<QOpenGLShaderProgram> collision_shader;
     std::unique_ptr<QOpenGLShaderProgram> wireframe_shader;
+    std::unique_ptr<QOpenGLShaderProgram> grid_shader;
 
 };
 

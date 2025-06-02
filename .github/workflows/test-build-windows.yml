@@ -1,0 +1,38 @@
+name: Release build on Windows
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Install VCPKG
+      run: |
+        git clone https://github.com/microsoft/vcpkg
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg.exe update
+        echo %CD%\vcpkg >> %GITHUB_PATH%
+      shell: cmd
+
+    - name: Install dependencies
+      run: vcpkg.exe install boost:x64-windows cgal:x64-windows eigen3:x64-windows python3:x64-windows qtbase:x64-windows usd:x64-windows
+      shell: cmd
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Run Build Script
+      run: shell\build.bat
+      shell: cmd
+
+    - name: List Output
+      run: dir /s build
+      shell: cmd

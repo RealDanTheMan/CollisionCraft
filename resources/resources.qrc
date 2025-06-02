@@ -9,6 +9,8 @@
 		<file>shaders/collision.ps</file>
 		<file>shaders/wireframe.vs</file>
 		<file>shaders/wireframe.ps</file>
+		<file>shaders/grid.vs</file>
+		<file>shaders/grid.ps</file>
 		<file>models/suzanne.usdc</file>
 		<file>models/teapot.usdc</file>
 		<file>models/cube.usdc</file>

@@ -103,6 +103,11 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         this,
         &PropertyPanelWidget::collisionGenerationRequested
     );
+
+    /// Poke technique menu to trigger a callback which is going enable/disable
+    /// other properties in the panel.
+    this->technique_menu->setSelectedIndex(2);
+    this->technique_menu->setSelectedIndex(0);
 }
 
 /// Initial setup of all properties controlling collision in the viewport.
@@ -148,7 +153,7 @@ void PropertyPanelWidget::initModelProperties(QLayout *parent_layout)
     this->model_hidden_property = new TogglePropertyWidget("Hidden", false, this);
     this->model_fill_property = new TogglePropertyWidget("Draw Solid", true, this);
     this->model_wire_property = new TogglePropertyWidget("Draw Wireframe", false, this);
-    this->model_light_property = new TogglePropertyWidget("Lighting", true, this);
+    this->model_light_property = new TogglePropertyWidget("Lighting", false, this);
 
     ExpanderWidget *expander = new ExpanderWidget("Model Draw Settings", this);
     expander->addWidget(model_hidden_property);
@@ -223,9 +228,8 @@ void PropertyPanelWidget::onTechniqueSelectionChanged(int technique)
     logDebug("Selected collision technique changed -> {}", this->technique_menu->getSelected());
 }
 
-/// Event handler invoked when the user edits the values of any properties which
-/// control the rendering behavior of the contents in the scene.
-void PropertyPanelWidget::onViewportSettingsPropertyChanged()
+/// Get viewport settings currently active in the property panel.
+ViewportSettings PropertyPanelWidget::getViewportSettings() const
 {
     ViewportSettings settings = ViewportSettings::Default();
     settings.collision_shaded = this->collision_fill_property->getValue();
@@ -236,6 +240,14 @@ void PropertyPanelWidget::onViewportSettingsPropertyChanged()
     settings.model_lighting = this->model_light_property->getValue();
     settings.model_hidden = this->model_hidden_property->getValue();
 
+    return settings;
+}
+
+/// Event handler invoked when the user edits the values of any properties which
+/// control the rendering behavior of the contents in the scene.
+void PropertyPanelWidget::onViewportSettingsPropertyChanged()
+{
+    ViewportSettings settings = this->getViewportSettings();
     Q_EMIT this->viewportSettingsChanged(settings);
 }
 

@@ -197,68 +197,8 @@ void AppWindow::onViewportReady()
     this->updateViewportSettings(this->property_panel->getViewportSettings());
 }
 
-
-/// Generates simple collision hull for all loaded meshes and adds it to the viewport.
-void AppWindow::generateSimpleCollision()
-{
-    logDebug("Generating scene simple collision");
-
-    // Clear existing collision.
-    for (const auto &collision : this->collision_models)
-    {
-        this->viewport_widget->removeRenderMesh(&collision->getRenderMesh());
-    }
-    this->collision_models.clear();
-
-    // Reset collision generator.
-    this->collision_gen->clearInputMeshes();
-    for (const auto &model : this->models)
-    {
-        this->collision_gen->addInputMesh(&model->getMesh());
-    }
-
-    CollisionGenSettings settings = this->property_panel->getSettings();
-    std::unique_ptr<Mesh> collision;
-    this->collision_gen->generateCollisionHull(settings, collision);
-    if (collision)
-    {
-        this->addCollisionModel(*collision);
-    }
-}
-
-/// Generate complex collision hulls using exact convex decomposition technique.
-void AppWindow::generateComplexCollision()
-{
-    logDebug("Generating scene complex collision");
-
-    // Clear existing collision.
-    for (const auto &collision : this->collision_models)
-    {
-        this->viewport_widget->removeRenderMesh(&collision->getRenderMesh());
-    }
-    this->collision_models.clear();
-
-    // Reset collision generator.
-    this->collision_gen->clearInputMeshes();
-    for (const auto &model : this->models)
-    {
-        this->collision_gen->addInputMesh(&model->getMesh());
-    }
-
-    CollisionGenSettings settings = this->property_panel->getSettings();
-    std::vector<std::unique_ptr<Mesh>> collisions;
-    this->collision_gen->generateCollisionHulls(settings, collisions);
-
-    logInfo("Generated {} complex collision meshes", collisions.size());
-    this->viewport_widget->makeCurrent();
-    for (const auto &collision : collisions)
-    {
-        this->addCollisionModel(*collision);
-    }
-}
-
 /// Generate approximate collision using approximate convex decomposition technique.
-void AppWindow::generateApproximateCollision()
+void AppWindow::generateApproximateCollision(const CollisionGenSettings &settings)
 {
     logDebug("Generating scene approximate collision");
 
@@ -276,7 +216,6 @@ void AppWindow::generateApproximateCollision()
         this->collision_gen->addInputMesh(&model->getMesh());
     }
 
-    CollisionGenSettings settings = this->property_panel->getSettings();
     std::vector<std::unique_ptr<Mesh>> collisions;
     this->collision_gen->generateVHACD(settings, collisions);
 
@@ -346,24 +285,8 @@ void AppWindow::onFrameAllClick()
 /// Event handler invoked when user requests new collision generation.
 void AppWindow::onCollisionGenerationRequested()
 {
-    CollisionTechnique technique = this->property_panel->getSelectedTechnique();
     CollisionGenSettings settings = this->property_panel->getSettings();
-    switch (technique)
-    {
-        case CollisionTechnique::SimpleHull:
-            this->generateSimpleCollision();
-            break;
-        case CollisionTechnique::ExactDecomposition:
-            this->generateComplexCollision();
-            break;
-        case CollisionTechnique::ApproximateDecomposition:
-            this->generateApproximateCollision();
-            break;
-        default:
-            logError("Invalid collision generation technique -> {}", static_cast<int>(technique));
-            return;
-    }
-
+    this->generateApproximateCollision(settings);
     this->viewport_widget->update();
 }
 

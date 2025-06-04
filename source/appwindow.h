@@ -35,9 +35,7 @@ protected:
     void onCollisionGenerationRequested();
     void onPropertyPanelViewportSettingsChanged(ViewportSettings settings);
 
-    void generateSimpleCollision();
-    void generateComplexCollision();
-    void generateApproximateCollision();
+    void generateApproximateCollision(const CollisionGenSettings &settings);
     void updateViewportSettings(const ViewportSettings &settings);
 
 protected:

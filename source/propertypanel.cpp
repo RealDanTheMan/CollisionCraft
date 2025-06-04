@@ -11,8 +11,7 @@
 
 
 PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) : 
-    QWidget(parent),
-    selected_technique(CollisionTechnique::SimpleHull)
+    QWidget(parent)
 {
     QVBoxLayout *panel_layout = new QVBoxLayout();
     panel_layout->setContentsMargins(QMargins(0.0, 0.0, 0.0, 0.0));
@@ -30,22 +29,6 @@ PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) :
 /// Should be called onlly once in the constructor.
 void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
 {
-    this->technique_menu = new DropdownPropertyWidget("Technique", this);
-    this->technique_menu->addItem(
-        "Simple Hull",
-        static_cast<int>(CollisionTechnique::SimpleHull)
-    );
-
-    this->technique_menu->addItem(
-        "Exact Decomposition",
-        static_cast<int>(CollisionTechnique::ExactDecomposition)
-    );
-
-    this->technique_menu->addItem(
-        "Approximate Decomposition",
-        static_cast<int>(CollisionTechnique::ApproximateDecomposition)
-    );
-
     this->scale_property = new DecimalPropertyWidget(
         "Scale",
         1.0,
@@ -135,7 +118,6 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
     this->generate_button->setMinimumHeight(32);
 
     ExpanderWidget *expander = new ExpanderWidget("Collision Generation", this);
-    expander->addWidget(this->technique_menu);
     expander->addWidget(this->mode_property);
     expander->addWidget(this->scale_property);
     expander->addWidget(this->resolution_property);
@@ -150,23 +132,11 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
     parent_layout->addWidget(expander);
 
     connect(
-        this->technique_menu,
-        &DropdownPropertyWidget::selectedValueChanged,
-        this,
-        &PropertyPanelWidget::onTechniqueSelectionChanged
-    );
-
-    connect(
         this->generate_button,
         &QPushButton::clicked,
         this,
         &PropertyPanelWidget::collisionGenerationRequested
     );
-
-    /// Poke technique menu to trigger a callback which is going enable/disable
-    /// other properties in the panel.
-    this->technique_menu->setSelectedIndex(2);
-    this->technique_menu->setSelectedIndex(0);
 }
 
 /// Initial setup of all properties controlling collision in the viewport.
@@ -248,58 +218,6 @@ void PropertyPanelWidget::initModelProperties(QLayout *parent_layout)
         this,
         &PropertyPanelWidget::onViewportSettingsPropertyChanged
     );
-}
-
-/// Get currently selected value in collision generation drop-down menu.
-CollisionTechnique PropertyPanelWidget::getSelectedTechnique() const
-{
-    return this->selected_technique;
-}
-
-/// Event handler invoked when user changes the 'Collision Generation Technique' menu option.
-void PropertyPanelWidget::onTechniqueSelectionChanged(int technique)
-{
-    this->selected_technique = static_cast<CollisionTechnique>(technique);
-    switch (this->selected_technique)
-    {
-        case CollisionTechnique::SimpleHull:
-            this->scale_property->setEnabled(true);
-            this->resolution_property->setEnabled(false);
-            this->hull_count_property->setEnabled(false);
-            this->downsampling_property->setEnabled(false);
-            this->mode_property->setEnabled(false);
-            this->concavity_property->setEnabled(false);
-            this->depth_property->setEnabled(false);
-            this->hull_vertex_count_property->setEnabled(false);
-            this->hull_min_volume_property->setEnabled(false);
-            break;
-        case CollisionTechnique::ExactDecomposition:
-            this->scale_property->setEnabled(true);
-            this->resolution_property->setEnabled(false);
-            this->hull_count_property->setEnabled(false);
-            this->downsampling_property->setEnabled(false);
-            this->mode_property->setEnabled(false);
-            this->concavity_property->setEnabled(false);
-            this->depth_property->setEnabled(false);
-            this->hull_vertex_count_property->setEnabled(false);
-            this->hull_min_volume_property->setEnabled(false);
-            break;
-        case CollisionTechnique::ApproximateDecomposition:
-            this->scale_property->setEnabled(true);
-            this->resolution_property->setEnabled(true);
-            this->hull_count_property->setEnabled(true);
-            this->downsampling_property->setEnabled(true);
-            this->mode_property->setEnabled(true);
-            this->concavity_property->setEnabled(true);
-            this->depth_property->setEnabled(true);
-            this->hull_vertex_count_property->setEnabled(true);
-            this->hull_min_volume_property->setEnabled(true);
-            break;
-        Default:
-            break;
-    }
-
-    logDebug("Selected collision technique changed -> {}", this->technique_menu->getSelected());
 }
 
 /// Get viewport settings currently active in the property panel.

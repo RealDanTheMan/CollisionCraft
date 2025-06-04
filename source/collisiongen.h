@@ -61,17 +61,6 @@ public:
 
     void addInputMesh(const Mesh *mesh);
     void clearInputMeshes();
-
-    void generateCollisionHull(
-        const CollisionGenSettings &settings,
-        std::unique_ptr<Mesh> &out_mesh
-    );
-
-    void generateCollisionHulls(
-        const CollisionGenSettings &settings,
-        std::vector<std::unique_ptr<Mesh>> &out_meshes
-    );
-
     void generateVHACD(
         const CollisionGenSettings &settings,
         std::vector<std::unique_ptr<Mesh>> &out_meshes

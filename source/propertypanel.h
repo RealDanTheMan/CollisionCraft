@@ -7,7 +7,6 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <ratio>
 
 
 class PropertyPanelWidget : public QWidget
@@ -16,7 +15,6 @@ class PropertyPanelWidget : public QWidget
 
 public:
     PropertyPanelWidget(QWidget *parent = nullptr);
-    CollisionTechnique getSelectedTechnique() const;
     CollisionGenSettings getSettings() const;
     ViewportSettings getViewportSettings() const;
 
@@ -27,9 +25,7 @@ public:
     void viewportSettingsChanged(ViewportSettings settings);
 
 protected:
-    void onTechniqueSelectionChanged(int technique);
     void onViewportSettingsPropertyChanged();
-    CollisionTechnique selected_technique;
 
 private:
     void initGenerationProperties(QLayout *parent_layout);
@@ -38,7 +34,6 @@ private:
 
 private:
     QPushButton             *generate_button;
-    DropdownPropertyWidget  *technique_menu;
 
     DecimalPropertyWidget   *scale_property;
     DecimalPropertyWidget   *resolution_property;

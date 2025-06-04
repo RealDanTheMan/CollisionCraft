@@ -39,6 +39,8 @@ public:
         double value,
         double min = -1000000.0,
         double max = 1000000.0,
+        double step = 1.0,
+        int decimals = 2,
         QWidget *parent = nullptr
 );
     void setEnabled(bool enabled);
@@ -63,6 +65,7 @@ public:
         int value,
         int min = -1000000,
         int max = 1000000,
+        int step = 1,
         QWidget *parent = nullptr
 );
     void setEnabled(bool enabled);

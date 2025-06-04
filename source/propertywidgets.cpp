@@ -63,6 +63,8 @@ DecimalPropertyWidget::DecimalPropertyWidget(
     double value,
     double min,
     double max,
+    double step,
+    int decimals,
     QWidget *parent
 ) : QWidget(parent)
 {
@@ -77,6 +79,8 @@ DecimalPropertyWidget::DecimalPropertyWidget(
     this->spinner = new QDoubleSpinBox(this->frame);
     this->spinner->setMinimumWidth(128);
     this->spinner->setRange(min, max);
+    this->spinner->setSingleStep(step);
+    this->spinner->setDecimals(decimals);
     this->spinner->setValue(value);
 
     QHBoxLayout *frame_layout = new QHBoxLayout();
@@ -113,6 +117,7 @@ IntegerPropertyWidget::IntegerPropertyWidget(
     int value,
     int min,
     int max,
+    int step,
     QWidget *parent
 ) : QWidget(parent)
 {
@@ -127,6 +132,7 @@ IntegerPropertyWidget::IntegerPropertyWidget(
     this->spinner = new QSpinBox(this->frame);
     this->spinner->setMinimumWidth(128);
     this->spinner->setRange(min, max);
+    this->spinner->setSingleStep(step);
     this->spinner->setValue(value);
 
     QHBoxLayout *frame_layout = new QHBoxLayout();

@@ -45,7 +45,12 @@ struct CollisionGenSettings
     double  scale;
     double  resolution;
     int     max_hulls;
+    int     max_hull_vertices;
+    double  min_hull_volume;
     int     downsample;
+    double  concavity;
+    int     depth_planes;
+    int     mode;
 };
 
 

@@ -163,10 +163,11 @@ void CollisionGen::generateVHACD(
 
         VHACD::IVHACD::Parameters params;
         params.m_resolution = settings.resolution;
+        params.m_mode = settings.mode;
+        params.m_concavity = settings.concavity;
         params.m_maxConvexHulls = settings.max_hulls;
-        params.m_maxNumVerticesPerCH = 32;
-        params.m_minVolumePerCH = 0.001;
-        params.m_planeDownsampling = settings.downsample;
+        params.m_maxNumVerticesPerCH = settings.max_hull_vertices;
+        params.m_minVolumePerCH = settings.min_hull_volume;
         params.m_convexhullDownsampling = settings.downsample;
         params.m_logger = &this->vhacd_logger;
         

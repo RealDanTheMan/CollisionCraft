@@ -1,13 +1,11 @@
 #include "propertypanel.h"
 #include "collisiongen.h"
-#include "logging.h"
 #include "expanderwidget.h"
 #include "propertywidgets.h"
 #include "viewportwidget.h"
 
 #include <QVBoxLayout>
 #include <QLabel>
-#include <cmath>
 
 
 PropertyPanelWidget::PropertyPanelWidget(QWidget *parent) : 
@@ -36,6 +34,7 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         2.0,
         0.1,
         2,
+        "Final scale of each convex hull",
         this
     );
     
@@ -45,6 +44,7 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         0,
         1,
         1,
+        "Decomposition Mode - 0=Volume, 1=Tetrahedron",
         this
     );
 
@@ -55,6 +55,7 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         64000000.0,
         1000.0,
         0,
+        "Max volumes used during decomposition",
         this
     );
     
@@ -64,16 +65,18 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         1,
         32,
         1,
+        "Maximum number of clip planes using during decomposition",
         this
     );
     
     this->concavity_property = new DecimalPropertyWidget(
-        "concavity",
+        "Concavity",
         0.0025,
         0.0,
         1.0,
         0.005,
         4,
+        "Maximum concavity factor",
         this
     );
 
@@ -83,6 +86,7 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         1,
         255,
         1,
+        "Maximum number of generated convex hull elements",
         this
     );
     
@@ -92,6 +96,7 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         4,
         1024,
         1,
+        "Maximum number of vertices in each convex hull generated",
         this
     );
     
@@ -102,6 +107,7 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         0.01,
         0.0001,
         4,
+        "Adaptive sampling of the generated convex hulls",
         this
     );
 
@@ -111,6 +117,7 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
         1,
         16,
         1,
+        "Precision of convex hull generation",
         this
     );
     
@@ -143,9 +150,26 @@ void PropertyPanelWidget::initGenerationProperties(QLayout *parent_layout)
 /// Should be called only once in the constructor.
 void PropertyPanelWidget::initCollisionProperties(QLayout *parent_layout)
 {
-    this->collision_hidden_property = new TogglePropertyWidget("Hidden", false, this);
-    this->collision_fill_property = new TogglePropertyWidget("Draw Solid", true, this);
-    this->collision_wire_property = new TogglePropertyWidget("Draw Wireframe", true, this);
+    this->collision_hidden_property = new TogglePropertyWidget(
+        "Hidden",
+        false,
+        "Hide collision",
+        this
+    );
+
+    this->collision_fill_property = new TogglePropertyWidget(
+        "Draw Solid",
+        true,
+        "Draw collision triangles",
+        this
+    );
+
+    this->collision_wire_property = new TogglePropertyWidget(
+        "Draw Wireframe",
+        true,
+        "Draw collision Wireframe",
+        this
+    );
 
     ExpanderWidget *expander= new ExpanderWidget("Collision Draw Settings", this);
     expander->addWidget(this->collision_hidden_property);
@@ -179,10 +203,33 @@ void PropertyPanelWidget::initCollisionProperties(QLayout *parent_layout)
 /// Should be called only once in the constructor.
 void PropertyPanelWidget::initModelProperties(QLayout *parent_layout)
 {
-    this->model_hidden_property = new TogglePropertyWidget("Hidden", false, this);
-    this->model_fill_property = new TogglePropertyWidget("Draw Solid", true, this);
-    this->model_wire_property = new TogglePropertyWidget("Draw Wireframe", false, this);
-    this->model_light_property = new TogglePropertyWidget("Lighting", false, this);
+    this->model_hidden_property = new TogglePropertyWidget(
+        "Hidden",
+        false, 
+        "Hide scene models",
+        this
+    );
+
+    this->model_fill_property = new TogglePropertyWidget(
+        "Draw Solid",
+        true,
+        "Draw model triangles",
+        this
+    );
+
+    this->model_wire_property = new TogglePropertyWidget(
+        "Draw Wireframe",
+        false,
+        "Draw model Wireframe",
+        this
+    );
+
+    this->model_light_property = new TogglePropertyWidget(
+        "Lighting",
+        false,
+        "Render model directional Lighting",
+        this
+    );
 
     ExpanderWidget *expander = new ExpanderWidget("Model Draw Settings", this);
     expander->addWidget(model_hidden_property);

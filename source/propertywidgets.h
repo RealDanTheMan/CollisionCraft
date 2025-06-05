@@ -14,7 +14,13 @@ class TogglePropertyWidget : public QWidget
     Q_OBJECT
 
 public:
-    TogglePropertyWidget(const QString &text, bool value, QWidget *parent = nullptr);
+    TogglePropertyWidget(
+        const QString &text,
+        bool value,
+        const QString &tooltip,
+        QWidget *parent = nullptr
+    );
+
     void setEnabled(bool enabled);
     void setValue(bool value);
     bool getValue() const;
@@ -41,6 +47,7 @@ public:
         double max = 1000000.0,
         double step = 1.0,
         int decimals = 2,
+        const QString& tooltip= "",
         QWidget *parent = nullptr
 );
     void setEnabled(bool enabled);
@@ -66,6 +73,7 @@ public:
         int min = -1000000,
         int max = 1000000,
         int step = 1,
+        const QString& tooltip= "",
         QWidget *parent = nullptr
 );
     void setEnabled(bool enabled);
@@ -84,7 +92,7 @@ class DropdownPropertyWidget : public QWidget
     Q_OBJECT
 
 public:
-    DropdownPropertyWidget(const QString &text, QWidget *parent = nullptr);
+    DropdownPropertyWidget(const QString &text, const QString &tooltip, QWidget *parent = nullptr);
     void addItem(const QString &text, int value);
     void setEnabled(bool enabled);
     void setSelected(int value);

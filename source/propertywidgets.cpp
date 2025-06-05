@@ -7,6 +7,7 @@
 TogglePropertyWidget::TogglePropertyWidget(
     const QString &text,
     bool value,
+    const QString & tooltip,
     QWidget *parent
 ) : QWidget(parent)
 {
@@ -18,6 +19,7 @@ TogglePropertyWidget::TogglePropertyWidget(
     this->layout()->addWidget(this->frame);
 
     this->label = new QLabel(text, this->frame);
+    this->label->setToolTip(tooltip);
     this->toggle = new QCheckBox(this->frame);
     this->toggle->setCheckable(true);
     this->toggle->setChecked(value);
@@ -65,6 +67,7 @@ DecimalPropertyWidget::DecimalPropertyWidget(
     double max,
     double step,
     int decimals,
+    const QString &tooltip,
     QWidget *parent
 ) : QWidget(parent)
 {
@@ -76,6 +79,7 @@ DecimalPropertyWidget::DecimalPropertyWidget(
     this->layout()->addWidget(this->frame);
 
     this->label = new QLabel(text, this->frame);
+    this->label->setToolTip(tooltip);
     this->spinner = new QDoubleSpinBox(this->frame);
     this->spinner->setMinimumWidth(128);
     this->spinner->setRange(min, max);
@@ -118,6 +122,7 @@ IntegerPropertyWidget::IntegerPropertyWidget(
     int min,
     int max,
     int step,
+    const QString &tooltip,
     QWidget *parent
 ) : QWidget(parent)
 {
@@ -129,6 +134,7 @@ IntegerPropertyWidget::IntegerPropertyWidget(
     this->layout()->addWidget(this->frame);
 
     this->label = new QLabel(text, this->frame);
+    this->label->setToolTip(tooltip);
     this->spinner = new QSpinBox(this->frame);
     this->spinner->setMinimumWidth(128);
     this->spinner->setRange(min, max);
@@ -167,6 +173,7 @@ double IntegerPropertyWidget::getValue() const
 /// Dropdown menu property widiget default constructor.
 DropdownPropertyWidget::DropdownPropertyWidget(
     const QString &text,
+    const QString &tooltip,
     QWidget *parent
 ) : QWidget(parent)
 {
@@ -178,6 +185,7 @@ DropdownPropertyWidget::DropdownPropertyWidget(
     this->layout()->addWidget(this->frame);
 
     this->label = new QLabel(text, this->frame);
+    this->label->setToolTip(tooltip);
     this->menu = new QComboBox(this->frame);
     this->menu->setMinimumWidth(128);
 

@@ -146,7 +146,7 @@ void ViewportWidget::initializeGL()
         1.0f
     );
 
-    this->grid_mesh = std::make_unique<GridRenderMesh>(1024, 1024, 10.0);
+    this->grid_mesh = std::make_unique<GridRenderMesh>(1000, 1000, 100.0);
     this->grid_mesh->bindShader(this->graphics->getGridShader());
     this->resizeGL(this->width(), this->height());
     Q_EMIT this->graphicsReady();

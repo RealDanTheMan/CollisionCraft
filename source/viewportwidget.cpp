@@ -265,6 +265,13 @@ void ViewportWidget::drawGridMesh(GridRenderMesh &grid)
     {
         grid.shader()->setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
     }
+    if (grid.shader()->uniformLocation("SV_GRID_RANGE") != -1)
+    {
+        QVector3D bsphere_center;
+        double bsphere_radius;
+        this->computeSceneBoundingSphere(bsphere_center, bsphere_radius);
+        grid.shader()->setUniformValue("SV_GRID_RANGE", (float)bsphere_radius * 2);
+    }
 
     grid.shader()->release();
     grid.render();

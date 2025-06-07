@@ -7,6 +7,6 @@ out vec4 frag_color;
 /// Main pixel shader entry point.
 void main()
 {
-    float dist_fac = smoothstep(SV_GRID_RANGE * 0.66f, SV_GRID_RANGE * 1.15f, length(local_position));
-    frag_color = vec4(0.33, 0.33, 0.33, 1.0 - dist_fac);
+    float dist_fac = smoothstep(SV_GRID_RANGE * 0.5f, SV_GRID_RANGE * 2.0f, length(local_position));
+    frag_color = vec4(0.44, 0.44, 0.44, 1.0 - dist_fac);
 }

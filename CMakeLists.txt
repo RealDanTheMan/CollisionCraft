@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.25)
 project(CollisionCraft VERSION 0.1 LANGUAGES CXX)
+
+option(PACKAGE_PRODUCT "Build product package" OFF)
 
 # C++ Standard
 set(CMAKE_CXX_STANDARD 20)
@@ -39,8 +41,8 @@ find_package(Qt6 REQUIRED COMPONENTS
 
 if(APPLE)
     message(STATUS "Targeting MacOS dependencies")
-    set(USD_PATH lib/openusd/macos)
-    set(VHACD_PATH lib/vhacd/macos)
+    set(USD_PATH ${CMAKE_SOURCE_DIR}/lib/openusd/macos)
+    set(VHACD_PATH ${CMAKE_SOURCE_DIR}/lib/vhacd/macos)
     # TMP flag to avoid compile issues with OpenUSD with older versions of TBB
     add_compile_options(-Wno-error=changes-meaning)
 elseif(UNIX)
@@ -118,6 +120,7 @@ if(APPLE OR UNIX)
         Qt6::Widgets
         Qt6::OpenGL
         Qt6::OpenGLWidgets
+        Qt6::DBus
         
         # OpenUSD Modules
         usd_usd    
@@ -136,6 +139,20 @@ if(APPLE OR UNIX)
         # VHACD dependency
         libvhacd
     )
+
+    if (APPLE AND PACKAGE_PRODUCT)
+        set(APP_RPATHS
+            "/opt/homebrew/opt/qt@6/lib"
+            "${USD_LIB}"
+            "${VHACD_LIB}"
+        )
+        set_target_properties(CollisionCraft PROPERTIES
+            BUNDLE TRUE
+            MACOSX_BUNDLE TRUE
+            INSTALL_RPATH "${APP_RPATHS}" 
+            BUILD_WITH_INSTALL_RPATH TRUE
+        )
+    endif()
 elseif(WIN32)
     target_include_directories(CollisionCraft PRIVATE
         ${PROJECT_SOURCE_DIR}

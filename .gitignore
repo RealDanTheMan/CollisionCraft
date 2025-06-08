@@ -23,6 +23,7 @@
 # Build and caches
 .cache
 build
+product
 
 # MacOS directory files
 .DS_Store

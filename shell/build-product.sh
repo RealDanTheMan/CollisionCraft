@@ -1,4 +1,4 @@
-CWD=$(PWD)
+CWD=$PWD
 OS_NAME=$(uname -s)
 BUILD_PATH="$CWD/product"
 
@@ -39,7 +39,7 @@ if [[ "$OS_NAME" == "Darwin" ]]; then
     USD_PLUG_DST="$BUILD_PATH/bin/CollisionCraft.app/Contents/Frameworks"
     echo "Deploying USD plugins -> $USD_PLUG_DST"
     mkdir -p "$USD_PLUG_DST"
-    cp -r "$USD_PLUG_SRC"* "$USD_PLUG_DST"
+    cp -r "$USD_PLUG_SRC/"* "$USD_PLUG_DST"
 
     # Package dependencies & code sign.
     echo "Deploying package dependencies..."
@@ -51,6 +51,51 @@ if [[ "$OS_NAME" == "Darwin" ]]; then
 
 elif [[ "$OS_NAME" == "Linux" ]]; then
     echo "Running product build on Linux"
+
+    # Create application package structure.
+    APP_DIR="$BUILD_PATH/package/linux/AppDir"
+    mkdir -p "$APP_DIR/usr/bin"
+    mkdir -p "$APP_DIR/usr/lib"
+    mkdir -p "$APP_DIR/usr/plugins"
+    mkdir -p "$APP_DIR/usr/share/applications"
+   
+    # Run release build.
+    cmake \
+        -B$BUILD_PATH  \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=$APP_DIR \
+        -DPACKAGE_PRODUCT=ON
+
+    cmake --build $BUILD_PATH -- -j$(nproc)
+    cmake --install $BUILD_PATH
+
+    # Deploy QT dependencies.
+    QT_PLUG_SRC="/usr/lib/qt6/plugins"
+    QT_PLUG_DST="$APP_DIR/usr/lib/qt6/plugins"
+    mkdir -p "$APP_DIR/usr/lib/qt6/plugins/platforms"
+    mkdir -p "$APP_DIR/usr/lib/qt6/plugins/xcbglintegrations"
+
+    cp -r "$QT_PLUG_SRC/platforms/libqwayland-egl.so" "$QT_PLUG_DST/platforms"
+    cp -r "$QT_PLUG_SRC/platforms/libqxcb.so" "$QT_PLUG_DST/platforms"
+    cp -r "$QT_PLUG_SRC/xcbglintegrations/libqxcb-glx-integration.so" "$QT_PLUG_DST/xcbglintegrations"
+
+    # Deploy USD plugins
+    USD_PLUG_SRC="$CWD/lib/openusd/linux/lib/usd"
+    USD_PLUG_DST="$APP_DIR/usr/lib/usd"
+    echo "Deploying USD plugins -> $USD_PLUG_DST"
+    mkdir -p "$USD_PLUG_DST"
+    cp -r "$USD_PLUG_SRC/"* "$USD_PLUG_DST"
+
+    # Invoke linuxdeploy to create package app image.
+    export NO_STRIP=1
+
+    linuxdeploy --appdir "$APP_DIR" \
+        --executable "$APP_DIR/usr/bin/CollisionCraft" \
+        --desktop-file "$APP_DIR/usr/share/applications/CollisionCraft.desktop" \
+        --icon-file "$APP_DIR/usr/share/icons/icon.png" \
+        --output appimage
+
+
 else
     echo "Unsupported OS: $OS_NAME - aborting"
 fi

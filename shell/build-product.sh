@@ -36,7 +36,7 @@ if [[ "$OS_NAME" == "Darwin" ]]; then
 
     # Deploy OpenUSD plugins
     USD_PLUG_SRC="$CWD/lib/openusd/macos/lib/usd"
-    USD_PLUG_DST="$BUILD_PATH/bin/CollisionCraft.app/Contents/Frameworks"
+    USD_PLUG_DST="$BUILD_PATH/bin/CollisionCraft.app/Contents/Frameworks/usd"
     echo "Deploying USD plugins -> $USD_PLUG_DST"
     mkdir -p "$USD_PLUG_DST"
     cp -r "$USD_PLUG_SRC/"* "$USD_PLUG_DST"

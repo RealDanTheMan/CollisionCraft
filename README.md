@@ -21,6 +21,7 @@ Small front end application for generating collision meshes from 3D models.
   <img src="demo/img_01.png" alt="App Preview Image" width="320">
   <img src="demo/img_02.png" alt="App Preview Image" width="320">
   <img src="demo/img_03.png" alt="App Preview Image" width="320">
+  <img src="demo/img_04.png" alt="App Preview Image" width="320">
 </p>
 
 
@@ -81,7 +82,7 @@ cd CollisionCraft
 ```bash
 git clone https://github.com/RealDanTheMan/CollisionCraft
 cd CollisionCraft
-./shell/build.bat
+./shell/build-product.bat
 ./shell/run.bat
 ```
 

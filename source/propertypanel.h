@@ -15,7 +15,6 @@ class PropertyPanelWidget : public QWidget
 
 public:
     PropertyPanelWidget(QWidget *parent = nullptr);
-    CollisionTechnique getSelectedTechnique() const;
     CollisionGenSettings getSettings() const;
     ViewportSettings getViewportSettings() const;
 
@@ -26,9 +25,7 @@ public:
     void viewportSettingsChanged(ViewportSettings settings);
 
 protected:
-    void onTechniqueSelectionChanged(int technique);
     void onViewportSettingsPropertyChanged();
-    CollisionTechnique selected_technique;
 
 private:
     void initGenerationProperties(QLayout *parent_layout);
@@ -37,11 +34,17 @@ private:
 
 private:
     QPushButton             *generate_button;
-    DropdownPropertyWidget  *technique_menu;
+
     DecimalPropertyWidget   *scale_property;
     DecimalPropertyWidget   *resolution_property;
-    IntegerPropertyWidget   *hull_count_property;
+    DecimalPropertyWidget   *hull_min_volume_property;
+    DecimalPropertyWidget   *concavity_property;
+    
     IntegerPropertyWidget   *downsampling_property;
+    IntegerPropertyWidget   *hull_count_property;
+    IntegerPropertyWidget   *hull_vertex_count_property;
+    IntegerPropertyWidget   *depth_property;
+    IntegerPropertyWidget   *mode_property;
 
     TogglePropertyWidget    *collision_hidden_property;
     TogglePropertyWidget    *collision_fill_property;

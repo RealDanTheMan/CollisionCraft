@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.25)
 project(CollisionCraft VERSION 0.1 LANGUAGES CXX)
+
+option(PACKAGE_PRODUCT "Build product package" OFF)
 
 # C++ Standard
 set(CMAKE_CXX_STANDARD 20)
@@ -18,10 +20,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 
 # Build paths
-set(CMAKE_BINARY_DIR ./bin/)
+set(CMAKE_BINARY_DIR "./bin/")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(PROJECT_SOURCE_DIR source/)
+set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/source/")
 set(CMAKE_AUTOMOC ON)
 
 # External dependencies
@@ -39,19 +41,17 @@ find_package(Qt6 REQUIRED COMPONENTS
 
 if(APPLE)
     message(STATUS "Targeting MacOS dependencies")
-    set(USD_PATH lib/openusd/macos)
-    set(VHACD_PATH lib/vhacd/macos)
-    # TMP flag to avoid compile issues with OpenUSD with older versions of TBB
-    add_compile_options(-Wno-error=changes-meaning)
+    set(USD_PATH "${CMAKE_SOURCE_DIR}/lib/openusd/macos")
+    set(VHACD_PATH "${CMAKE_SOURCE_DIR}/lib/vhacd/macos")
 elseif(UNIX)
     message(STATUS "Targeting Unix dependencies")
-    set(USD_PATH lib/openusd/linux)
-    set(VHACD_PATH lib/vhacd/linux)
+    set(USD_PATH "${CMAKE_SOURCE_DIR}/lib/openusd/linux")
+    set(VHACD_PATH "${CMAKE_SOURCE_DIR}/lib/vhacd/linux")
     # TMP flag to avoid compile issues with OpenUSD with older versions of TBB
     add_compile_options(-Wno-error=changes-meaning)
 elseif(WIN32)
     message(STATUS "Targeting Windows dependencies")
-    set(VHACD_PATH ${CMAKE_SOURCE_DIR}/lib/vhacd/windows)
+    set(VHACD_PATH "${CMAKE_SOURCE_DIR}/lib/vhacd/windows")
 else()
     message(FATAL_ERROR "Unsupported target architecture")
 endif()
@@ -79,8 +79,8 @@ set(SOURCES
 # Define resources
 qt_add_resources(PROCESSED_RESOURCES resources/resources.qrc)
 
-set(VHACD_INCLUDES ${VHACD_PATH}/include)
-set(VHACD_LIB ${VHACD_PATH}/lib)
+set(VHACD_INCLUDES "${VHACD_PATH}/include")
+set(VHACD_LIB "${VHACD_PATH}/lib")
 
 # Create executable target and link modules
 add_executable(CollisionCraft ${SOURCES} ${PROCESSED_RESOURCES})
@@ -98,8 +98,8 @@ else()
 endif()
 
 if(APPLE OR UNIX)
-    set(USD_INCLUDES ${USD_PATH}/include)
-    set(USD_LIB ${USD_PATH}/lib)
+    set(USD_INCLUDES "${USD_PATH}/include")
+    set(USD_LIB "${USD_PATH}/lib")
     target_include_directories(CollisionCraft PRIVATE
         ${PROJECT_SOURCE_DIR}
         ${Python3_INCLUDE_DIRS}
@@ -118,6 +118,7 @@ if(APPLE OR UNIX)
         Qt6::Widgets
         Qt6::OpenGL
         Qt6::OpenGLWidgets
+        Qt6::DBus
         
         # OpenUSD Modules
         usd_usd    
@@ -136,6 +137,45 @@ if(APPLE OR UNIX)
         # VHACD dependency
         libvhacd
     )
+
+    if (PACKAGE_PRODUCT)
+        if (APPLE)
+            set(APP_RPATHS
+                "/opt/homebrew/opt/qt@6/lib"
+                "${USD_LIB}"
+                "${VHACD_LIB}"
+            )
+            set_target_properties(CollisionCraft PROPERTIES
+                BUNDLE TRUE
+                MACOSX_BUNDLE TRUE
+                INSTALL_RPATH "${APP_RPATHS}" 
+                BUILD_WITH_INSTALL_RPATH TRUE
+            )
+        elseif (UNIX)
+            install(TARGETS CollisionCraft DESTINATION "./usr/bin")
+            install(FILES "${CMAKE_SOURCE_DIR}/resources/packaging/linux/CollisionCraft.desktop" 
+                DESTINATION "./usr/share/applications")
+            
+            install(FILES "${CMAKE_SOURCE_DIR}/resources/packaging/linux/icon.png" 
+                DESTINATION "./usr/share/icons")
+
+            set(APP_RPATHS
+                "${USD_LIB}"
+                "${VHACD_LIB}"
+                "$ORIGIN/../lib"
+                "/usr/lib"
+                "/usr/lib/qt6"
+                "/usr/lib/qt6/plugins/platforms"
+            )
+
+            set_target_properties(CollisionCraft PROPERTIES
+                INSTALL_RPATH "${APP_RPATHS}" 
+                BUILD_WITH_INSTALL_RPATH TRUE
+                CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE
+            )
+        endif()
+    endif()
+
 elseif(WIN32)
     target_include_directories(CollisionCraft PRIVATE
         ${PROJECT_SOURCE_DIR}

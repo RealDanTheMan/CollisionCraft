@@ -1,10 +1,12 @@
 #version 330
 
-in vec3 pix_position;
+uniform float SV_GRID_RANGE;
+in vec3 local_position;
 out vec4 frag_color;
 
 /// Main pixel shader entry point.
 void main()
 {
-    frag_color = vec4(0.33, 0.33, 0.33, 1.0);
+    float dist_fac = smoothstep(SV_GRID_RANGE * 0.5f, SV_GRID_RANGE * 2.0f, length(local_position));
+    frag_color = vec4(0.44, 0.44, 0.44, 1.0 - dist_fac);
 }

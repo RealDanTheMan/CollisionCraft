@@ -45,7 +45,12 @@ struct CollisionGenSettings
     double  scale;
     double  resolution;
     int     max_hulls;
+    int     max_hull_vertices;
+    double  min_hull_volume;
     int     downsample;
+    double  concavity;
+    int     depth_planes;
+    int     mode;
 };
 
 
@@ -56,17 +61,6 @@ public:
 
     void addInputMesh(const Mesh *mesh);
     void clearInputMeshes();
-
-    void generateCollisionHull(
-        const CollisionGenSettings &settings,
-        std::unique_ptr<Mesh> &out_mesh
-    );
-
-    void generateCollisionHulls(
-        const CollisionGenSettings &settings,
-        std::vector<std::unique_ptr<Mesh>> &out_meshes
-    );
-
     void generateVHACD(
         const CollisionGenSettings &settings,
         std::vector<std::unique_ptr<Mesh>> &out_meshes

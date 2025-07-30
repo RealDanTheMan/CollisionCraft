@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QFile>
+#include <QFileInfo>
+#include <QDir>
 #include <qapplication.h>
 #include <qcontainerfwd.h>
 #include <string>
@@ -88,8 +90,12 @@ int main(int argc, char *argv[])
     qputenv("QT_WAYLAND_DISABLE_WINDOW_ALPHA", QByteArray("1"));
 #endif
 #if defined(_WIN32)
-    qputenv("QT_QPA_PLATFORM_PLUGIN_PATH", "C:\\dev\\apps\\collisioncraft\\CollisionCraft\\build\\bin\\Release");
-    qputenv("PXR_PLUGINPATH_NAME", "C:\\dev\\apps\\collisioncraft\\CollisionCraft\\build\\bin\\Release\\usd");
+    // Resolve default location for QT plugins shipped with the application.
+    QString exe_path = QFileInfo(QString::fromLocal8Bit(argv[0])).absolutePath();
+    QString plugin_path = QDir(exe_path + "/qt/plugins").absolutePath();
+    QCoreApplication::addLibraryPath(plugin_path);
+
+    qputenv("PXR_PLUGINPATH_NAME", "\\usd");
 #endif
 
     /// Define OpenGL context specification.
@@ -108,8 +114,7 @@ int main(int argc, char *argv[])
     Logger::active()->debug("Starting application");
     QApplication::setStyle("Fusion");
     QApplication app(argc, argv);
-    
-    
+
     std::string stylesheet = ":/ui/stylesheet.qss";
     if(!applyStyleSheet(app, stylesheet))
     {

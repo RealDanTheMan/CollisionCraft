@@ -146,7 +146,7 @@ void ViewportWidget::initializeGL()
         1.0f
     );
 
-    this->grid_mesh = std::make_unique<GridRenderMesh>(1024, 1024, 10.0);
+    this->grid_mesh = std::make_unique<GridRenderMesh>(1000, 1000, 100.0);
     this->grid_mesh->bindShader(this->graphics->getGridShader());
     this->resizeGL(this->width(), this->height());
     Q_EMIT this->graphicsReady();
@@ -203,15 +203,21 @@ void ViewportWidget::drawMesh(RenderMesh &mesh)
             mesh.shader()->bind();
             mesh.shader()->setUniformValue("unlit", false);
             mesh.shader()->release();
+            glEnable(GL_POLYGON_OFFSET_FILL);
+            glPolygonOffset(2.0, 2.0);
             break;
         case RenderMeshMaterial::StandardUnlit:
             mesh.bindShader(this->graphics->getModelShader());
             mesh.shader()->bind();
             mesh.shader()->setUniformValue("unlit", true);
             mesh.shader()->release();
+            glEnable(GL_POLYGON_OFFSET_FILL);
+            glPolygonOffset(2.0, 2.0);
             break;
         case RenderMeshMaterial::Collision:
             mesh.bindShader(this->graphics->getCollisionShader());
+            glEnable(GL_POLYGON_OFFSET_FILL);
+            glPolygonOffset(-2.0, -2.0);
             break;
         default:
             logError(
@@ -223,6 +229,9 @@ void ViewportWidget::drawMesh(RenderMesh &mesh)
 
     this->setShaderStandardInputs(mesh);
     mesh.Render();
+    glPolygonOffset(0.0, 0.0);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+
 }
 
 /// Draw given render mesh wireframe to viewport screen.
@@ -233,10 +242,11 @@ void ViewportWidget::drawMeshWireframe(RenderMesh &mesh)
     this->setShaderStandardInputs(mesh);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glPolygonOffset(-1.0, -1.0);
+    glPolygonOffset(-4.0, -4.0);
     glEnable(GL_POLYGON_OFFSET_LINE);
-    glLineWidth(1.0);
+    glLineWidth(2.0);
     mesh.Render();
+    glLineWidth(1.0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPolygonOffset(0.0, 0.0);
     glDisable(GL_POLYGON_OFFSET_LINE);
@@ -254,6 +264,13 @@ void ViewportWidget::drawGridMesh(GridRenderMesh &grid)
     if (grid.shader()->uniformLocation("SV_PROJ_MAT") != -1)
     {
         grid.shader()->setUniformValue("SV_PROJ_MAT", this->camera->getPorjectionMatrix());
+    }
+    if (grid.shader()->uniformLocation("SV_GRID_RANGE") != -1)
+    {
+        QVector3D bsphere_center;
+        double bsphere_radius;
+        this->computeSceneBoundingSphere(bsphere_center, bsphere_radius);
+        grid.shader()->setUniformValue("SV_GRID_RANGE", (float)bsphere_radius * 2);
     }
 
     grid.shader()->release();

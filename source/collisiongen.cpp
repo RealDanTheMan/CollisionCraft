@@ -30,101 +30,6 @@ void CollisionGen::clearInputMeshes()
     this->input_meshes.clear();
 }
 
-/// Generate simple collision hull mesh which envelops all active input meshes.
-/// @param: out_mesh Output mesh handle to allocate generated collision hull.
-void CollisionGen::generateCollisionHull(
-    const CollisionGenSettings &settings,
-    std::unique_ptr<Mesh> &out_mesh
-)
-{
-    const double padding = 100.0 - settings.scale * 100.0;
-    std::vector<CGAL_Point> points = this->getInputPoints(padding);
-    CGAL_Surface collision_surface;
-
-    CGAL::convex_hull_3(points.begin(), points.end(), collision_surface);
-
-    Mesh collision({}, {});
-    CollisionGen::meshFromSurface(collision_surface, collision);
-
-    logInfo("Generated collision mesh vertex count -> {}", collision.numVertices());
-    logInfo("Generated collision mesh triangle count -> {}", collision.numIndices() / 3);
-    out_mesh = std::make_unique<Mesh>(collision);
-    out_mesh->generateNormals();
-    out_mesh->computeBounds();
-}
-
-/// Generate collection of hull meshes which envelop all active input meshes using 
-/// exact convex decomposition technique via CGAL.
-/// @param: out_meshes List to add newly generated collision hulls to.
-void CollisionGen::generateCollisionHulls(
-    const CollisionGenSettings &settings,
-    std::vector<std::unique_ptr<Mesh>> &out_meshes
-)
-{
-    for (const Mesh *mesh : this->input_meshes)
-    {
-        logDebug("Processing complex collision for mesh of {} vertices", mesh->numVertices());
-        CGAL_Surface surface_mesh;
-        CollisionGen::surfaceFromMesh(*mesh, surface_mesh);
-        CollisionGen::capSurface(surface_mesh);
-
-        CGAL_Polyhedron polyhedron;
-        CGAL::copy_face_graph(surface_mesh, polyhedron);
-
-        if (!polyhedron.is_valid())
-        {
-            logError("Input mesh polyhedron is not valid");
-            continue;
-        }
-
-        if (!polyhedron.is_closed())
-        {
-            logError("Input mesh polyhedron is not closed");
-            continue;
-        }
-
-        CGAL_NefPolyhedron volume_poly(polyhedron);
-        if (!volume_poly.is_valid())
-        {
-            logError("Failed to generate polyhedron does not represent valid volume");
-            continue;
-        }
-
-        logDebug("Decomposing input polyhedron geometry");
-        CGAL::convex_decomposition_3(volume_poly);
-        logDebug("Convex decomposition generated {} volumes", volume_poly.number_of_volumes());
-        
-        for ( auto it = volume_poly.volumes_begin(); it != volume_poly.volumes_end(); ++it)
-        {
-            if (it->mark())
-            {
-                logDebug("Converting convex polyhedron to surface mesh");
-                CGAL_Polyhedron sub_convex;
-                volume_poly.convert_inner_shell_to_polyhedron(
-                    it->shells_begin(),
-                    sub_convex
-                );
-
-                if (!sub_convex.is_valid())
-                {
-                    logError("Convex decomposition generated invalid polyhedron convex hull");
-                    continue;
-                }
-
-                logInfo("Convex decomposition sub volume has {} faces", sub_convex.size_of_facets());
-                CGAL_Surface convex_surface;
-                CGAL::copy_face_graph(sub_convex, convex_surface);
-
-                Mesh convex_mesh({}, {});
-                CollisionGen::meshFromSurface(convex_surface, convex_mesh);
-                out_meshes.push_back(std::make_unique<Mesh>(convex_mesh));
-                out_meshes.back()->generateNormals();
-                out_meshes.back()->computeBounds();
-            }
-        }
-    }
-}
-
 /// Generate collection of hull meshes which envelop all active input meshes using 
 /// approximate convex decomposition technique via VHACD.
 /// @param: out_meshes List to add newly generated collision hulls to.
@@ -163,10 +68,11 @@ void CollisionGen::generateVHACD(
 
         VHACD::IVHACD::Parameters params;
         params.m_resolution = settings.resolution;
+        params.m_mode = settings.mode;
+        params.m_concavity = settings.concavity;
         params.m_maxConvexHulls = settings.max_hulls;
-        params.m_maxNumVerticesPerCH = 32;
-        params.m_minVolumePerCH = 0.001;
-        params.m_planeDownsampling = settings.downsample;
+        params.m_maxNumVerticesPerCH = settings.max_hull_vertices;
+        params.m_minVolumePerCH = settings.min_hull_volume;
         params.m_convexhullDownsampling = settings.downsample;
         params.m_logger = &this->vhacd_logger;
         

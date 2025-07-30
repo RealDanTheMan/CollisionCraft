@@ -82,7 +82,7 @@ cd CollisionCraft
 ```bash
 git clone https://github.com/RealDanTheMan/CollisionCraft
 cd CollisionCraft
-./shell/build.bat
+./shell/build-product.bat
 ./shell/run.bat
 ```
 
